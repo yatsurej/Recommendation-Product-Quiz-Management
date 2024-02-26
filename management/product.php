@@ -16,18 +16,51 @@
         header('Location: index.php');
         exit();
     }
+
+    $recordsPerPage = 10;
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $offset = ($page - 1) * $recordsPerPage;
+    $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
+
+    $query = "SELECT c.categoryID, c.categoryName, p.*
+              FROM category c 
+              NATURAL JOIN product p";
+    
+    if ($categoryFilter > 0) {
+        $query .= " WHERE c.categoryID = $categoryFilter";
+    }
+
+    $query .= " GROUP BY p.prodID
+               LIMIT $offset, $recordsPerPage";
+
+    $result = mysqli_query($conn, $query);
 ?>
 
 <div class="container w-75 my-3">
     <h1 class="text-center fw-bold mt-4">Product Management</h1>
     <hr style="height:1px;border-width:0;color:gray;background-color:gray">
     <?php include 'product_nav.php';?>
+    <form class="form-inline d-inline">
+        <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
+            <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
+            <?php
+            $categoriesQuery = "SELECT * FROM category";
+            $categoriesResult = mysqli_query($conn, $categoriesQuery);
+
+            while ($categoryRow = mysqli_fetch_assoc($categoriesResult)) {
+                $categoryId = $categoryRow['categoryID'];
+                $categoryName = $categoryRow['categoryName'];
+                echo '<option value="' . $categoryId . '" ' . ($categoryFilter == $categoryId ? 'selected' : '') . '>' . $categoryName . '</option>';
+            }
+            ?>
+        </select>
+    </form>
     <button class="btn btn-dark float-end mb-2 me-5" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
 </div>
 <div class="container w-100">
-    <div class="table table-borderless ">
-        <table class="table text-center table-hover">
-            <thead>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="text-center">
                 <tr>
                     <th scope="col">Product Name</th>
                     <th scope="col">Category</th>
@@ -36,12 +69,6 @@
             </thead>
             <tbody>
                 <?php
-                    $query = "SELECT c.categoryID, c.categoryName, p.*
-                              FROM category c 
-                              NATURAL JOIN product p
-                              GROUP BY p.prodID";
-                    $result = mysqli_query($conn, $query);
-                    
                     while($row = mysqli_fetch_assoc($result)){
                         $categoryID      = $row['categoryID'];
                         $categoryName    = $row['categoryName'];
@@ -142,6 +169,30 @@
     </div>
 </div>
 
+<!-- Pagination -->
+<div class="container w-75">
+    <ul class="pagination justify-content-center">
+        <?php
+        $totalRecordsQuery = "SELECT COUNT(*) AS totalRecords FROM product";
+        if ($categoryFilter > 0) {
+            $totalRecordsQuery .= " WHERE categoryID = $categoryFilter";
+        }
+
+        $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
+        $totalRecordsRow = mysqli_fetch_assoc($totalRecordsResult);
+        $totalRecords = $totalRecordsRow['totalRecords'];
+        $totalPages = ceil($totalRecords / $recordsPerPage);
+
+        if ($totalPages > 1) {
+            for ($i = 1; $i <= $totalPages; $i++) {
+                echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '">';
+                echo '<a class="page-link" href="?page=' . $i . '&category=' . $categoryFilter . '">' . $i . '</a>';
+                echo '</li>';
+            }
+        }
+        ?>
+    </ul>
+</div>
 
 <!-- Add Product Modal -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">

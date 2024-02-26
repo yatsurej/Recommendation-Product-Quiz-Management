@@ -16,15 +16,22 @@
             
             public function addQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
                 global $conn;
-            
-                $query = "INSERT INTO parent_question(pqContent, pqNumOptions, pqMinAnswer, categoryID)
-                        VALUES ('$parentQuestion', '$numOptions', '$numAnswer', '$categoryID')";
+                
+                $maxOrderQuery = "SELECT MAX(pqOrder) AS maxOrder FROM parent_question WHERE categoryID = '$categoryID'";
+                $maxOrderResult = mysqli_query($conn, $maxOrderQuery);
+                $maxOrderRow = mysqli_fetch_assoc($maxOrderResult);
+                $nextOrder = $maxOrderRow['maxOrder'] + 1;
+
+                $query = "INSERT INTO parent_question(pqContent, pqNumOptions, pqMinAnswer, categoryID, pqOrder)
+                        VALUES ('$parentQuestion', '$numOptions', '$numAnswer', '$categoryID', '$nextOrder')";
                 $result = mysqli_query($conn, $query);
             
                 if ($result) {
                     $parentQuestionID = mysqli_insert_id($conn);
             
                     foreach ($answersData as $answerContent => $productIDs) {
+                        $answerContent = mysqli_real_escape_string($conn, $answerContent);
+                        
                         $answerInsertQuery  = "INSERT INTO answer(answerContent) VALUES ('$answerContent')";
                         $answerResult = mysqli_query($conn, $answerInsertQuery);
             
