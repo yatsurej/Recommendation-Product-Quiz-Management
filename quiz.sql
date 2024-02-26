@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 21, 2024 at 02:25 AM
+-- Generation Time: Feb 26, 2024 at 08:05 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -37,7 +37,7 @@ CREATE TABLE `answer` (
 --
 
 INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
-(59, 'Starting fresh with a morning routing'),
+(59, 'Starting fresh with a morning routine'),
 (60, 'Conquering a daily workout'),
 (61, 'Unwinding in your happy place'),
 (62, 'Indulging in self-care pampering'),
@@ -52,9 +52,6 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 (71, 'Fight off fine lines'),
 (72, 'Reduce appearance of wrinkles'),
 (73, 'Even skin tone and reduced dark spots'),
-(82, 'Serum — the energizing booster'),
-(83, 'Moisturizing Cream — the hydration hero'),
-(84, 'Skincare Set — the ultimate champion\'s routine in one package'),
 (85, 'Just me — I am my own laundry champion!'),
 (86, '2 to 3 — We\'re a solid team doing laundry!'),
 (87, '4 or more — I do laundry for everybody!'),
@@ -84,7 +81,10 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 (111, 'Dry, frizzy strands'),
 (113, 'Classic shampoo & conditioner'),
 (114, 'Haircare Set — a champion\'s routine in one package'),
-(115, 'Haircare made with innovative ingredients');
+(115, 'Haircare made with innovative ingredients'),
+(118, 'Serum — the energizing booster'),
+(119, 'Moisturizing Cream — the hydration hero'),
+(120, 'Skincare Set — the ultimate champions routine in one package');
 
 -- --------------------------------------------------------
 
@@ -94,7 +94,9 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 
 CREATE TABLE `category` (
   `categoryID` int(11) NOT NULL,
+  `categoryTitle` text NOT NULL,
   `categoryName` text NOT NULL,
+  `categoryDescription` text NOT NULL,
   `userClick` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -102,10 +104,10 @@ CREATE TABLE `category` (
 -- Dumping data for table `category`
 --
 
-INSERT INTO `category` (`categoryID`, `categoryName`, `userClick`) VALUES
-(4, 'Skin care', 0),
-(5, 'Fabric care', 0),
-(6, 'Hair care', 0);
+INSERT INTO `category` (`categoryID`, `categoryTitle`, `categoryName`, `categoryDescription`, `userClick`) VALUES
+(4, 'Solutions you\'re looking for', 'Skin care', 'Take our skincare quiz to find the perfect addition to your beauty routine. Embrace the spirit of the Olympics 2024, and make every day feel like a gold medal win with the right skin-ssential from P&G!', 0),
+(5, '', 'Fabric care', 'Take our fabric care quiz to find the perfect addition to your laundry routine.', 0),
+(6, '', 'Hair care', 'Take our hair care quiz to find the perfect addition to your hair care routine.', 0);
 
 -- --------------------------------------------------------
 
@@ -132,6 +134,7 @@ CREATE TABLE `parent_question` (
   `pqContent` text NOT NULL,
   `pqNumOptions` tinyint(4) NOT NULL,
   `pqMinAnswer` tinyint(4) NOT NULL,
+  `pqOrder` tinyint(4) NOT NULL,
   `categoryID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -139,22 +142,22 @@ CREATE TABLE `parent_question` (
 -- Dumping data for table `parent_question`
 --
 
-INSERT INTO `parent_question` (`pqID`, `pqContent`, `pqNumOptions`, `pqMinAnswer`, `categoryID`) VALUES
-(43, 'Which everyday ritual makes you feel like a champion?', 4, 0, 4),
-(44, 'What is the ideal skincare routing that kickstarts your triumphant day?', 4, 1, 4),
-(45, 'How would you describe your skin before and after your daily activities?', 4, 1, 4),
-(46, 'What is the ultimate skincare goal for a winner like you?', 3, 1, 4),
-(51, 'Which is your perfect skincare companion and your winning MVP (Most Valuable Product)?', 3, 1, 4),
-(52, 'How many everyday champions do you do laundry for?', 3, 0, 5),
-(53, 'Which laundry method would receive the gold medal?', 2, 1, 5),
-(54, 'Which fabric care benefit would keep your clothes clean and ready to conquer the daily challenges with you?', 2, 1, 5),
-(55, 'Which P&G fabric care product would complete your winning combination for cleaning, softening, and refreshing your fabrics and linen?', 2, 1, 5),
-(56, 'If you had to pick a scent champion for your everyday life, which scent would it be?', 3, 0, 5),
-(57, 'How frequently do you treat your hair?', 4, 1, 6),
-(58, 'Which hair pattern perfectly describes your hair?', 4, 1, 6),
-(59, 'How would you describe your skin before and after your daily activities', 3, 1, 6),
-(60, 'Which daily hair challenge are you hoping to overcome?', 4, 1, 6),
-(62, 'Which hair care product sounds like the perfect ticket to achieving gold-medal hair?', 3, 1, 6);
+INSERT INTO `parent_question` (`pqID`, `pqContent`, `pqNumOptions`, `pqMinAnswer`, `pqOrder`, `categoryID`) VALUES
+(43, 'Which everyday ritual makes you feel like a champion?', 4, 1, 1, 4),
+(44, 'What is the ideal skincare routing that kickstarts your triumphant day?', 4, 1, 2, 4),
+(45, 'How would you describe your skin before and after your daily activities?', 4, 1, 3, 4),
+(46, 'What is the ultimate skincare goal for a winner like you?', 3, 1, 4, 4),
+(47, 'Which is your perfect skincare companion and your winning MVP (Most Valuable Product)?', 3, 1, 5, 4),
+(52, 'How many everyday champions do you do laundry for?', 3, 1, 1, 5),
+(53, 'Which laundry method would receive the gold medal?', 2, 1, 2, 5),
+(54, 'Which fabric care benefit would keep your clothes clean and ready to conquer the daily challenges with you?', 2, 1, 3, 5),
+(55, 'Which P&G fabric care product would complete your winning combination for cleaning, softening, and refreshing your fabrics and linen?', 2, 1, 4, 5),
+(56, 'If you had to pick a scent champion for your everyday life, which scent would it be?', 3, 1, 5, 5),
+(57, 'How frequently do you treat your hair?', 4, 1, 1, 6),
+(58, 'Which hair pattern perfectly describes your hair?', 4, 1, 2, 6),
+(59, 'How would you describe your skin before and after your daily activities', 3, 1, 3, 6),
+(60, 'Which daily hair challenge are you hoping to overcome?', 4, 1, 4, 6),
+(62, 'Which hair care product sounds like the perfect ticket to achieving gold-medal hair?', 3, 1, 5, 6);
 
 -- --------------------------------------------------------
 
@@ -195,6 +198,17 @@ CREATE TABLE `product_answer` (
   `answerID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `product_answer`
+--
+
+INSERT INTO `product_answer` (`paID`, `prodID`, `answerID`) VALUES
+(25, 14, 118),
+(27, 17, 94),
+(28, 14, 59),
+(29, 15, 61),
+(30, 15, 63);
+
 -- --------------------------------------------------------
 
 --
@@ -228,9 +242,6 @@ INSERT INTO `question_answer` (`qaID`, `pqID`, `cqID`, `answerID`) VALUES
 (52, 46, NULL, 71),
 (53, 46, NULL, 72),
 (54, 46, NULL, 73),
-(63, 51, NULL, 82),
-(64, 51, NULL, 83),
-(65, 51, NULL, 84),
 (66, 52, NULL, 85),
 (67, 52, NULL, 86),
 (68, 52, NULL, 87),
@@ -260,7 +271,10 @@ INSERT INTO `question_answer` (`qaID`, `pqID`, `cqID`, `answerID`) VALUES
 (92, 60, NULL, 111),
 (94, 62, NULL, 113),
 (95, 62, NULL, 114),
-(96, 62, NULL, 115);
+(96, 62, NULL, 115),
+(99, 47, NULL, 118),
+(100, 47, NULL, 119),
+(101, 47, NULL, 120);
 
 -- --------------------------------------------------------
 
@@ -353,7 +367,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `answer`
 --
 ALTER TABLE `answer`
-  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
+  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -371,7 +385,7 @@ ALTER TABLE `child_question`
 -- AUTO_INCREMENT for table `parent_question`
 --
 ALTER TABLE `parent_question`
-  MODIFY `pqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `pqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `product`
@@ -383,13 +397,13 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `product_answer`
 --
 ALTER TABLE `product_answer`
-  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `question_answer`
 --
 ALTER TABLE `question_answer`
-  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `user`

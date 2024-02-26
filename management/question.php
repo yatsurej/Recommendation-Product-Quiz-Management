@@ -17,10 +17,48 @@
         header('Location: index.php');
         exit();
     }
-    ?>
+
+    $recordsPerPage = 10;
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+    $offset = ($page - 1) * $recordsPerPage;
+    $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
+
+    $query = "SELECT pq.*, c.categoryName, 
+                GROUP_CONCAT(a.answerContent) as answerContents, 
+                GROUP_CONCAT(p.prodName) as prodNames
+                FROM parent_question pq 
+                LEFT JOIN category c ON pq.categoryID = c.categoryID
+                LEFT JOIN question_answer qa ON pq.pqID = qa.pqID 
+                LEFT JOIN answer a ON a.answerID = qa.answerID
+                LEFT JOIN product_answer pa ON pa.answerID = a.answerID
+                LEFT JOIN product p ON pa.prodID = p.prodID";
+    if ($categoryFilter > 0) {
+        $query .= " WHERE c.categoryID = $categoryFilter";
+    }
+
+    $query .= " GROUP BY pq.pqID DESC
+        LIMIT $offset, $recordsPerPage";
+
+    $result = mysqli_query($conn, $query);
+?>
 
 <div class="container w-75 my-3">
     <h1 class="text-center fw-bold mt-4">Questionnaire Management</h1>
+    <form class="form-inline d-inline">
+        <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
+            <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
+            <?php
+            $categoriesQuery = "SELECT * FROM category";
+            $categoriesResult = mysqli_query($conn, $categoriesQuery);
+
+            while ($categoryRow = mysqli_fetch_assoc($categoriesResult)) {
+                $categoryId = $categoryRow['categoryID'];
+                $categoryName = $categoryRow['categoryName'];
+                echo '<option value="' . $categoryId . '" ' . ($categoryFilter == $categoryId ? 'selected' : '') . '>' . $categoryName . '</option>';
+            }
+            ?>
+        </select>
+    </form>
     <button class="btn btn-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#addQuestionModal">Add Question</button>
 </div>
 <div class="container w-75">
@@ -35,18 +73,6 @@
             </thead>
             <tbody>
                 <?php
-                    $query = "SELECT pq.*, c.categoryName, 
-                              GROUP_CONCAT(a.answerContent) as answerContents, 
-                              GROUP_CONCAT(p.prodName) as prodNames
-                              FROM parent_question pq 
-                              LEFT JOIN category c ON pq.categoryID = c.categoryID
-                              LEFT JOIN question_answer qa ON pq.pqID = qa.pqID 
-                              LEFT JOIN answer a ON a.answerID = qa.answerID
-                              LEFT JOIN product_answer pa ON pa.answerID = a.answerID
-                              LEFT JOIN product p ON pa.prodID = p.prodID
-                              GROUP BY pq.pqID";
-                    $result = mysqli_query($conn, $query);
-
                     while ($row = mysqli_fetch_assoc($result)){
                         $pqID           = $row['pqID'];
                         $pqContent      = $row['pqContent'];
@@ -227,6 +253,32 @@
         </table>
     </div>
 </div>
+
+<!-- Pagination -->
+<div class="container w-75">
+    <ul class="pagination justify-content-center">
+        <?php
+        $totalRecordsQuery = "SELECT COUNT(*) AS totalRecords FROM parent_question";
+        if ($categoryFilter > 0) {
+            $totalRecordsQuery .= " WHERE categoryID = $categoryFilter";
+        }
+        
+        $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
+        $totalRecordsRow = mysqli_fetch_assoc($totalRecordsResult);
+        $totalRecords = $totalRecordsRow['totalRecords'];
+        $totalPages = ceil($totalRecords / $recordsPerPage);
+
+        if ($totalPages > 1) {
+            for ($i = 1; $i <= $totalPages; $i++) {
+                echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '">';
+                echo '<a class="page-link" href="?page=' . $i . '&category=' . $categoryFilter . '">' . $i . '</a>';
+                echo '</li>';
+            }
+        }
+        ?>
+    </ul>
+</div>
+
 <!-- Add Question Modal -->
 <div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
