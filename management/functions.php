@@ -1,6 +1,6 @@
 <?php
     require 'class/class_quiz.php';
-
+    
     $classQuiz = new Quiz;
     session_start();
     if (isset($_POST['login'])){
@@ -53,29 +53,25 @@
         $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
         $check = getimagesize($_FILES["prodImage"]["tmp_name"]);
         if ($check === false) {
-            echo "File is not an image.";
-            $uploadOk = 0;
-        }
-        if (file_exists($targetFile)) {
-            echo "Sorry, file already exists.";
+            echo "<script>alert('File is not an image.');window.location.href='product.php';</script>";
             $uploadOk = 0;
         }
         if ($_FILES["prodImage"]["size"] > 500000) {
-            echo "Sorry, your file is too large.";
+            echo "<script>alert('Sorry, your file is too large.');window.location.href='product.php';</script>";
             $uploadOk = 0;
         }
         $allowedFormats = ["jpg", "jpeg", "png", "gif"];
         if (!in_array($imageFileType, $allowedFormats)) {
-            echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+            echo "<script>alert('Sorry, only JPG, JPEG, PNG & GIF files are allowed.');window.location.href='product.php';</script>";
             $uploadOk = 0;
         }
         if ($uploadOk == 0) {
-            echo "Sorry, your file was not uploaded.";
+            echo "<script>alert('Sorry, your file was not uploaded.');window.location.href='product.php';</script>";
         } else {
             if (move_uploaded_file($_FILES["prodImage"]["tmp_name"], $targetFile)) {
-                echo "The file " . htmlspecialchars(basename($_FILES["prodImage"]["name"])) . " has been uploaded.";
+                // echo "<script>alert('The file " . htmlspecialchars(basename($_FILES["prodImage"]["name"])) . " has been uploaded.');window.location.href='product.php';</script>";
             } else {
-                echo "Sorry, there was an error uploading your file.";
+                echo "<script>alert('Sorry, there was an error uploading your file..');window.location.href='product.php';</script>";
             }
         }
     
@@ -96,5 +92,39 @@
         } else{
             $result->error;
         }
+    } elseif(isset($_POST['updateProduct'])){
+        $prodID            = $_POST['prodID'];
+        $prodName          = $_POST['prodName'];
+        $prodDescription   = $_POST['prodDescription'];
+        $prodURL           = $_POST['prodURL'];
+    
+        if(isset($_FILES["prodImage"]) && $_FILES["prodImage"]["error"] == 0) {
+            $targetDirectory = "uploads/";
+            $targetFile = $targetDirectory . basename($_FILES["prodImage"]["name"]);
+            $uploadOk = 1;
+    
+            $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+            $check = getimagesize($_FILES["prodImage"]["tmp_name"]);
+            if ($uploadOk == 0) {
+                echo "<script>alert('Sorry, your file was not uploaded.');window.location.href='product.php';</script>";
+            } else {
+                if (move_uploaded_file($_FILES["prodImage"]["tmp_name"], $targetFile)) {
+                    echo "<script>alert('The file " . htmlspecialchars(basename($_FILES["prodImage"]["name"])) . " has been uploaded.');window.location.href='product.php';</script>";
+                } else {
+                    echo "<script>alert('Sorry, there was an error uploading your file.');window.location.href='product.php';</script>";
+                }
+            }
+            $result = $classQuiz->updateProductWithImage($prodID, $prodName, $prodDescription, $targetFile, $prodURL);
+        } else {
+            $result = $classQuiz->updateProductWithoutImage($prodID, $prodName, $prodDescription, $prodURL);
+        }
+    
+        if ($result) {
+            header("Location: product.php");
+        } else {
+            echo "Failed to update product.";
+        }
+    } elseif(isset($_POST['updateQuestion'])){
+        
     }
     

@@ -23,7 +23,6 @@
         $categoryResult = mysqli_query($conn, $categoryQuery);
 
         while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
-            $categoryTitle  = $categoryRow['categoryTitle'];
             $categoryID     = $categoryRow['categoryID'];
             $categoryName   = $categoryRow['categoryName'];
             ?>

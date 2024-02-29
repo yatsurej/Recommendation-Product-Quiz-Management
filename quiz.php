@@ -106,13 +106,6 @@
 
         var nextButton = document.getElementById('next-button');
         nextButton.disabled = selectedAnswers.length < maxAnswer;
-
-        var sessionId = '<?php echo session_id(); ?>';
-        var selectedAnswersData = JSON.stringify(selectedAnswers);
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'store_answers.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send('sessionId=' + sessionId + '&selectedAnswers=' + selectedAnswersData);
     }
 
 
@@ -122,6 +115,13 @@
             return;
         }
 
+        var sessionId = '<?php echo session_id(); ?>';
+        var selectedAnswersData = JSON.stringify(selectedAnswers);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'store_answers.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.send('sessionId=' + sessionId + '&selectedAnswers=' + selectedAnswersData);
+        
         currentQuestionIndex++;
 
         if (currentQuestionIndex < questions.length) {

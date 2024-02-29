@@ -42,8 +42,9 @@
     $result = mysqli_query($conn, $query);
 ?>
 
-<div class="container w-75 my-3">
+<div class="container w-75">
     <h1 class="text-center fw-bold mt-4">Questionnaire Management</h1>
+    <hr style="height:1px;border-width:0;color:gray;background-color:gray">
     <form class="form-inline d-inline">
         <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
             <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
@@ -115,126 +116,170 @@
                                         <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
                                         <!-- Card -->
                                         <div class="card">
-                                            <div class="card-header">
-                                                <h4 class="card-title text-center">Question ID: <?php echo $pqID; ?></h4>
-                                            </div>
                                             <div class="card-body">
-                                                <div class="text-center">
-                                                    <label for="minAnswer">Category: <?php echo $categoryName;?></label>
+                                                <div class="form-group my-2">
+                                                    <label for="category" class="form-label">Category:</label>
+                                                    <input type="text" class="form-control" value="<?php echo $categoryName;?>" id="category" readonly>
                                                 </div>
-                                                <label for="numberOptions">Question: </label>
-                                                <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription" readonly><?php echo $pqContent; ?></textarea>                                                
-                                                <div class="row">
-                                                    <div class="col">
-                                                        <label for="numberOptions">Number of Options:</label>
-                                                        <input type="text" name="numberOptions" class="form-control" value="<?php echo $pqNumOptions;?>" readonly>
-                                                    </div>
-                                                    <div class="col">
-                                                        <label for="minAnswer">Minimum Number of Answers:</label>
-                                                        <input type="text" class="form-control" value="<?php echo $pqMinAnswer;?>" readonly>
+                                                <div class="form-group my-2">
+                                                    <label for="numberOptions">Question: </label>
+                                                    <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription" readonly><?php echo $pqContent; ?></textarea>                                                
+                                                </div>
+                                                <div class="form-group my-2">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <label for="numberOptions">Number of Options:</label>
+                                                            <input type="text" name="numberOptions" class="form-control" value="<?php echo $pqNumOptions;?>" readonly>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="minAnswer">Minimum Number of Answers:</label>
+                                                            <input type="text" class="form-control" value="<?php echo $pqMinAnswer;?>" readonly>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                
-                                                <label for="answers">Answers:</label>
-                                                <span class="float-end">Associated Product/s:</span>
-                                                <ul class="list-group" name="answers">
-                                                    <?php
-                                                    $answersArray = explode(',', $answerContents);
-                                                    $associatedProducts = explode(',', $prodNames);
-
-                                                    foreach ($answersArray as $index => $answer) {
-                                                        echo '<li class="list-group-item list-group-item-secondary">';
-                                                        echo $answer;
-
-                                                        if (isset($associatedProducts[$index])) {
-                                                            $productsForAnswer = explode(',', $associatedProducts[$index]);
-                                                            echo '<span class="float-end text-muted small">';
-                                                            echo implode(', ', $productsForAnswer);
-                                                            echo '</span>';
-                                                        } else {
-                                                            echo '<span class="float-end text-muted small">No associated product</span>';
+                                                <div class="form-group my-2">
+                                                    <label for="answers">Answers:</label>
+                                                    <span class="float-end">Associated Product/s:</span>
+                                                    <ul class="list-group" name="answers">
+                                                        <?php
+                                                        $answersArray = explode(',', $answerContents);
+                                                        $associatedProducts = explode(',', $prodNames);
+    
+                                                        foreach ($answersArray as $index => $answer) {
+                                                            echo '<li class="list-group-item list-group-item-secondary">';
+                                                            echo $answer;
+    
+                                                            if (isset($associatedProducts[$index])) {
+                                                                $productsForAnswer = explode(',', $associatedProducts[$index]);
+                                                                echo '<span class="float-end text-muted small">';
+                                                                echo implode(', ', $productsForAnswer);
+                                                                echo '</span>';
+                                                            } else {
+                                                                echo '<span class="float-end text-muted small">No associated product</span>';
+                                                            }
+    
+                                                            echo '</li>';
                                                         }
-
-                                                        echo '</li>';
-                                                    }
-                                                    ?>
-                                                </ul>
+                                                        ?>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Edit Question Details -->
+                        <!-- Update Question Details -->
                         <div class="modal fade" id="editQuestionModal<?php echo $pqID; ?>" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
+                                        <h3 class="text-center">Update Question</h3>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
+                                    <?php
+                                        $existingDataQuery = "SELECT pq.*, c.categoryName
+                                                            FROM parent_question pq
+                                                            LEFT JOIN category c ON pq.categoryID = c.categoryID
+                                                            WHERE pq.pqID = $pqID";
+                                        $existingDataResult = mysqli_query($conn, $existingDataQuery);
+                                        $existingData = mysqli_fetch_assoc($existingDataResult);
+                                        
+                                        $existingCategoryID     = $existingData['categoryID'];
+                                        $existingCategoryName   = $existingData['categoryName'];
+                                        $existingNumOptions     = $existingData['pqNumOptions'];
+                                        $existingMinAnswer      = $existingData['pqMinAnswer'];
+                                    ?>
                                         <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
                                         <!-- Card -->
                                         <div class="card">
-                                            <div class="card-header">
-                                                <h4 class="card-title text-center">Question ID: <?php echo $pqID; ?></h4>
-                                            </div>
                                             <div class="card-body">
-                                                <div class="text-center">
-                                                    <label for="minAnswer">Category: <?php echo $categoryName;?></label>
+                                                <div class="form-group my-2">
+                                                    <div class="form-floating">
+                                                        <select name="category" id="mainForm_category" class="form-control w-100" >
+                                                            <option value="">Select category</option>
+                                                            <?php
+                                                                $categoryQuery = "SELECT * FROM category";
+                                                                $categoryResult = mysqli_query($conn, $categoryQuery);
+    
+                                                                while($row = mysqli_fetch_assoc($categoryResult)){
+                                                                    $categoryID   = $row['categoryID'];
+                                                                    $categoryName = $row['categoryName'];
+    
+                                                                    echo "<option value=\"$categoryID\"";
+                                                                    echo ($categoryID == $existingCategoryID) ? ' selected' : '';
+                                                                    echo ">$categoryName</option>";
+                                                                }
+                                                            ?>
+                                                        </select>
+                                                        <label for="mainForm_category">Choose Category</label>
+                                                    </div>
                                                 </div>
-                                                <label for="numberOptions">Question: </label>
-                                                <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription"><?php echo $pqContent; ?></textarea>                                                
-                                                <div class="row">
-                                                <div class="col">
-                                                    <label for="numberOptions">Number of Options:</label>
-                                                    <select name="numOptions" class="form-control w-100" required>
+                                                <div class="form-group my-2">
+                                                    <div class="form-floating">
+                                                        <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription"><?php echo $pqContent; ?></textarea>                                                
+                                                        <label for="numberOptions">Question: </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group my-2">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <div class="form-floating">
+                                                                <select name="numOptions" class="form-control w-100" required>
+                                                                    <?php
+                                                                    for ($i = 0; $i <= 5; $i++) {
+                                                                        echo "<option value=\"$i\"";
+                                                                        echo ($i == $pqNumOptions) ? ' selected' : '';
+                                                                        echo ">$i</option>";
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <label for="numberOptions">Number of Options:</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="form-floating">
+                                                                <select name="minAnswer" class="form-control w-100" required>
+                                                                    <?php
+                                                                    for ($i = 0; $i <= 5; $i++) {
+                                                                        echo "<option value=\"$i\"";
+                                                                        echo ($i == $pqMinAnswer) ? ' selected' : '';
+                                                                        echo ">$i</option>";
+                                                                    }
+                                                                    ?>
+                                                                </select>
+                                                                <label for="minAnswer">Minimum Number of Answers:</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group my-2">
+                                                    <label for="answers">Answers:</label>
+                                                    <span class="float-end">Associated Product/s:</span>
+                                                    <ul class="list-group" name="answers">
                                                         <?php
-                                                        for ($i = 0; $i <= 5; $i++) {
-                                                            echo "<option value=\"$i\"";
-                                                            echo ($i == $pqNumOptions) ? ' selected' : '';
-                                                            echo ">$i</option>";
+                                                        $answersArray = explode(',', $answerContents);
+                                                        $associatedProducts = explode(',', $prodNames);
+    
+                                                        foreach ($answersArray as $index => $answer) {
+                                                            echo '<li class="list-group-item list-group-item-secondary">';
+                                                            echo $answer;
+    
+                                                            if (isset($associatedProducts[$index])) {
+                                                                $productsForAnswer = explode(',', $associatedProducts[$index]);
+                                                                echo '<span class="float-end text-muted small">';
+                                                                echo implode(', ', $productsForAnswer);
+                                                                echo '</span>';
+                                                            } else {
+                                                                echo '<span class="float-end text-muted small">No associated product</span>';
+                                                            }
+    
+                                                            echo '</li>';
                                                         }
                                                         ?>
-                                                    </select>
+                                                    </ul>
                                                 </div>
-                                                <div class="col">
-                                                    <label for="minAnswer">Minimum Number of Answers:</label>
-                                                    <select name="minAnswer" class="form-control w-100" required>
-                                                        <?php
-                                                        for ($i = 0; $i <= 5; $i++) {
-                                                            echo "<option value=\"$i\"";
-                                                            echo ($i == $pqMinAnswer) ? ' selected' : '';
-                                                            echo ">$i</option>";
-                                                        }
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                                <label for="answers">Answers:</label>
-                                                <span class="float-end">Associated Product/s:</span>
-                                                <ul class="list-group" name="answers">
-                                                    <?php
-                                                    $answersArray = explode(',', $answerContents);
-                                                    $associatedProducts = explode(',', $prodNames);
-
-                                                    foreach ($answersArray as $index => $answer) {
-                                                        echo '<li class="list-group-item list-group-item-secondary">';
-                                                        echo $answer;
-
-                                                        if (isset($associatedProducts[$index])) {
-                                                            $productsForAnswer = explode(',', $associatedProducts[$index]);
-                                                            echo '<span class="float-end text-muted small">';
-                                                            echo implode(', ', $productsForAnswer);
-                                                            echo '</span>';
-                                                        } else {
-                                                            echo '<span class="float-end text-muted small">No associated product</span>';
-                                                        }
-
-                                                        echo '</li>';
-                                                    }
-                                                    ?>
-                                                </ul>
                                             </div>
                                         </div>
                                     </div>
@@ -288,49 +333,62 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <a href="javascript:void(0)" class="float-end mb-3 add-more-form btn btn-primary">Add more</a>  <!-- Multiple Form Add Button -->
                 <!-- Form -->
                 <form action="functions.php" method="post" id="questionForm">
                 <div class="main-form">
-                    <label for="mainForm_category">Choose Category</label>
-                    <select name="category" id="mainForm_category" class="form-control w-100" onchange="toggleInputs('mainForm')">
-                        <option value="">Select category</option>
-                        <?php
-                            $categoryQuery = "SELECT * FROM category";
-                            $categoryResult = mysqli_query($conn, $categoryQuery);
-                
-                            while($row = mysqli_fetch_assoc($categoryResult)){
-                                $categoryID   = $row['categoryID'];
-                                $categoryName = $row['categoryName'];
-                
-                                echo "<option value=\"$categoryID\">$categoryName</option>";
-                            }
-                        ?>
-                    </select>
-                    <label for="mainForm_parentQuestion">Question:</label>
-                    <textarea type="text" style="resize: none" class="form-control" rows="3" id="mainForm_parentQuestion" name="parentQuestion" placeholder="Enter question here" required disabled></textarea> 
-                    <div class="row">
-                        <div class="col">
-                            <label for="mainForm_numOptions">Number of Options</label>
-                            <select name="numOptions" id="mainForm_numOptions" class="form-control w-100" onchange="addAnswerInputs('mainForm')" required disabled>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
+                    <div class="form-group my-2">
+                        <div class="form-floating">
+                            <select name="category" id="mainForm_category" class="form-control w-100" onchange="toggleInputs('mainForm')">
+                                <option value="">Select category</option>
+                                <?php
+                                    $categoryQuery = "SELECT * FROM category";
+                                    $categoryResult = mysqli_query($conn, $categoryQuery);
+                                    
+                                    while($row = mysqli_fetch_assoc($categoryResult)){
+                                        $categoryID   = $row['categoryID'];
+                                        $categoryName = $row['categoryName'];
+                                        
+                                        echo "<option value=\"$categoryID\">$categoryName</option>";
+                                    }
+                                    ?>
                             </select>
+                            <label for="mainForm_category">Choose Category</label>
                         </div>
-                        <div class="col">
-                            <label for="mainForm_numAnswer">Minimum Number of Answers</label>
-                            <select name="numAnswer" id="mainForm_numAnswer" class="form-control w-100" required disabled>
-                                <option value="0">0</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                            </select>
+                    </div>
+                    <div class="form-group my-2">
+                        <div class="form-floating">
+                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" id="mainForm_parentQuestion" name="parentQuestion" placeholder="Enter question here" required disabled></textarea> 
+                            <label for="mainForm_parentQuestion">Question:</label>
+                        </div>
+                    </div>
+                    <div class="form-group my-2">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-floating">
+                                    <select name="numOptions" id="mainForm_numOptions" class="form-control w-100" onchange="addAnswerInputs('mainForm')" required disabled>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <label for="mainForm_numOptions">Number of Options</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-floating">
+                                    <select name="numAnswer" id="mainForm_numAnswer" class="form-control w-100" required disabled>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <label for="mainForm_numAnswer">Minimum Number of Answers</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- Answer inputs -->
@@ -338,8 +396,6 @@
                     <div id="mainForm_answerInputsContainer">
                     </div>
                 </div>
-                <!-- New Forms for Multiple Forms -->
-                <div class="new-forms my-5"></div>
             </div>
             <div class="modal-footer">
                 <button name="addQuestion" class="btn btn-success" type="submit" id="submitAdd" disabled>Submit</button>
@@ -368,10 +424,14 @@
                     inputs += `
                         <div class="row mb-3">
                             <div class="col">
-                                <input type="text" name="answer[]" placeholder="Enter answer option ${i + 1} here." required class="form-control">
+                                <div class="form-floating">
+                                    <input type="text" name="answer[]" id="answerOption" placeholder="Enter answer option ${i + 1} here." required class="form-control">
+                                    <label for="answerOption">Answer Option ${i + 1}</label>
+                                </div>
                             </div>
                             <div class="col">
-                                <select id="${uniqueId}" name="answer_type[${i}][]" class="form-control ${formPrefix}_productAnswers" multiple>
+                                <label for="answerProduct" class="text-muted">Product/s</label>
+                                <select id="${uniqueId}" id="answerProduct" name="answer_type[${i}][]" class="form-control ${formPrefix}_productAnswers" multiple>
                                     ${data} 
                                 </select>
                             </div>
@@ -390,58 +450,7 @@
             }
         });
     }
-    $(document).ready(function () {
-        $(document).on('click', '.remove-btn', function () {
-            $(this).closest('.main-form').remove();
-        });
-
-        $(document).on('click', '.add-more-form', function () {
-            $.ajax({
-                url: 'get_categories.php',
-                type: 'GET',
-                success: function (data) {
-                    const formPrefix = 'form' + Date.now(); // Unique prefix for each form
-                    $('.new-forms').append(`<div class="main-form my-5">
-                        <button class="float-end remove-btn btn btn-danger mb-1" type="button">Remove</button>
-                        <label for="${formPrefix}_category">Choose Category</label>
-                        <select name="category" id="${formPrefix}_category" class="form-control w-100" onchange="toggleInputs('${formPrefix}')">
-                            ${data}
-                        </select>
-                        <label for="${formPrefix}_parentQuestion">Question:</label>
-                        <textarea type="text" style="resize: none" class="form-control" rows="3" id="${formPrefix}_parentQuestion" name="parentQuestion" placeholder="Enter question here" required disabled></textarea>
-                        <div class="row">
-                            <div class="col">
-                                <label for="${formPrefix}_numOptions">Number of Options</label>
-                                <select name="numOptions" id="${formPrefix}_numOptions" class="form-control w-100" onchange="addAnswerInputs('${formPrefix}')" required disabled>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label for="${formPrefix}_numAnswer">Minimum Number of Answers</label>
-                                <select name="numAnswer" id="${formPrefix}_numAnswer" class="form-control w-100" required disabled>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                </select>
-                            </div>
-                        </div>
-                        <br>
-                        <div id="${formPrefix}_answerInputsContainer">
-                        </div>
-                    </div>`);
-                },
-                error: function () {
-                    console.error('Error fetching category options');
-                }
-            });
-        });
-    });
+    
     function toggleInputs(formPrefix) {
         var categorySelect       = document.getElementById(formPrefix + '_category');
         var questionInput        = document.getElementById(formPrefix + '_parentQuestion'); 
