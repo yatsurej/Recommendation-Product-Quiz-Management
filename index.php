@@ -1,7 +1,28 @@
-<?php
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/output-min.css">
+    <link rel="stylesheet" href="./assets/styles-min.css">
+    <title>P&G Product Recommendation Quiz</title>
+    <style>
+        .custom-bg {
+            background-image: url('./assets/images/bg.jpg');
+        }
+
+        .choices {
+            margin-bottom: clamp(25px, 2vw, 40px);
+        }
+    </style>
+</head>
+
+<body>
+    <?php
     session_start();
     $pageTitle = "Quiz";
-    include 'header.php';
+    // include 'header.php';
     include 'db.php';
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -9,30 +30,37 @@
         header("Location: category-page.php");
         exit();
     }
-?>
-<style>
-    .form{
-        margin-top: 10em;
-    }
-</style>
-<div class="container w-75 mt-4 text-center">
-    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="form" method="post">
-        <h3 class="mb-3 fw-bolder">Solutions you're looking for</h3>
-        <?php
-        $categoryQuery = "SELECT * FROM category";
-        $categoryResult = mysqli_query($conn, $categoryQuery);
 
-        while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
-            $categoryID     = $categoryRow['categoryID'];
-            $categoryName   = $categoryRow['categoryName'];
-            ?>
-            <div class="mb-4">
-                <button type="submit" class="btn btn-primary rounded-pill w-50" name="category" value="<?php echo $categoryID; ?>">
-                    <?php echo $categoryName; ?>
-                </button>
+    ?>
+
+    <div class="custom-bg">
+        <div class="content">
+            <div class="wrapper">
+                <div class="title">Solutions you're<br>looking for</div>
+                <div class="selection">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="form" method="post">
+                        <?php
+                        $categoryQuery = "SELECT * FROM category";
+                        $categoryResult = mysqli_query($conn, $categoryQuery);
+                        
+                        while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
+                            $categoryID = $categoryRow['categoryID'];
+                            $categoryName = $categoryRow['categoryName'];
+                            ?>
+                            <div class="buttons">
+                                <button type="submit" class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2" name="category" value="<?php echo $categoryID; ?>">
+                                    <?php echo $categoryName; ?>
+                                </button>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </form>
+                </div>
+                <div class="spacer"></div>
             </div>
-            <?php
-        }
-        ?>
-    </form>
-</div>
+        </div>
+    </div>
+</body>
+
+</html>
