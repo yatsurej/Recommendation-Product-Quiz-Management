@@ -7,15 +7,118 @@
     <link rel="stylesheet" href="./assets/output-min.css">
     <link rel="stylesheet" href="./assets/styles-min.css">
     <style>
+
+        .spacer{
+            height: 20px
+        }
+
         .custom-bg {
             background-image: url('./assets/images/bg-4.jpg')
         }
 
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            align-content: center;
+            justify-content: space-between;
+            align-items: center;
+            height: -webkit-fill-available;
+            max-width: 320px;
+        }
+
         p {
             color: #8E7242;
-            font-size: clamp(11px, 2vw, 14px);
             font-weight: normal;
         }
+
+        .wrapper h3 {
+            line-height: 0.8;
+        }
+
+        .suggested-products {
+            overflow: scroll;
+            flex-direction: column;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            padding-bottom: var(--mask-height);
+        }
+
+        .masked-overflow {
+            --scrollbar-width: 8px;
+            --mask-height: 32px;
+            overflow-y: auto;
+            height: 100%;
+            padding-bottom: var(--mask-height);
+            --mask-image-content: linear-gradient(
+            to bottom,
+            transparent,
+            black var(--mask-height),
+            black calc(100% - var(--mask-height)),
+            transparent
+            );
+            --mask-size-content: calc(100% - var(--scrollbar-width)) 100%;
+            --mask-image-scrollbar: linear-gradient(black, black);
+            --mask-size-scrollbar: var(--scrollbar-width) 100%;
+            mask-image: var(--mask-image-content), var(--mask-image-scrollbar);
+            mask-size: var(--mask-size-content), var(--mask-size-scrollbar);
+            mask-position: 0 100%, 100% 100%; /* Adjusted to apply only at the bottom */
+            mask-repeat: no-repeat, no-repeat;
+        }
+
+
+        .suggested-products::-webkit-scrollbar {
+        display: none;
+        }
+
+        .product-body p {
+            font-size: 12px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .product-container {
+            background: #fff;
+            border-radius: 15px;
+            border-color: #8E7242;
+            border-width: 2px;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 20px;
+            margin-bottom: 20px;
+            height: 430px;
+            width: -webkit-fill-available;
+        }
+        
+        .product-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            height: 450px;
+            justify-content: space-between;
+        }
+
+        .product-body textarea {
+            width: 100%;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .product-body button {
+            font-size: 11px;
+            width: 100%;
+        }
+        
+        .nav-buttons {
+            width: -webkit-fill-available;
+            padding-top: 20px
+        }
+        
+            .nav-buttons button{
+                width: 100%;
+            }
+
     </style>
 </head>
 <body>
@@ -52,40 +155,42 @@
 <div class="custom-bg">
     <div class="content">
         <div class="wrapper">
-
-            <h3>Thanks for waiting</h3>
-            <p>Here are the products that might interest you.</p>
-            <div class="question-box">
+            <div class="spacer"></div>
+            <h3>Thanks for<br>waiting</h3>
+            <p>Here are the products<br>that might interest you.</p>
+            <div class="suggested-products masked-overflow">
+                <div class="spacer"></div>
                 <?php if (!empty($maxTallyProducts)): ?>
-                    <?php foreach ($maxTallyProducts as $maxTallyProduct): ?><br>
-                        <div class="container w-100">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div class="card w-100">
-                                    <div class="card-body">
-                                        <?php
-                                    $prodID                 = $maxTallyProduct['id'];
-                                    $productDetailsQuery    = "SELECT prodImage, prodURL, prodDescription FROM product WHERE prodID = '$prodID' AND categoryID = '$selectedCategory'";
-                                    $productDetailsResult   = mysqli_query($conn, $productDetailsQuery);
-                                    
-                                    if ($productDetailsRow  = mysqli_fetch_assoc($productDetailsResult)) {
-                                        $prodImage          = $productDetailsRow['prodImage'];
-                                        $prodURL            = $productDetailsRow['prodURL'];
-                                        $prodDescription    = $productDetailsRow['prodDescription'];
-                                        ?>
-                                <img src="management/<?php echo $prodImage; ?>" class="rounded img-thumbnail" style="width: 100%;" alt="Product Image" class="img-fluid">
-                                <p class="fs-5"><?php echo $maxTallyProduct['name']; ?></p>
-                                <textarea type="text" style="resize: none" class="form-control mt-3" rows="4" readonly><?php echo $prodDescription; ?></textarea>
-                                <a href="<?php echo $prodURL; ?>" class="btn btn-primary rounded-pill mt-3" target="_blank">VIEW PRODUCT</a>
-                                <?php } ?>
-                            </div>
+                    <?php foreach ($maxTallyProducts as $maxTallyProduct): ?>
+                        <div class="product-container">
+                            <div class="product-body">
+                                <?php
+                                $prodID                 = $maxTallyProduct['id'];
+                                $productDetailsQuery    = "SELECT prodImage, prodURL, prodDescription FROM product WHERE prodID = '$prodID' AND categoryID = '$selectedCategory'";
+                                $productDetailsResult   = mysqli_query($conn, $productDetailsQuery);
+                                
+                                if ($productDetailsRow  = mysqli_fetch_assoc($productDetailsResult)) {
+                                    $prodImage          = $productDetailsRow['prodImage'];
+                                    $prodURL            = $productDetailsRow['prodURL'];
+                                    $prodDescription    = $productDetailsRow['prodDescription'];
+                                    ?>
+                            <img src="management/<?php echo $prodImage; ?>" class="rounded img-thumbnail" alt="Product Image" class="img-fluid">
+                            <p><?php echo $maxTallyProduct['name']; ?></p>
+                            <textarea type="text" rows="4" readonly><?php echo $prodDescription; ?></textarea>
+                            <button onclick="window.open('<?php echo $prodURL; ?>', '_blank')" class="choices text-white border-2 rounded-3xl px-auto py-auto text-center">VIEW PRODUCT</button>  
+                            <?php } ?>
                         </div>
                     </div>
-                </div>
-                <?php endforeach; ?>
-                <?php else: ?>
-                    <p>No favorable product found.</p>
-                    <?php endif; ?>
-                    </div>
+                    <?php endforeach; ?>
+                    <div class="spacer"></div>
+                                <?php else: ?>
+                <p>No favorable product found.</p>
+                <?php endif; ?>
+            </div>
+            <div class="nav-buttons">
+                <button class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2">Retake the quiz</button>
+                <button class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2">Back to home</button>
+            </div>
         </div>
     </div>
 </div>

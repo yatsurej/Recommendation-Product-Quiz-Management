@@ -18,14 +18,14 @@
     }
 ?>
 
-<div class="container w-75 my-3">
+<div class="container-body" style="padding-top: 128px;">
     <h1 class="text-center fw-bold mt-4">Product Management</h1>
     <hr style="height:1px;border-width:0;color:gray;background-color:gray">
     <?php include 'product_nav.php';?>
     <button class="btn btn-dark float-end mb-2  me-5" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
 
 </div>
-<div class="container w-100">
+<div class="container-body">
     <div class="table table-borderless ">
         <table class="table text-center table-hover">
             <thead>
@@ -81,3 +81,16 @@
         </div>
     </div>
 </div>
+
+
+<style>
+    .container-body {
+        padding-left: 256px;
+    }
+
+    @media only screen and (max-width: 640px) {
+        .container-body {
+            padding-left: 0px;
+        }
+    }
+</style>

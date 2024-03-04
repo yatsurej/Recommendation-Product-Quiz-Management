@@ -115,7 +115,6 @@
 <body>
 <?php
     $pageTitle = "Quiz";
-    // include 'header.php';
     include 'db.php';
     session_start();
 

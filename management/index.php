@@ -21,7 +21,7 @@
     include 'navbar.php';
 ?>
 
-<div class="container w-75 text-center mt-5">
+<div class="container text-center mt-5">
     <p class="fs-3">Welcome, 
         <?php 
             echo $userFirstName . ' ' . $userLastName;

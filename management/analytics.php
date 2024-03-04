@@ -1,6 +1,7 @@
 <?php
     include '../header.php';
     include 'navbar.php';
+    $pageTitle = "Analytics";
 ?>
 
 <div class="container w-50 text-center">

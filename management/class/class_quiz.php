@@ -7,7 +7,7 @@
                 $query = "SELECT * FROM user WHERE username = '$username' AND password = '$password'";
                 $result = mysqli_query($conn, $query);
 
-                if (mysqli_fetch_assoc($result)){
+                if ($result){
                     return true;
                 } else{
                     return false;
@@ -55,8 +55,6 @@
 
             public function addProduct($prodName, $prodDescription, $prodImage, $prodURL, $categoryID){
                 global $conn;
-                $prodDescription = mysqli_real_escape_string($conn,$prodDescription);
-                
                 $query  = "INSERT INTO product(prodName, prodDescription, prodImage, prodURL, categoryID)
                                   VALUES('$prodName', '$prodDescription', '$prodImage', '$prodURL', '$categoryID')";
                 $result = mysqli_query($conn, $query);
@@ -77,34 +75,6 @@
                 if($result){
                     return true;
                 } else{
-                    return false;
-                }
-            }
-            
-            public function updateProductWithImage($prodID, $prodName, $prodDescription, $targetFile, $prodURL){
-                global $conn;
-                $query  = "UPDATE product
-                           SET prodName = '$prodName', prodDescription = '$prodDescription', prodImage = '$targetFile', prodURL = '$prodURL'
-                           WHERE prodID = '$prodID'";
-                $result = mysqli_query($conn, $query);
-            
-                if ($result){
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            
-            public function updateProductWithoutImage($prodID, $prodName, $prodDescription, $prodURL){
-                global $conn;
-                $query  = "UPDATE product
-                           SET prodName = '$prodName', prodDescription = '$prodDescription', prodURL = '$prodURL'
-                           WHERE prodID = '$prodID'";
-                $result = mysqli_query($conn, $query);
-            
-                if ($result){
-                    return true;
-                } else {
                     return false;
                 }
             }
