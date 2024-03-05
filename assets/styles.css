@@ -52,17 +52,20 @@ html {
 }
 
 .choices {
+  background: #fff;
   background-image: linear-gradient(
     to right,
     #2a68dc 0%,
     #4da3ff 37%,
     #3677e4 100%
   );
+  margin-bottom: 20px;
 }
 
 .choices:hover {
-  transition: all 0.5s ease 0s;
-  background: #fff;
+  transition: all 0.5s ease-in 0s;
+  background-image: linear-gradient(#f9f6f1 #f9f6f1);
+  color: #8e7242;
 }
 
 button {
@@ -71,12 +74,13 @@ button {
   height: clamp(35px, 5vh, 50px);
   font-size: clamp(16px, 2vw, 22px);
   border-color: #8e7242;
+  background: #fff;
 }
 
 button:hover {
-  transition: all 1s ease 0s;
+  transition: all 0.5s ease-in 0s;
   color: #8e7242;
-  background: #fff;
+  /* background: #fff; */
 }
 
 .spacer {
@@ -101,4 +105,12 @@ h3 {
 
 .description {
   width: clamp(260px, 80vw, 550px);
+}
+
+/* Quiz Styles */
+
+/* Admin Dashboard */
+
+.btn btn-dark button {
+  background: #000;
 }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Results</title>
     <link rel="stylesheet" href="./assets/output-min.css">
-    <link rel="stylesheet" href="./assets/styles-min.css">
+    <link rel="stylesheet" href="./assets/styles.css">
     <style>
 
         .spacer{
@@ -20,8 +20,7 @@
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
-            align-content: center;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
             height: -webkit-fill-available;
             max-width: 320px;
@@ -86,7 +85,7 @@
             flex-direction: column;
             padding: 20px 20px;
             margin-bottom: 20px;
-            height: 430px;
+            height: 350px;
             width: -webkit-fill-available;
         }
         
@@ -99,11 +98,14 @@
             justify-content: space-between;
         }
 
-        .product-body textarea {
+        /* .product-body textarea {
             width: 100%;
             font-size: 11px;
             text-align: center;
-        }
+            height: 35px;
+            max-height: 40px;
+
+        } */
 
         .product-body button {
             font-size: 11px;
@@ -115,9 +117,11 @@
             padding-top: 20px
         }
         
-            .nav-buttons button{
-                width: 100%;
-            }
+        .nav-buttons button{
+            width: 100%;
+            font-size: 1rem;
+            letter-spacing: 4px;
+        }
 
     </style>
 </head>
@@ -176,7 +180,7 @@
                                     ?>
                             <img src="management/<?php echo $prodImage; ?>" class="rounded img-thumbnail" alt="Product Image" class="img-fluid">
                             <p><?php echo $maxTallyProduct['name']; ?></p>
-                            <textarea type="text" rows="4" readonly><?php echo $prodDescription; ?></textarea>
+                            <!-- <textarea type="text" rows="4" readonly><?php echo $prodDescription; ?></textarea> -->
                             <button onclick="window.open('<?php echo $prodURL; ?>', '_blank')" class="choices text-white border-2 rounded-3xl px-auto py-auto text-center">VIEW PRODUCT</button>  
                             <?php } ?>
                         </div>
@@ -188,8 +192,8 @@
                 <?php endif; ?>
             </div>
             <div class="nav-buttons">
-                <button class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2">Retake the quiz</button>
-                <button class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2">Back to home</button>
+                <button class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2" onclick="window.location.href = 'index.php';">Retake the quiz</button>
+                <button class="choices text-white border-2 rounded-3xl px-auto py-auto text-center me-2 mb-2" onclick="window.location.href = 'index.php';">Back to home</button>
             </div>
         </div>
     </div>

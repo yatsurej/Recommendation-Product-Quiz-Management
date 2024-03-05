@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./assets/output-min.css">
-    <link rel="stylesheet" href="./assets/styles-min.css">
+    <link rel="stylesheet" href="./assets/styles.css">
     <title>P&G Product Recommendation Quiz</title>
     <style>
         .custom-bg {

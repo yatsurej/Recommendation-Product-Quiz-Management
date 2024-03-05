@@ -85,7 +85,7 @@
                             <div class="d-flex justify-content-center align-items-center">
                                 <!-- View Button -->
                                 <div class="text-center me-1">
-                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#viewProductModal<?php echo $prodID; ?>">
+                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#viewProductModal<?php echo $prodID; ?>" >
                                         <div class="d-flex align-items-center">
                                             <i class="fa-solid fa-eye"></i>
                                         </div>
@@ -250,5 +250,15 @@
         .container-body {
             padding-left: 0px;
         }
+    }
+
+    .btn{
+        background: #000 !important;
+        color: #fff !important;
+    }
+
+    .btn:hover{
+        background: #fff !important;
+        color: #000 !important;
     }
 </style>

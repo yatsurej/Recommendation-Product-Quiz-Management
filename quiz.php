@@ -5,62 +5,31 @@
     <title>Quiz</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./assets/output.css">
+    <link rel="stylesheet" href="./assets/styles.css">
 
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            align-items: center;
-            justify-content: center;
-        }
-
         .custom-bg {
             background-image: url('./assets/images/bg-3.jpg');
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center center;
-            width: 100%;
-            height: 100%;
-            position: relative;
         }
 
         .content {
-            text-align: center;
-            display: flex;
-            flex-direction: column; 
-            align-items: center;
             max-width: clamp(200px, 80vw, 400px);
-            margin: auto;
-            height: -webkit-fill-available;
-            justify-content: space-around;
+            padding: 0px;
         }
-
-        .wrapper{
+        
+        .wrapper-qb {
+            justify-content: flex-start;
+            height: 100%;
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
-            justify-content: space-around;
+            /* align-content: center; */
             align-items: center;
-            height: 100%;
-        }
-
-        .question-box {
-            background-color: #fff;
-            border: 2px solid #8E7242;
-            padding: 20px 40px 20px 40px;
-            border-radius: 10px;
-            color: #8E7242;
-            position: relative;
+            gap: 40px;
         }
 
         .answers{
             width: 100%;
-        }
-
-        h1{
-            font-size: clamp(18px, 2vw, 24px);
-            font-weight: bold;
         }
 
         
@@ -68,43 +37,58 @@
             background-image: linear-gradient(to right, #2A68DC 0%, #4DA3FF 37%, #3677E4 100%);
             margin-bottom: 20px;
         }
-        
-        
-        .choices:hover {
-            transition: all 0.5s ease 0s;
-            background: #FFF;
-            color: #8E7242;
+    
+
+        .answers .choices {
+            min-height: 8ch;
+            padding: 10px 30px;
         }
 
         .choices.selected {
             background: #fff;
             color: #8E7242;
         }
-
-        .answers .choices {
-            min-height: 8ch;
-            padding: 10px 30px;
-        }
         
         button {
-            display: block;
             width: 100%;
             font-size: clamp(14px, 2vw, 16px);
-            border-color: #8E7242;
             padding: 10px;  
         }
         
-        button.hover {
-            transition: all 1s ease 0s;
-            color: #8E7242;
-            background: #fff;
-        }
         
         .next {
             width: 100%;
         }
         
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            background-color: #fff;
+            border: 2px solid #8E7242;
+            padding: 40px 40px 30px 40px;
+            border-radius: 10px;
+            color: #8E7242;
+            position: relative;
+            letter-spacing: 1em;
         
+        }
+    
+        .question-box {
+            position: relative;
+        }
+
+        .question-box p {
+            letter-spacing: 1px;
+            font-size: clamp(18px, 2vw, 20px);
+            font-weight: bold;
+        }
+
+        .question-mark {
+            position: absolute;
+            top: -30px;
+        }
 
         .btn-answer.selected {
         background-color: #fff; 
@@ -163,11 +147,17 @@
 
 <div class="custom-bg">
     <div class="content" id="question-container">
-        <div class="wrapper" >
+        <div class="wrapper-qb" >
         <?php if (!empty($questions)): ?>
             <?php $firstQuestion = reset($questions); ?>
-            <div class="question-box">
-                <h1><?php echo $firstQuestion['content']; ?></h1>
+            <div class="question-container">
+                <div class="question-mark">
+                    <img src="./assets/icon-questionmark.svg">
+                    
+                </div>
+                <div class="question-box">
+                    <p><?php echo $firstQuestion['content']; ?></p>
+                </div>
             </div>
             <div class="answers">
                 <?php if (!empty($firstQuestion['answers'])): ?>
@@ -247,16 +237,24 @@
         questionContainer.innerHTML = '';
 
         // Create the wrapper div
-        var wrapperDiv = document.createElement('div');
-        wrapperDiv.classList.add('wrapper');
+        var wrapperDiv = document.createElement('div'); 
+        wrapperDiv.classList.add('wrapper-qb');
         questionContainer.appendChild(wrapperDiv);
 
+        
         // Create the question box
         var questionBox = document.createElement('div');
+        questionBox.classList.add('question-container');
         questionBox.classList.add('question-box');
-        questionBox.innerHTML = '<h1 class="question-container">' + questions[currentQuestionIndex]['content'] + '</h1>';
+        questionBox.innerHTML = '<p>' + questions[currentQuestionIndex]['content'] + '</p>';
         wrapperDiv.appendChild(questionBox);
 
+
+        var questionMark = document.createElement('div');
+        questionMark.classList.add('question-mark');
+        questionMark.innerHTML =  '<img src="./assets/icon-questionmark.svg">';
+        questionBox.appendChild(questionMark);
+        
         // Create the answers div
         var answersDiv = document.createElement('div');
         answersDiv.classList.add('answers');
