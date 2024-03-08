@@ -33,12 +33,15 @@
             gap: 18px;
             display: flex;
             flex-direction: column;
+            width: 100%;
         }
     
 
         .answers .choices {
             min-height: 8ch;
             padding: 10px 30px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         .choices.selected {
@@ -56,6 +59,16 @@
         .next {
             width: 100%;
         }
+
+        /* .next-c {
+            height: 60px;
+            font-size: 21px;
+            border-radius: 30px;
+        } */
+
+        .next-c button:active{
+            background: #fff;
+        }
         
         .question-container {
             display: flex;
@@ -63,7 +76,7 @@
             align-items: center;
             margin-top: 50px;
             background-color: #fff;
-            border: 2px solid #8E7242;
+            border: 2px solid #DABB7B;
             padding: 40px 40px 30px 40px;
             border-radius: 10px;
             color: #8E7242;
@@ -78,6 +91,7 @@
 
         .question-box p {
             letter-spacing: 1px;
+            line-height: 1.25em;
             font-size: clamp(18px, 2vw, 20px);
             font-weight: bold;
         }
