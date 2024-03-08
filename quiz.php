@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./assets/styles.css">
 
     <style>
+        @import url("assets/style.css");
         .custom-bg {
             background-image: url('./assets/images/bg-3.jpg');
         }
@@ -23,19 +24,15 @@
             display: flex;
             flex-direction: column;
             flex-wrap: nowrap;
-            /* align-content: center; */
+            align-content: center;
             align-items: center;
             gap: 40px;
         }
 
-        .answers{
-            width: 100%;
-        }
-
-        
-        .choices {
-            background-image: linear-gradient(to right, #2A68DC 0%, #4DA3FF 37%, #3677E4 100%);
-            margin-bottom: 20px;
+        .answers {
+            gap: 18px;
+            display: flex;
+            flex-direction: column;
         }
     
 
