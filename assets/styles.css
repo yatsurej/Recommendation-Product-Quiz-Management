@@ -72,7 +72,7 @@ h4 {
   align-items: center;
   max-width: 450px;
   min-width: 280px;
-  padding: 20px;
+  padding: 40px;
 }
 
 .title {
@@ -160,6 +160,12 @@ button:active {
 .question-mark {
   position: absolute;
   top: -30px;
+}
+
+.conditional-answer-btn.selected,
+.parent-answer-btn.selected {
+  color: #8e7242;
+  background-image: linear-gradient(#f9f6f1, #f9f6f1);
 }
 
 /* Results Page */
