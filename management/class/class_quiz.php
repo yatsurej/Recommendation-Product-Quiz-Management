@@ -14,7 +14,7 @@
                 }
             }
             
-            public function addQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
+            public function addMainQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
                 global $conn;
                 
                 $maxOrderQuery = "SELECT MAX(pqOrder) AS maxOrder FROM parent_question WHERE categoryID = '$categoryID'";
@@ -44,6 +44,78 @@
                             }
             
                             $questionAnswerQuery = "INSERT INTO question_answer(pqID, answerID) VALUES ('$parentQuestionID', '$answerID')";
+                            mysqli_query($conn, $questionAnswerQuery);
+                        }
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            public function addConditionalQuestion($mainQuestion, $mainQuestionAnswer, $conditionalQuestion, $cqNumOptions, $cqNumAnswer, $answersData){
+                global $conn;
+                
+                $query = "INSERT INTO conditional_question(cqContent, cqNumOptions, cqMinAnswer)
+                        VALUES ('$conditionalQuestion', '$cqNumOptions', '$cqNumAnswer')";
+                $result = mysqli_query($conn, $query);
+            
+                if ($result) {
+                    $conditionalQuestionID = mysqli_insert_id($conn);
+                    
+                    $insertAnswerTriggerQuery = "INSERT INTO trigger_condition(answerID, cqID) VALUES('$mainQuestionAnswer', '$conditionalQuestionID')";
+                    mysqli_query($conn,$insertAnswerTriggerQuery);
+                    foreach ($answersData as $answerContent => $productIDs) {
+                        $answerContent = mysqli_real_escape_string($conn, $answerContent);
+                        
+                        $answerInsertQuery  = "INSERT INTO answer(answerContent) VALUES ('$answerContent')";
+                        $answerResult = mysqli_query($conn, $answerInsertQuery);
+                        
+
+                        if ($answerResult) {
+                            $answerID = mysqli_insert_id($conn);
+            
+                            foreach ($productIDs as $prodID) {
+                                $productAnswerQuery = "INSERT INTO product_answer(prodID, answerID) VALUES ('$prodID', '$answerID')";
+                                mysqli_query($conn, $productAnswerQuery);
+                            }
+            
+                            $questionAnswerQuery = "INSERT INTO question_answer(cqID, answerID) VALUES ('$conditionalQuestionID', '$answerID')";
+                            mysqli_query($conn, $questionAnswerQuery);
+
+                        }
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            public function addVoucherQuestion($voucherQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
+                global $conn;
+                
+                $query = "INSERT INTO bonus_question(bqContent, bqNumOptions, bqMaxAnswer, categoryID)
+                        VALUES ('$voucherQuestion', '$numOptions', '$numAnswer', '$categoryID')";
+                $result = mysqli_query($conn, $query);
+            
+                if ($result) {
+                    $voucherQuestionID = mysqli_insert_id($conn);
+            
+                    foreach ($answersData as $answerContent => $productIDs) {
+                        $answerContent = mysqli_real_escape_string($conn, $answerContent);
+                        
+                        $answerInsertQuery  = "INSERT INTO answer(answerContent) VALUES ('$answerContent')";
+                        $answerResult = mysqli_query($conn, $answerInsertQuery);
+            
+                        if ($answerResult) {
+                            $answerID = mysqli_insert_id($conn);
+            
+                            foreach ($productIDs as $prodID) {
+                                $productAnswerQuery = "INSERT INTO product_answer(prodID, answerID) VALUES ('$prodID', '$answerID')";
+                                mysqli_query($conn, $productAnswerQuery);
+                            }
+            
+                            $questionAnswerQuery = "INSERT INTO question_answer(bqID, answerID) VALUES ('$voucherQuestionID', '$answerID')";
                             mysqli_query($conn, $questionAnswerQuery);
                         }
                     }

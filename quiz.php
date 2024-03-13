@@ -1,143 +1,177 @@
+<style>
+    .conditional-answer-btn.selected,
+    .parent-answer-btn.selected {
+        background-color: green;
+    }
+</style>
+
 <?php
     $pageTitle = "Quiz";
     include 'header.php';
     include 'db.php';
     session_start();
 
+    $selectedCategory = $_SESSION['selectedCategory'];
     if (!isset($_SESSION['selectedCategory'])) {
         header('Location: index.php');
         exit();
     }
 
-    $_SESSION['userAnswers'] = array(); 
-    $selectedCategory = $_SESSION['selectedCategory'];
+    if (!isset($_SESSION['currentQuestion'])) {
+        $_SESSION['currentQuestion'] = 1;
+    }
 
-    $query = "SELECT pq.pqID, pq.pqContent, pq.pqMinAnswer, a.answerID, a.answerContent
-            FROM parent_question pq
-            LEFT JOIN question_answer qa ON qa.pqID = pq.pqID 
-            LEFT JOIN answer a ON a.answerID = qa.answerID
-            WHERE pq.categoryID = '$selectedCategory'
-            ORDER BY pq.pqOrder";
+    $selectedAnswer = '';
+    if (!isset($_SESSION['selectedAnswers'])) {
+        $_SESSION['selectedAnswers'] = array();
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $selectedAnswer = $_POST['selectedAnswer'];
+        $_SESSION['selectedAnswers'][$_SESSION['currentQuestion']] = $selectedAnswer;
+        $conditionalQuery = "SELECT cq.cqID, cq.cqContent, cq.cqMaxAnswer
+                            FROM conditional_question cq
+                            LEFT JOIN trigger_condition tc ON cq.cqID = tc.cqID
+                            WHERE tc.answerID = '$selectedAnswer'";
+        $conditionalResult = mysqli_query($conn, $conditionalQuery);
+
+        if ($conditionalResult && mysqli_num_rows($conditionalResult) > 0) {
+            $conditionalRow = mysqli_fetch_assoc($conditionalResult);
+            $cqID           = $conditionalRow['cqID'];
+            $cqContent      = $conditionalRow['cqContent'];
+            $cqMaxAnswer    = $conditionalRow['cqMaxAnswer'];
+            ?>
+
+            <div class="container w-50 my-5 text-center">
+                <form action="quiz.php" method="post" id="quizForm">
+                    <h2><?php echo $cqContent; ?></h2>
+                    <?php
+                    $conditionalAnswerQuery = "SELECT a.answerID, a.answerContent
+                                                FROM answer a
+                                                LEFT JOIN question_answer qa ON qa.answerID = a.answerID
+                                                WHERE qa.cqID = '$cqID'";
+                    $conditionalAnswerResult = mysqli_query($conn, $conditionalAnswerQuery);
+
+                    while ($conditionalAnswerRow = mysqli_fetch_assoc($conditionalAnswerResult)) {
+                        $conditionalAnswerID = $conditionalAnswerRow['answerID'];
+                        $conditionalAnswerContent = $conditionalAnswerRow['answerContent'];
+                        echo "<button type='button' class='conditional-answer-btn btn btn-primary mb-2 rounded-pill w-100' data-answer-id='$conditionalAnswerID' onclick='selectAnswer($conditionalAnswerID)'>$conditionalAnswerContent</button><br>";
+                    }
+                    ?>
+                    <button type="submit" class="btn btn-primary" id="nextButton" disabled="disabled">Next</button>
+                    <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
+                </form>
+            </div>
+
+            <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+            <script>
+                var selectedAnswer = '';
+
+                $(document).ready(function() {
+                    $(document).on('click', '.conditional-answer-btn', function() {
+                        selectedAnswer = $(this).data('answer-id');
+                        $('.conditional-answer-btn').removeClass('selected');
+                        $(this).addClass('selected');
+                        $('#nextButton').prop('disabled', false);
+                    });
+
+                    $('#nextButton').on('click', function() {
+                        $('#selectedAnswer').val(selectedAnswer);
+                        $('#quizForm').submit();
+                    });
+                });
+            </script>
+            <?php
+            exit;
+        }
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $_SESSION['currentQuestion']++;
+    }
+
+    $query = "SELECT pqID, pqContent, pqMaxAnswer
+              FROM parent_question 
+              WHERE pqOrder = {$_SESSION['currentQuestion']} AND categoryID = '$selectedCategory'";
     $result = mysqli_query($conn, $query);
 
-    $questions = array();
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row           = mysqli_fetch_assoc($result);
+        $pqID          = $row['pqID'];
+        $pqContent     = $row['pqContent'];
+        $pqMaxAnswer   = $row['pqMaxAnswer'];
 
-    while ($row = mysqli_fetch_assoc($result)) {
-        $pqID = $row['pqID'];
-        $pqContent = $row['pqContent'];
-        $pqMinAnswer = $row['pqMinAnswer'];
-        $answerID = $row['answerID'];
-        $answerContent = $row['answerContent'];
+        $answerQuery = "SELECT a.answerID, a.answerContent
+                        FROM answer a
+                        LEFT JOIN question_answer qa ON qa.answerID = a.answerID
+                        WHERE qa.pqID = '$pqID' ";
+        $answerResult = mysqli_query($conn, $answerQuery);
+        ?>
+        <div class="container w-50 my-5 text-center">
+            <form action="quiz.php" method="post" id="quizForm">
+                <h2><?php echo $pqContent; ?></h2>
+                <?php
+                while ($answerRow = mysqli_fetch_assoc($answerResult)) {
+                    $answerID = $answerRow['answerID'];
+                    $answerContent = $answerRow['answerContent'];
+                    echo "<button type='button' class='parent-answer-btn btn btn-primary mb-2 rounded-pill w-100' data-answer-id='$answerID' onclick='selectAnswer($answerID)'>$answerContent</button><br>";
+                }
+                ?>
+                <button type="submit" class="btn btn-primary" id="nextButton" disabled="disabled">Next</button>
+                <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
+            </form>
+        </div>
+        <?php
+    } else {
+        $selectedAnswers = $_SESSION['selectedAnswers'];
+        $productTally = array();
 
-        if (!isset($questions[$pqID])) {
-            $questions[$pqID] = array(
-                'content' => $pqContent,
-                'answers' => array(),
-                'pqMinAnswer' =>  $pqMinAnswer, 
-            );
+        foreach ($selectedAnswers as $answerID) {
+            $productQuery = "SELECT p.prodID, p.prodName
+                            FROM product p
+                            INNER JOIN product_answer pa ON p.prodID = pa.prodID
+                            WHERE pa.answerID = '$answerID'";
+
+            $productResult = mysqli_query($conn, $productQuery);
+
+            while ($productRow = mysqli_fetch_assoc($productResult)) {
+                $prodID   = $productRow['prodID'];
+                $prodName = $productRow['prodName'];
+
+                if (!isset($productTally[$prodID])) {
+                    $productTally[$prodID] = array(
+                        'id'    => $prodID,
+                        'name'  => $prodName,
+                        'tally' => 1,
+                    );
+                } else {
+                    $productTally[$prodID]['tally']++;
+                }
+            }
         }
 
-        if ($answerID !== null) {
-            $questions[$pqID]['answers'][] = array(
-                'id' => $answerID,
-                'content' => $answerContent,
-            );
-        }
+        $_SESSION['productTally'] = $productTally;
+
+        header("Location: result.php");
+        exit;
     }
 ?>
 
-<style>
-    .btn-answer.selected {
-        background-color: #28a745; 
-        color: #fff;
-    }
-</style>
-
-<div class="container w-75 text-center">
-    <div class="mt-5" id="question-container">
-        <?php if (!empty($questions)): ?>
-            <?php $firstQuestion = reset($questions); ?>
-            <h3><?php echo $firstQuestion['content']; ?></h3><br>
-            <?php if (!empty($firstQuestion['answers'])): ?>
-                <?php foreach ($firstQuestion['answers'] as $answer): ?>
-                    <button class="btn btn-primary rounded-pill mb-2 w-100 btn-answer" data-answer-id="<?php echo $answer['id']; ?>" value="<?php echo $answer['id']; ?>"onclick="selectAnswer('<?php echo $answer['id']; ?>')">
-                        <?php echo $answer['content']; ?>
-                    </button><br>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No answers found for this question.</p>
-            <?php endif; ?>
-        <?php else: ?>
-            <p>No questions found for this category.</p>
-        <?php endif; ?>
-    </div>
-    
-    <button class="btn btn-primary" id="next-button" onclick="nextQuestion()" disabled>Next</button>
-</div>
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    var currentQuestionIndex = 0;
-    var questions = <?php echo json_encode(array_values($questions)); ?>;
-    var selectedAnswers = [];
+    var selectedAnswer = '';
 
-    function selectAnswer(answerID) {
-        var questionContainer = document.getElementById('question-container');
-        var answerButtons = questionContainer.getElementsByClassName('btn-answer');
-        var maxAnswer = questions[currentQuestionIndex]['pqMinAnswer'];
+    $(document).ready(function() {
+        $(document).on('click', '.parent-answer-btn', function() {
+            selectedAnswer = $(this).data('answer-id');
+            $('.parent-answer-btn').removeClass('selected');
+            $(this).addClass('selected');
+            $('#nextButton').prop('disabled', false);
+        });
 
-        var answerIndex = selectedAnswers.indexOf(answerID);
-        
-        if (answerIndex === -1) {
-            if (selectedAnswers.length < maxAnswer) {
-                selectedAnswers.push(answerID);
-            }
-        } else {
-            selectedAnswers.splice(answerIndex, 1);
-        }
-
-        for (var i = 0; i < answerButtons.length; i++) {
-            var currentAnswerID = answerButtons[i].getAttribute('data-answer-id');
-            if (selectedAnswers.indexOf(currentAnswerID) !== -1) {
-                answerButtons[i].classList.add('selected');
-            } else {
-                answerButtons[i].classList.remove('selected');
-            }
-        }
-
-        var nextButton = document.getElementById('next-button');
-        nextButton.disabled = selectedAnswers.length < maxAnswer;
-    }
-
-
-    function nextQuestion() {
-        if (selectedAnswers.length < questions[currentQuestionIndex]['pqMinAnswer']) {
-            alert('Please select at least ' + questions[currentQuestionIndex]['pqMinAnswer'] + ' answer(s).');
-            return;
-        }
-
-        var sessionId = '<?php echo session_id(); ?>';
-        var selectedAnswersData = JSON.stringify(selectedAnswers);
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'store_answers.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.send('sessionId=' + sessionId + '&selectedAnswers=' + selectedAnswersData);
-        
-        currentQuestionIndex++;
-
-        if (currentQuestionIndex < questions.length) {
-            var questionContainer = document.getElementById('question-container');
-            questionContainer.innerHTML = '<h3 class="question-container">' + questions[currentQuestionIndex]['content'] + '</h3>';
-
-            if (questions[currentQuestionIndex]['answers']) {
-                for (var i = 0; i < questions[currentQuestionIndex]['answers'].length; i++) {
-                    var answer = questions[currentQuestionIndex]['answers'][i];
-                    questionContainer.innerHTML += '<button class="btn btn-primary rounded-pill mb-2 w-100 btn-answer" data-answer-id="' + answer['id'] + '" onclick="selectAnswer(\'' + answer['id'] + '\')">' + answer['content'] + '</button><br>';
-                }
-            }
-
-            selectedAnswers = [];
-        } else {
-            window.location.href = "result.php"; 
-        }
-    }
+        $('#nextButton').on('click', function() {
+            $('#selectedAnswer').val(selectedAnswer);
+            $('#quizForm').submit();
+        });
+    });
 </script>

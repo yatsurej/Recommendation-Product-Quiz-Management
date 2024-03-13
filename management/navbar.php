@@ -34,10 +34,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav nav-underline ms-auto text-end">
                 <li class="nav-item">
-                    <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php' || basename($_SERVER['PHP_SELF']) == 'tags.php' || basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>                   
+                    <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php' || basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>                   
                 </li>
                 <li class="nav-item">
-                    <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'question.php') ? 'active' : 'inactive'; ?>" href="question.php">Questions</a>            
+                    <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'question.php' || basename($_SERVER['PHP_SELF']) == 'conditional-question.php') ? 'active' : 'inactive'; ?>" href="question.php">Questions</a>            
                 </li>
                 <li class="nav-item">
                     <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'analytics.php') ? 'active' : 'inactive'; ?>" href="analytics.php">Analytics</a>            
