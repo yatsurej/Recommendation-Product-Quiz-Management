@@ -15,18 +15,21 @@
         $categoryDescription    = $row['categoryDescription'];
         $categoryName           = $row['categoryName'];
 ?>
-<style>
-    .container{
-        margin-top: 10em;
-    }
-</style>
-<div class="container text-center w-75">
-    <h3>READY FOR A</h3>
-    <h1>QUIZ?</h1>
-    <small><?php echo $categoryName; ?></small>
-    <br>
-    <p><?php echo $categoryDescription;?></p>
-    <a href="quiz.php" class="btn btn-primary rounded-pill">Click to start</a>
+
+<div class="body-wrapper bg3">
+    <div class="wrapper justify-center gap20">
+        <div class="spacer"></div>
+        <div class="header-container">
+            <h2>READY FOR A</h2>
+            <h1 class="quiz">QUIZ?</h1>
+        </div>
+        <div class="content-container">
+            <h2><?php echo $categoryName; ?></h2>
+            <p><?php echo $categoryDescription;?></p>
+        </div>
+        <button onclick="location.href='quiz.php'">CLICK TO START</button>
+        <div class="spacer"></div>
+    </div>
 </div>
 
 <?php

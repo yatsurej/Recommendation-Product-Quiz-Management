@@ -30,16 +30,17 @@
     }
 ?>
 
-<div class="container w-75 text-center mt-5">
-    <h2 class="fw-bold">Thanks for waiting</h2>
-    <p class="fs-3">Here are the products that might interest you.</p>
-    <?php if (!empty($maxTallyProducts)): ?>
-        <?php foreach ($maxTallyProducts as $maxTallyProduct): ?>
-            <br>
-            <div class="container w-100">
-                <div class="d-flex justify-content-center align-items-center">
-                    <div class="card w-100">
-                        <div class="card-body">
+<div class="body-wrapper bg5">
+    <div class="wrapper justify-center gap20">
+        <div class="result-title">
+            <h3>Thanks for waiting</h3>
+            <p>Here are the products that might interest you.</p>
+        </div>
+        <div class="suggested-products masked-overflow">
+            <?php if (!empty($maxTallyProducts)): ?>
+                <?php foreach ($maxTallyProducts as $maxTallyProduct): ?>
+                    <div class="product-container">
+                        <div class="product-body">
                             <?php
                             $prodID = $maxTallyProduct['id'];
                             $productDetailsQuery = "SELECT prodImage, prodURL, prodDescription FROM product WHERE prodID = '$prodID' AND categoryID = '$selectedCategory'";
@@ -52,45 +53,58 @@
 
                                 $_SESSION['prodID'] = $prodID;
                                 ?>
-                                <img src="management/<?php echo $prodImage; ?>" class="rounded img-thumbnail" style="width: 100%;" alt="Product Image" class="img-fluid">
-                                <p class="fs-5"><?php echo $maxTallyProduct['name']; ?></p>
-                                <textarea type="text" style="resize: none" class="form-control mt-3" rows="4" readonly><?php echo $prodDescription; ?></textarea>
-                                <a href="<?php echo $prodURL; ?>" class="btn btn-primary rounded-pill mt-3" target="_blank">VIEW PRODUCT</a>
+                                <img src="management/<?php echo $prodImage; ?>" class="suggested-image" alt="Product Image" class="img-fluid">
+                                <p><?php echo $maxTallyProduct['name']; ?></p>
+                                <button onclick="window.open('<?php echo $prodURL; ?>', '_blank')" class="view-product-button">VIEW PRODUCT</button>
                             <?php } ?>
                         </div>
                     </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No favorable product found.</p>
-    <?php endif; ?>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p>No favorable product found.</p>
+        <?php endif; ?>
+        </div>
+        <div class="voucher">
+            <?php if ($bonusQuestion && isset($_SESSION['bonusAnswered'])): ?>
+                <?php
+                if ($_SESSION['bonusAnswered']) {
+                    $voucherQuery = "SELECT voucherCode FROM voucher WHERE categoryID = '$selectedCategory'";
+                    $voucherResult = mysqli_query($conn, $voucherQuery);
 
-    <?php if ($bonusQuestion && isset($_SESSION['bonusAnswered'])): ?>
-        <br>
-        <?php
-        if ($_SESSION['bonusAnswered']) {
-            $voucherQuery = "SELECT voucherCode FROM voucher WHERE categoryID = '$selectedCategory'";
-            $voucherResult = mysqli_query($conn, $voucherQuery);
+                    if ($voucherResult && $voucher = mysqli_fetch_assoc($voucherResult)['voucherCode']) {
+                        echo "<h4><strong>Congratulations!</strong><br>Here's your voucher code</h4>";
+                        echo "<h1>$voucher</h1>";
+                        ?>
+                        <div class="nav-buttons">
+                            <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
+                        </div>
+                    <?php
+                    } 
+                } else {
+                    echo "<p>Thanks for trying! Unfortunately, you didn't get the correct answer.</p>";
+                    ?>
+                    <div class="nav-buttons">
+                        <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
+                    </div>
+                <?php
+                }
 
-            if ($voucherResult && $voucher = mysqli_fetch_assoc($voucherResult)['voucherCode']) {
-                echo $voucher;
-            } else {
-                echo "Sorry, no voucher.";
-            }
-        } else {
-            echo "Sorry, no voucher.";
-        }
-        session_unset();
-        session_destroy(); 
-        ?>
+                session_unset();
+                session_destroy(); 
+            ?>
+        </div>
     <?php elseif ($bonusQuestion): ?>
-        <br>
-        <a class="btn btn-success rounded-pill" href="bonus.php">Get Voucher</a>
+        <button onclick="window.location.href='bonus.php'">GET VOUCHER</button>
     <?php else: ?>
+        <div class="nav-buttons">
+            <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
+        </div>
         <?php
         session_unset();
         session_destroy(); 
         ?>
-    <?php endif; ?>
+    <?php endif;
+    // session_unset();
+    // session_destroy();  ?>
+    </div>
 </div>

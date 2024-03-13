@@ -42,25 +42,41 @@
             $cqMaxAnswer    = $conditionalRow['cqMaxAnswer'];
             ?>
 
-            <div class="container w-50 my-5 text-center">
-                <form action="quiz.php" method="post" id="quizForm">
-                    <h2><?php echo $cqContent; ?></h2>
-                    <?php
-                    $conditionalAnswerQuery = "SELECT a.answerID, a.answerContent
-                                                FROM answer a
-                                                LEFT JOIN question_answer qa ON qa.answerID = a.answerID
-                                                WHERE qa.cqID = '$cqID'";
-                    $conditionalAnswerResult = mysqli_query($conn, $conditionalAnswerQuery);
+            <div class="body-wrapper bg4">
+                <div class="wrapper">
+                    <form action="quiz.php" method="post" id="quizForm">
+                        <div class="spacer"></div>
+                        <div class="q-container">
+                            <div class="question-mark">
+                                <img src="./assets/icon-questionmark.svg">  
+                            </div>
+                            <div class="question-box">
+                                <h3><?php echo $cqContent; ?></h3>
+                            </div>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="spacer display-none"></div>
+                        <div class="options-container">
+                            <?php
+                            $conditionalAnswerQuery = "SELECT a.answerID, a.answerContent
+                                                        FROM answer a
+                                                        LEFT JOIN question_answer qa ON qa.answerID = a.answerID
+                                                        WHERE qa.cqID = '$cqID'";
+                            $conditionalAnswerResult = mysqli_query($conn, $conditionalAnswerQuery);
 
-                    while ($conditionalAnswerRow = mysqli_fetch_assoc($conditionalAnswerResult)) {
-                        $conditionalAnswerID = $conditionalAnswerRow['answerID'];
-                        $conditionalAnswerContent = $conditionalAnswerRow['answerContent'];
-                        echo "<button type='button' class='conditional-answer-btn btn btn-primary mb-2 rounded-pill w-100' data-answer-id='$conditionalAnswerID' onclick='selectAnswer($conditionalAnswerID)'>$conditionalAnswerContent</button><br>";
-                    }
-                    ?>
-                    <button type="submit" class="btn btn-primary" id="nextButton" disabled="disabled">Next</button>
-                    <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
-                </form>
+                            while ($conditionalAnswerRow = mysqli_fetch_assoc($conditionalAnswerResult)) {
+                                $conditionalAnswerID = $conditionalAnswerRow['answerID'];
+                                $conditionalAnswerContent = $conditionalAnswerRow['answerContent'];
+                                echo "<button type='button' class='conditional-answer-btn' data-answer-id='$conditionalAnswerID' onclick='selectAnswer($conditionalAnswerID)'>$conditionalAnswerContent</button><br>";
+                            }
+                            ?>
+                       </div>
+                        <div class="spacer"></div>
+                        <button type="submit" class="next" id="nextButton" disabled="disabled">Next</button>
+                        <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
+                        <div class="spacer"></div>
+                    </form>
+                </div>
             </div>
 
             <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -107,19 +123,34 @@
                         WHERE qa.pqID = '$pqID' ";
         $answerResult = mysqli_query($conn, $answerQuery);
         ?>
-        <div class="container w-50 my-5 text-center">
-            <form action="quiz.php" method="post" id="quizForm">
-                <h2><?php echo $pqContent; ?></h2>
-                <?php
-                while ($answerRow = mysqli_fetch_assoc($answerResult)) {
-                    $answerID = $answerRow['answerID'];
-                    $answerContent = $answerRow['answerContent'];
-                    echo "<button type='button' class='parent-answer-btn btn btn-primary mb-2 rounded-pill w-100' data-answer-id='$answerID' onclick='selectAnswer($answerID)'>$answerContent</button><br>";
-                }
-                ?>
-                <button type="submit" class="btn btn-primary" id="nextButton" disabled="disabled">Next</button>
-                <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
-            </form>
+        <div class="body-wrapper bg4">
+            <div class="wrapper">
+                <form action="quiz.php" method="post" id="quizForm">
+                    <div class="spacer">    </div>
+                    <div class="q-container">
+                        <div class="question-mark">
+                            <img src="./assets/icon-questionmark.svg">
+                        </div>
+                        <div class="question-box">
+                            <h3><?php echo $pqContent; ?></h3>
+                        </div>
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="spacer display-none"></div>
+                    <div class="options-container">
+                        <?php
+                        while ($answerRow = mysqli_fetch_assoc($answerResult)) {
+                            $answerID = $answerRow['answerID'];
+                            $answerContent = $answerRow['answerContent'];
+                            echo "<button type='button' class='parent-answer-btn' data-answer-id='$answerID' onclick='selectAnswer($answerID)'>$answerContent</button><br>";
+                        }
+                        ?>
+                    <div class="spacer"></div>
+                    <button type="submit" class="next" id="nextButton" disabled="disabled">Next</button>
+                    <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
+                    </div>
+                </form>
+            </div>
         </div>
         <?php
     } else {

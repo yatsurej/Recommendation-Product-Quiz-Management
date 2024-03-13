@@ -10,29 +10,33 @@
         exit();
     }
 ?>
-<style>
-    .form{
-        margin-top: 10em;
-    }
-</style>
-<div class="container w-75 mt-4 text-center">
-    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="form" method="post">
-        <h3 class="mb-3 fw-bolder">Solutions you're looking for</h3>
-        <?php
-        $categoryQuery = "SELECT * FROM category";
-        $categoryResult = mysqli_query($conn, $categoryQuery);
 
-        while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
-            $categoryID     = $categoryRow['categoryID'];
-            $categoryName   = $categoryRow['categoryName'];
-            ?>
-            <div class="mb-4">
-                <button type="submit" class="btn btn-primary rounded-pill w-50" name="category" value="<?php echo $categoryID; ?>">
-                    <?php echo $categoryName; ?>
-                </button>
-            </div>
-            <?php
-        }
-        ?>
-    </form>
+<div class="body-wrapper bg2">
+    <div class="wrapper">
+        <div class="spacer"></div>
+        <div class="header-container">
+            <h1>Solutions you're<br>looking for</h1>
+        </div>
+        <div class="spacer"></div>
+        <div class="options-container">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="form" method="post">
+                <?php
+                $categoryQuery = "SELECT * FROM category";
+                $categoryResult = mysqli_query($conn, $categoryQuery);
+                
+                while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
+                    $categoryID = $categoryRow['categoryID'];
+                    $categoryName = $categoryRow['categoryName'];
+                    ?>
+                    <div class="buttons">
+                        <button type="submit" name="category" value="<?php echo $categoryID; ?>">
+                            <?php echo $categoryName; ?>
+                        </button>
+                    </div>
+                    <?php
+                }
+                ?>
+            </form>
+        </div>
+    </div>
 </div>
