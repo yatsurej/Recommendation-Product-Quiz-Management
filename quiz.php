@@ -4,108 +4,7 @@
     <meta charset="UTF-8">
     <title>Quiz</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./assets/output.css">
     <link rel="stylesheet" href="./assets/styles.css">
-
-    <style>
-        @import url("assets/style.css");
-        .custom-bg {
-            background-image: url('./assets/images/bg-3.jpg');
-        }
-
-        .content {
-            max-width: clamp(200px, 80vw, 400px);
-            padding: 0px;
-        }
-        
-        .wrapper-qb {
-            justify-content: flex-start;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
-            align-content: center;
-            align-items: center;
-            gap: 40px;
-        }
-
-        .answers {
-            gap: 18px;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }
-    
-
-        .answers .choices {
-            min-height: 8ch;
-            padding: 10px 30px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        .choices.selected {
-            background: #fff;
-            color: #8E7242;
-        }
-        
-        button {
-            width: 100%;
-            font-size: clamp(14px, 2vw, 16px);
-            padding: 10px;  
-        }
-        
-        
-        .next {
-            width: 100%;
-        }
-
-        /* .next-c {
-            height: 60px;
-            font-size: 21px;
-            border-radius: 30px;
-        } */
-
-        .next-c button:active{
-            background: #fff;
-        }
-        
-        .question-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 50px;
-            background-color: #fff;
-            border: 2px solid #DABB7B;
-            padding: 40px 40px 30px 40px;
-            border-radius: 10px;
-            color: #8E7242;
-            position: relative;
-            letter-spacing: 1em;
-        
-        }
-    
-        .question-box {
-            position: relative;
-        }
-
-        .question-box p {
-            letter-spacing: 1px;
-            line-height: 1.25em;
-            font-size: clamp(18px, 2vw, 20px);
-            font-weight: bold;
-        }
-
-        .question-mark {
-            position: absolute;
-            top: -30px;
-        }
-
-        .btn-answer.selected {
-        background-color: #fff; 
-        color: #8E7242;
-    }
-    </style>
 </head>
 <body>
 <?php
@@ -156,24 +55,26 @@
 ?>  
 
 
-<div class="custom-bg">
-    <div class="content" id="question-container">
-        <div class="wrapper-qb" >
+<div class="body-wrapper bg4">
+    <div class="wrapper" id="question-container">
         <?php if (!empty($questions)): ?>
             <?php $firstQuestion = reset($questions); ?>
-            <div class="question-container">
+            <div class="spacer"></div>
+            <div class="q-container">
                 <div class="question-mark">
                     <img src="./assets/icon-questionmark.svg">
                     
                 </div>
                 <div class="question-box">
-                    <p><?php echo $firstQuestion['content']; ?></p>
+                    <h3><?php echo $firstQuestion['content']; ?></h3>
                 </div>
             </div>
-            <div class="answers">
+            <div class="spacer"></div>
+            <div class="spacer display-none "></div>
+            <div class="options-container">
                 <?php if (!empty($firstQuestion['answers'])): ?>
                     <?php foreach ($firstQuestion['answers'] as $answer): ?>
-                        <button class="choices text-white border-2 rounded-full text-center btn-answer" data-answer-id="<?php echo $answer['id']; ?>" value="<?php echo $answer['id']; ?>"onclick="selectAnswer('<?php echo $answer['id']; ?>')">
+                        <button class="btn-answer" data-answer-id="<?php echo $answer['id']; ?>" value="<?php echo $answer['id']; ?>"onclick="selectAnswer('<?php echo $answer['id']; ?>')">
                             <?php echo $answer['content']; ?>
                         </button>
                     <?php endforeach; ?>
@@ -184,11 +85,9 @@
                                 <p>No questions found for this category.</p>
                                 <?php endif; ?>
             </div>
-            <div class="next">
-                <button class="next-c choices text-white border-2 rounded-3xl text-center" id="next-button" onclick="nextQuestion()" disabled>NEXT</button>
-            </div>
             <div class="spacer"></div>
-        </div>
+            <button id="next-button" class="next" onclick="nextQuestion()" disabled>NEXT</button>
+            <div class="spacer"></div>
     </div>
  </div>
 
@@ -247,35 +146,41 @@
         // Clear existing content
         questionContainer.innerHTML = '';
 
-        // Create the wrapper div
-        var wrapperDiv = document.createElement('div'); 
-        wrapperDiv.classList.add('wrapper-qb');
-        questionContainer.appendChild(wrapperDiv);
-
+        var quizSpacer = document.createElement('div');
+        quizSpacer.classList.add('spacer');
+        questionContainer.appendChild(quizSpacer);
         
-        // Create the question box
-        var questionBox = document.createElement('div');
-        questionBox.classList.add('question-container');
-        questionBox.classList.add('question-box');
-        questionBox.innerHTML = '<p>' + questions[currentQuestionIndex]['content'] + '</p>';
-        wrapperDiv.appendChild(questionBox);
-
+        var qContainer = document.createElement('div')
+        qContainer.classList.add('q-container');
+        questionContainer.appendChild(qContainer);
 
         var questionMark = document.createElement('div');
         questionMark.classList.add('question-mark');
         questionMark.innerHTML =  '<img src="./assets/icon-questionmark.svg">';
-        questionBox.appendChild(questionMark);
+        qContainer.appendChild(questionMark);
+
+        var qBox = document.createElement('div');
+        qBox.classList.add('question-box');
+        qBox.innerHTML =  '<h3>' + questions[currentQuestionIndex]['content'] + '</h3>';
+        qContainer.appendChild(qBox);
+
+        var spacer2 = document.createElement('div')
+        spacer2.classList.add('spacer');
+        questionContainer.appendChild(spacer2);
+
+        var spacerDN = document.createElement('div');
+        spacerDN.classList.add('spacer', 'display-none');
+        questionContainer.appendChild(spacerDN);
         
-        // Create the answers div
         var answersDiv = document.createElement('div');
-        answersDiv.classList.add('answers');
-        wrapperDiv.appendChild(answersDiv);
+        answersDiv.classList.add('options-container');
+        questionContainer.appendChild(answersDiv);
 
         if (questions[currentQuestionIndex]['answers']) {
             for (var i = 0; i < questions[currentQuestionIndex]['answers'].length; i++) {
                 var answer = questions[currentQuestionIndex]['answers'][i];
                 var answerButton = document.createElement('button');
-                answerButton.classList.add('choices', 'text-white', 'border-2', 'rounded-3xl', 'px-auto', 'py-auto', 'text-center', 'me-2', 'mb-2', 'btn-answer');
+                answerButton.classList.add('btn-answer');
                 answerButton.setAttribute('data-answer-id', answer['id']);
                 answerButton.setAttribute('value', answer['id']);
                 answerButton.setAttribute('onclick', 'selectAnswer(\'' + answer['id'] + '\')');
@@ -288,22 +193,24 @@
             answersDiv.appendChild(noAnswersParagraph);
         }
 
+        var spacerDiv = document.createElement('div');
+        spacerDiv.classList.add('spacer');
+        questionContainer.appendChild(spacerDiv);
+
+
         // Add the next button
-        var nextButtonDiv = document.createElement('div');
-        nextButtonDiv.classList.add('next');
         var nextButton = document.createElement('button');
-        nextButton.classList.add('next-c', 'choices', 'text-white', 'border-2', 'rounded-3xl', 'px-auto', 'py-auto', 'text-center', 'me-2', 'mb-2');
+        nextButton.classList.add('next');
         nextButton.setAttribute('id', 'next-button');
         nextButton.setAttribute('onclick', 'nextQuestion()');
         nextButton.setAttribute('disabled', 'true');
         nextButton.textContent = 'NEXT';
-        nextButtonDiv.appendChild(nextButton);
-        wrapperDiv.appendChild(nextButtonDiv);
+        questionContainer.appendChild(nextButton);
 
         // Add the spacer
         var spacerDiv = document.createElement('div');
         spacerDiv.classList.add('spacer');
-        wrapperDiv.appendChild(spacerDiv);
+        questionContainer.appendChild(spacerDiv);
 
         selectedAnswers = [];
     } else {
