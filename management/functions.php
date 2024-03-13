@@ -20,11 +20,52 @@
                 echo "<script>alert('Invalid login details');window.location.href='login.php';</script>";
             }
         } 
-    } elseif (isset($_POST['addQuestion'])) {
+    } elseif (isset($_POST['addMainQuestion'])) {
         $parentQuestion = $_POST['parentQuestion'];
         $numOptions     = $_POST['numOptions'];
         $numAnswer      = $_POST['numAnswer'];
         $categoryID     = $_POST['category'];
+    
+        $answersData = array();
+        for ($i = 0; $i < $numOptions; $i++) {
+            $answerContent  = $_POST['answer'][$i];
+            $productIDs     = $_POST['answer_type'][$i];
+            $answersData[$answerContent] = $productIDs;
+        }
+
+        $result = $classQuiz->addMainQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData);
+    
+        if ($result){
+            header("Location: question.php");
+        } else{
+            echo "Failed to add question.";
+        }
+    } elseif (isset($_POST['addConditionalQuestion'])) {
+        $mainQuestion           = $_POST['mainQuestion'];
+        $mainQuestionAnswer     = $_POST['mainQuestionAnswer'];
+        $conditionalQuestion    = $_POST['conditionalQuestion'];
+        $cqNumOptions           = $_POST['cqNumOptions'];
+        $cqNumAnswer            = $_POST['cqNumAnswer'];
+        
+        $answersData = array();
+        for ($i = 0; $i < $cqNumOptions; $i++) {
+            $answerContent  = $_POST['answer'][$i];
+            $productIDs     = $_POST['answer_type'][$i];
+            $answersData[$answerContent] = $productIDs;
+        }
+
+        $result = $classQuiz->addConditionalQuestion($mainQuestion, $mainQuestionAnswer, $conditionalQuestion, $cqNumOptions, $cqNumAnswer, $answersData);
+
+        if ($result){
+            header("Location: conditional-question.php");
+        } else {
+            echo "Failed to add question.";
+        }
+    } elseif (isset($_POST['addVoucherQuestion'])) {
+        $voucherQuestion = $_POST['voucherQuestion'];
+        $numOptions      = $_POST['numOptions'];
+        $numAnswer       = $_POST['numAnswer'];
+        $categoryID      = $_POST['category'];
     
         $answersData = array();
         for ($i = 0; $i < $numOptions; $i++) {
@@ -33,12 +74,22 @@
             $answersData[$answerContent] = $productIDs;
         }
 
-        $result = $classQuiz->addQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData);
+        $result = $classQuiz->addVoucherQuestion($voucherQuestion, $numOptions, $numAnswer, $categoryID, $answersData);
     
         if ($result){
-            header("Location: question.php");
+            header("Location: voucher-question.php");
         } else{
             echo "Failed to add question.";
+        }
+    } elseif(isset($_POST['addCategory'])){
+        $categoryName = $_POST['categoryName'];
+
+        $result = $classQuiz->addCategory($categoryName);
+
+        if($result){
+            header("Location: categories.php");
+        } else{
+            $result->error;
         }
     } elseif (isset($_POST['addProduct'])) {
         $prodName           = $_POST['prodName'];
@@ -80,16 +131,6 @@
         if ($result) {
             header("Location: product.php");
         } else {
-            $result->error;
-        }
-    } elseif(isset($_POST['addCategory'])){
-        $categoryName = $_POST['categoryName'];
-
-        $result = $classQuiz->addCategory($categoryName);
-
-        if($result){
-            header("Location: categories.php");
-        } else{
             $result->error;
         }
     } elseif(isset($_POST['updateProduct'])){

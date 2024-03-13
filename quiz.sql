@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 29, 2024 at 07:36 AM
+-- Generation Time: Mar 13, 2024 at 03:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -59,11 +59,6 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 (89, 'Washing machine for speed and convenience'),
 (90, 'Easy cleaning and stain removal'),
 (91, 'Fragrance boosters and fabric softeners'),
-(92, 'Liquid detergent'),
-(93, 'Powder detergent'),
-(94, 'Fresh and floral scents'),
-(95, 'Floral anti-bacteria'),
-(96, 'Strong, luxurious fragrances'),
 (97, 'Daily — for winning moments'),
 (98, 'Every other day — finding balance in my hair game'),
 (99, '2 - 3 times a week — letting natural oils work'),
@@ -85,9 +80,18 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 (118, 'Serum — the energizing booster'),
 (119, 'Moisturizing Cream — the hydration hero'),
 (120, 'Skincare Set — the ultimate champions routine in one package'),
-(122, 'Retinol to reduce the appearance of wrinkes'),
-(123, 'Vitamin C to boost brightness'),
-(124, 'Niacinamide to improve overall skin health');
+(146, 'Liquid detergent'),
+(147, 'Powder detergent'),
+(148, 'Fresh and floral scents'),
+(149, 'Floral anti-bacteria'),
+(150, 'Strong, luxurious fragrance'),
+(155, 'Retinol to reduce the appearance of wrinkles'),
+(156, 'Vitamin C to boost brightness'),
+(157, 'Niacinamide to improve overall skin health'),
+(158, 'Cool menthol to beat dandrufff, itchiness, and an oily scalp.'),
+(159, 'Smooth & Silky prevents dandruff while keeping hair soft.'),
+(160, 'Argan oil hydrates and conditions the hair to make it soft and manageable.'),
+(161, ' Pro-V Formula penetrates the hair shaft to repair damage from within.');
 
 -- --------------------------------------------------------
 
@@ -98,6 +102,8 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 CREATE TABLE `bonus_question` (
   `bqID` int(11) NOT NULL,
   `bqContent` text NOT NULL,
+  `bqNumOptions` tinyint(4) NOT NULL,
+  `bqMaxAnswer` tinyint(4) NOT NULL,
   `categoryID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -105,8 +111,9 @@ CREATE TABLE `bonus_question` (
 -- Dumping data for table `bonus_question`
 --
 
-INSERT INTO `bonus_question` (`bqID`, `bqContent`, `categoryID`) VALUES
-(1, 'Which skincare ingredient of this product empowers your skin to be an everyday champion?', 4);
+INSERT INTO `bonus_question` (`bqID`, `bqContent`, `bqNumOptions`, `bqMaxAnswer`, `categoryID`) VALUES
+(5, 'Which skincare ingredient of this product empowers your skin to be an everyday champion?', 3, 1, 4),
+(6, 'Which haircare ingredient of this product empowers your hair to be an everyday champion?', 4, 1, 6);
 
 -- --------------------------------------------------------
 
@@ -133,6 +140,27 @@ INSERT INTO `category` (`categoryID`, `categoryName`, `categoryDescription`, `us
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `conditional_question`
+--
+
+CREATE TABLE `conditional_question` (
+  `cqID` int(11) NOT NULL,
+  `cqContent` text NOT NULL,
+  `cqNumOptions` tinyint(4) NOT NULL,
+  `cqMaxAnswer` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `conditional_question`
+--
+
+INSERT INTO `conditional_question` (`cqID`, `cqContent`, `cqNumOptions`, `cqMaxAnswer`) VALUES
+(12, 'Which P&G fabric care product would complete your winning combination for cleaning, softening, and refreshing your fabrics and linen? \r\n', 2, 1),
+(13, 'If you had to pick a scent champion for your everyday life, which scent would it be? ', 3, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `parent_question`
 --
 
@@ -140,7 +168,7 @@ CREATE TABLE `parent_question` (
   `pqID` int(11) NOT NULL,
   `pqContent` text NOT NULL,
   `pqNumOptions` tinyint(4) NOT NULL,
-  `pqMinAnswer` tinyint(4) NOT NULL,
+  `pqMaxAnswer` tinyint(4) NOT NULL,
   `pqOrder` tinyint(4) NOT NULL,
   `categoryID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -149,7 +177,7 @@ CREATE TABLE `parent_question` (
 -- Dumping data for table `parent_question`
 --
 
-INSERT INTO `parent_question` (`pqID`, `pqContent`, `pqNumOptions`, `pqMinAnswer`, `pqOrder`, `categoryID`) VALUES
+INSERT INTO `parent_question` (`pqID`, `pqContent`, `pqNumOptions`, `pqMaxAnswer`, `pqOrder`, `categoryID`) VALUES
 (43, 'Which everyday ritual makes you feel like a champion?', 4, 1, 1, 4),
 (44, 'What is the ideal skincare routing that kickstarts your triumphant day?', 4, 1, 2, 4),
 (45, 'How would you describe your skin before and after your daily activities?', 4, 1, 3, 4),
@@ -158,8 +186,6 @@ INSERT INTO `parent_question` (`pqID`, `pqContent`, `pqNumOptions`, `pqMinAnswer
 (52, 'How many everyday champions do you do laundry for?', 3, 1, 1, 5),
 (53, 'Which laundry method would receive the gold medal?', 2, 1, 2, 5),
 (54, 'Which fabric care benefit would keep your clothes clean and ready to conquer the daily challenges with you?', 2, 1, 3, 5),
-(55, 'Which P&G fabric care product would complete your winning combination for cleaning, softening, and refreshing your fabrics and linen?', 2, 1, 4, 5),
-(56, 'If you had to pick a scent champion for your everyday life, which scent would it be?', 3, 1, 5, 5),
 (57, 'How frequently do you treat your hair?', 4, 1, 1, 6),
 (58, 'Which hair pattern perfectly describes your hair?', 4, 1, 2, 6),
 (59, 'How would you describe your skin before and after your daily activities', 3, 1, 3, 6),
@@ -258,7 +284,28 @@ INSERT INTO `product_answer` (`paID`, `prodID`, `answerID`) VALUES
 (66, 44, 109),
 (67, 42, 109),
 (68, 45, 110),
-(69, 46, 111);
+(69, 46, 111),
+(85, 47, 146),
+(86, 48, 147),
+(87, 49, 148),
+(88, 50, 149),
+(89, 51, 150),
+(94, 21, 155),
+(95, 22, 155),
+(96, 23, 155),
+(97, 31, 156),
+(98, 32, 156),
+(99, 33, 156),
+(100, 24, 157),
+(101, 25, 157),
+(102, 29, 157),
+(103, 45, 158),
+(104, 46, 159),
+(105, 40, 160),
+(106, 39, 161),
+(107, 41, 161),
+(108, 42, 161),
+(109, 44, 161);
 
 -- --------------------------------------------------------
 
@@ -269,6 +316,7 @@ INSERT INTO `product_answer` (`paID`, `prodID`, `answerID`) VALUES
 CREATE TABLE `question_answer` (
   `qaID` int(11) NOT NULL,
   `pqID` int(11) DEFAULT NULL,
+  `cqID` int(11) DEFAULT NULL,
   `bqID` int(11) DEFAULT NULL,
   `answerID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -277,58 +325,82 @@ CREATE TABLE `question_answer` (
 -- Dumping data for table `question_answer`
 --
 
-INSERT INTO `question_answer` (`qaID`, `pqID`, `bqID`, `answerID`) VALUES
-(40, 43, NULL, 59),
-(41, 43, NULL, 60),
-(42, 43, NULL, 61),
-(43, 43, NULL, 62),
-(44, 44, NULL, 63),
-(45, 44, NULL, 64),
-(46, 44, NULL, 65),
-(47, 44, NULL, 66),
-(48, 45, NULL, 67),
-(49, 45, NULL, 68),
-(50, 45, NULL, 69),
-(51, 45, NULL, 70),
-(52, 46, NULL, 71),
-(53, 46, NULL, 72),
-(54, 46, NULL, 73),
-(66, 52, NULL, 85),
-(67, 52, NULL, 86),
-(68, 52, NULL, 87),
-(69, 53, NULL, 88),
-(70, 53, NULL, 89),
-(71, 54, NULL, 90),
-(72, 54, NULL, 91),
-(73, 55, NULL, 92),
-(74, 55, NULL, 93),
-(75, 56, NULL, 94),
-(76, 56, NULL, 95),
-(77, 56, NULL, 96),
-(78, 57, NULL, 97),
-(79, 57, NULL, 98),
-(80, 57, NULL, 99),
-(81, 57, NULL, 100),
-(82, 58, NULL, 101),
-(83, 58, NULL, 102),
-(84, 58, NULL, 103),
-(85, 58, NULL, 104),
-(86, 59, NULL, 105),
-(87, 59, NULL, 106),
-(88, 59, NULL, 107),
-(89, 60, NULL, 108),
-(90, 60, NULL, 109),
-(91, 60, NULL, 110),
-(92, 60, NULL, 111),
-(94, 62, NULL, 113),
-(95, 62, NULL, 114),
-(96, 62, NULL, 115),
-(99, 47, NULL, 118),
-(100, 47, NULL, 119),
-(101, 47, NULL, 120),
-(103, NULL, 1, 122),
-(104, NULL, 1, 123),
-(105, NULL, 1, 124);
+INSERT INTO `question_answer` (`qaID`, `pqID`, `cqID`, `bqID`, `answerID`) VALUES
+(40, 43, NULL, NULL, 59),
+(41, 43, NULL, NULL, 60),
+(42, 43, NULL, NULL, 61),
+(43, 43, NULL, NULL, 62),
+(44, 44, NULL, NULL, 63),
+(45, 44, NULL, NULL, 64),
+(46, 44, NULL, NULL, 65),
+(47, 44, NULL, NULL, 66),
+(48, 45, NULL, NULL, 67),
+(49, 45, NULL, NULL, 68),
+(50, 45, NULL, NULL, 69),
+(51, 45, NULL, NULL, 70),
+(52, 46, NULL, NULL, 71),
+(53, 46, NULL, NULL, 72),
+(54, 46, NULL, NULL, 73),
+(66, 52, NULL, NULL, 85),
+(67, 52, NULL, NULL, 86),
+(68, 52, NULL, NULL, 87),
+(69, 53, NULL, NULL, 88),
+(70, 53, NULL, NULL, 89),
+(71, 54, NULL, NULL, 90),
+(72, 54, NULL, NULL, 91),
+(78, 57, NULL, NULL, 97),
+(79, 57, NULL, NULL, 98),
+(80, 57, NULL, NULL, 99),
+(81, 57, NULL, NULL, 100),
+(82, 58, NULL, NULL, 101),
+(83, 58, NULL, NULL, 102),
+(84, 58, NULL, NULL, 103),
+(85, 58, NULL, NULL, 104),
+(86, 59, NULL, NULL, 105),
+(87, 59, NULL, NULL, 106),
+(88, 59, NULL, NULL, 107),
+(89, 60, NULL, NULL, 108),
+(90, 60, NULL, NULL, 109),
+(91, 60, NULL, NULL, 110),
+(92, 60, NULL, NULL, 111),
+(94, 62, NULL, NULL, 113),
+(95, 62, NULL, NULL, 114),
+(96, 62, NULL, NULL, 115),
+(99, 47, NULL, NULL, 118),
+(100, 47, NULL, NULL, 119),
+(101, 47, NULL, NULL, 120),
+(128, NULL, 12, NULL, 146),
+(129, NULL, 12, NULL, 147),
+(130, NULL, 13, NULL, 148),
+(131, NULL, 13, NULL, 149),
+(132, NULL, 13, NULL, 150),
+(137, NULL, NULL, 5, 155),
+(138, NULL, NULL, 5, 156),
+(139, NULL, NULL, 5, 157),
+(140, NULL, NULL, 6, 158),
+(141, NULL, NULL, 6, 159),
+(142, NULL, NULL, 6, 160),
+(143, NULL, NULL, 6, 161);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `trigger_condition`
+--
+
+CREATE TABLE `trigger_condition` (
+  `tcID` int(11) NOT NULL,
+  `answerID` int(11) NOT NULL,
+  `cqID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `trigger_condition`
+--
+
+INSERT INTO `trigger_condition` (`tcID`, `answerID`, `cqID`) VALUES
+(7, 90, 12),
+(8, 91, 13);
 
 -- --------------------------------------------------------
 
@@ -352,6 +424,27 @@ INSERT INTO `user` (`userID`, `firstName`, `lastName`, `username`, `password`) V
 (1, 'Ash', 'Ketchum', 'admin', 'admin'),
 (2, 'Hello', 'World', 'test1', 'test1');
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `voucher`
+--
+
+CREATE TABLE `voucher` (
+  `voucherID` int(11) NOT NULL,
+  `voucherCode` varchar(20) NOT NULL,
+  `categoryID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `voucher`
+--
+
+INSERT INTO `voucher` (`voucherID`, `voucherCode`, `categoryID`) VALUES
+(4, 'SKIN123', 4),
+(5, 'FABRIC123', 5),
+(6, 'HAIR123', 6);
+
 --
 -- Indexes for dumped tables
 --
@@ -374,6 +467,12 @@ ALTER TABLE `bonus_question`
 --
 ALTER TABLE `category`
   ADD PRIMARY KEY (`categoryID`);
+
+--
+-- Indexes for table `conditional_question`
+--
+ALTER TABLE `conditional_question`
+  ADD PRIMARY KEY (`cqID`);
 
 --
 -- Indexes for table `parent_question`
@@ -404,7 +503,16 @@ ALTER TABLE `question_answer`
   ADD PRIMARY KEY (`qaID`),
   ADD KEY `qa_fk1` (`pqID`),
   ADD KEY `qa_fk3` (`answerID`),
-  ADD KEY `qa_fk4` (`bqID`);
+  ADD KEY `qa_fk4` (`bqID`),
+  ADD KEY `qa_fk2` (`cqID`);
+
+--
+-- Indexes for table `trigger_condition`
+--
+ALTER TABLE `trigger_condition`
+  ADD PRIMARY KEY (`tcID`),
+  ADD KEY `tc_fk1` (`answerID`),
+  ADD KEY `tc_fk2` (`cqID`);
 
 --
 -- Indexes for table `user`
@@ -414,6 +522,13 @@ ALTER TABLE `user`
   ADD UNIQUE KEY `username` (`username`);
 
 --
+-- Indexes for table `voucher`
+--
+ALTER TABLE `voucher`
+  ADD PRIMARY KEY (`voucherID`),
+  ADD KEY `voucher_fk1` (`categoryID`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -421,19 +536,25 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `answer`
 --
 ALTER TABLE `answer`
-  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=129;
+  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
 
 --
 -- AUTO_INCREMENT for table `bonus_question`
 --
 ALTER TABLE `bonus_question`
-  MODIFY `bqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `bqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
   MODIFY `categoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `conditional_question`
+--
+ALTER TABLE `conditional_question`
+  MODIFY `cqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `parent_question`
@@ -451,19 +572,31 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `product_answer`
 --
 ALTER TABLE `product_answer`
-  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
 
 --
 -- AUTO_INCREMENT for table `question_answer`
 --
 ALTER TABLE `question_answer`
-  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
+
+--
+-- AUTO_INCREMENT for table `trigger_condition`
+--
+ALTER TABLE `trigger_condition`
+  MODIFY `tcID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
   MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `voucher`
+--
+ALTER TABLE `voucher`
+  MODIFY `voucherID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -499,8 +632,22 @@ ALTER TABLE `product_answer`
 --
 ALTER TABLE `question_answer`
   ADD CONSTRAINT `qa_fk1` FOREIGN KEY (`pqID`) REFERENCES `parent_question` (`pqID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qa_fk2` FOREIGN KEY (`cqID`) REFERENCES `conditional_question` (`cqID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `qa_fk3` FOREIGN KEY (`answerID`) REFERENCES `answer` (`answerID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `qa_fk4` FOREIGN KEY (`bqID`) REFERENCES `bonus_question` (`bqID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `trigger_condition`
+--
+ALTER TABLE `trigger_condition`
+  ADD CONSTRAINT `tc_fk1` FOREIGN KEY (`answerID`) REFERENCES `answer` (`answerID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `tc_fk2` FOREIGN KEY (`cqID`) REFERENCES `conditional_question` (`cqID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `voucher`
+--
+ALTER TABLE `voucher`
+  ADD CONSTRAINT `voucher_fk1` FOREIGN KEY (`categoryID`) REFERENCES `category` (`categoryID`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
