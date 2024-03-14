@@ -73,9 +73,10 @@
 
                     if ($voucherResult && $voucher = mysqli_fetch_assoc($voucherResult)['voucherCode']) {
                         echo "<h4><strong>Congratulations!</strong><br>Here's your voucher code</h4>";
-                        echo "<h1>$voucher</h1>";
+                        echo "<h1 id='voucher'>$voucher</h1>";
                         ?>
                         <div class="nav-buttons">
+                            <button onclick="copyToClipboard('#voucher')">COPY VOUCHER</button>
                             <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
                         </div>
                     <?php
@@ -94,7 +95,10 @@
             ?>
         </div>
     <?php elseif ($bonusQuestion): ?>
-        <button onclick="window.location.href='bonus.php'">GET VOUCHER</button>
+        <div class="nav-buttons">
+            <button onclick="window.location.href='bonus.php'">GET VOUCHER</button>
+            <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
+        </div>
     <?php else: ?>
         <div class="nav-buttons">
             <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
@@ -108,3 +112,46 @@
     // session_destroy();  ?>
     </div>
 </div>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p id="modalMessage"></p>
+  </div>
+</div>
+
+<script>
+    document.getElementById('voucher').style.cursor = 'pointer'; // Change cursor to pointer when hovering over the voucher code
+    document.getElementById('voucher').addEventListener('click', function() {
+        copyToClipboard('#voucher');
+    });
+
+    function copyToClipboard(elementId) {
+        var voucherCode = document.querySelector(elementId).innerText;
+        var tempInput = document.createElement("input");
+        tempInput.value = voucherCode;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        
+        // Show modal
+        var modal = document.getElementById("myModal");
+        var modalMessage = document.getElementById("modalMessage");
+        modalMessage.innerHTML = "Voucher code copied to clipboard: <strong>" + voucherCode + "</strong>";
+        modal.style.display = "flex";
+
+        // Close the modal when the user clicks on <span> (x)
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Close the modal when the user clicks anywhere outside of the modal
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+</script>
