@@ -67,7 +67,7 @@
             <div class="spacer display-none "></div>
             <div class="options-container">
                 <?php foreach ($bonusQuestion['answers'] as $answer): ?>
-                    <button type="button" data-answer-id="<?php echo $answer['id']; ?>" onclick="selectBonusAnswer(<?php echo $answer['id']; ?>)">
+                    <button type="button" class="bonus-answer-btn" data-answer-id="<?php echo $answer['id']; ?>" onclick="selectBonusAnswer(<?php echo $answer['id']; ?>)">
                         <?php echo $answer['content']; ?>
                     </button>
                 <?php endforeach; ?>

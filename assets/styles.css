@@ -162,6 +162,7 @@ button:active {
   top: -30px;
 }
 
+.bonus-answer-btn.selected,
 .conditional-answer-btn.selected,
 .parent-answer-btn.selected {
   color: #8e7242;
