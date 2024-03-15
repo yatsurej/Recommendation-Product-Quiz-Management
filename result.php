@@ -12,6 +12,7 @@
     $selectedCategory = $_SESSION['selectedCategory'];
     $currentQuestion = $_SESSION['currentQuestion'];
     $productTally = $_SESSION['productTally'];
+    $answers = $_SESSION['selectedAnswers'];
 
     $bonusQuestionQuery = "SELECT bqID, bqContent FROM bonus_question WHERE categoryID = '$selectedCategory'";
     $bonusQuestionResult = mysqli_query($conn, $bonusQuestionQuery);
@@ -93,8 +94,14 @@
                 <?php
                 }
 
-                session_unset();
-                session_destroy(); 
+                unset($_SESSION['selectedCategory']);
+                unset($_SESSION['selectedAnswers']);
+                unset($_SESSION['currentQuestion']);
+                unset($_SESSION['productTally']);
+                unset($_SESSION['prodID']);
+                unset($_SESSION['bonusAnswered']);
+                unset($_SESSION['insertion_done']);
+                unset($_SESSION['device_type']); 
             ?>
         </div>
     <?php elseif ($bonusQuestion): ?> 
@@ -109,15 +116,20 @@
             <button onclick="window.location.href= 'index.php';">BACK TO HOME</button>
         </div>
     <?php
-        session_unset();
-        session_destroy(); 
+        unset($_SESSION['selectedCategory']);
+        unset($_SESSION['selectedAnswers']);
+        unset($_SESSION['currentQuestion']);
+        unset($_SESSION['productTally']);
+        unset($_SESSION['prodID']);
+        unset($_SESSION['insertion_done']);
+        unset($_SESSION['device_type']);
     ?>
     <?php endif;  ?>
     </div>
 </div>
 
 <script>
-    document.getElementById('voucher').style.cursor = 'pointer'; // Change cursor to pointer when hovering over the voucher code
+    document.getElementById('voucher').style.cursor = 'pointer'; 
     document.getElementById('voucher').addEventListener('click', function() {
         copyToClipboard('#voucher');
     });
@@ -131,7 +143,6 @@
         document.execCommand("copy");
         document.body.removeChild(tempInput);
 
-        // Adding display:block to the copy-code div
         var copyDiv = document.getElementById("copy");
         if (copyDiv) {
             copyDiv.classList.remove("fa-regular", "fa-clone");

@@ -1,10 +1,3 @@
-<style>
-    .conditional-answer-btn.selected,
-    .parent-answer-btn.selected {
-        background-color: green;
-    }
-</style>
-
 <?php
     $pageTitle = "Quiz";
     include 'header.php';

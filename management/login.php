@@ -8,7 +8,7 @@
 
     $pageTitle = "Login Page";
     require '../db.php';
-    include '../header.php';
+    include 'header.php';
     include 'navbar.php';
 ?>
 

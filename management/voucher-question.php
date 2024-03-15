@@ -1,6 +1,6 @@
 <?php
     $pageTitle = "Question Page";
-    include '../header.php';
+    include 'header.php';
     include 'navbar.php';
     include '../db.php';
     

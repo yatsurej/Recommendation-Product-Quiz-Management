@@ -1,9 +1,3 @@
-<style>
-    .bonus-answer-btn.selected{
-        background-color: green;
-    }
-</style>
-
 <?php
     $pageTitle = "Bonus Question";
     include 'header.php';

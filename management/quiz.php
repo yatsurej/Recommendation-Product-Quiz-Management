@@ -1,6 +1,6 @@
 <?php
     $pageTitle = "Quiz Page";
-    include '../header.php';
+    include 'header.php';
     include 'navbar.php';
     if (isset($_SESSION['username'])) {
         $username   = $_SESSION['username'];
