@@ -146,7 +146,7 @@
                         }
                         ?>
                     <div class="spacer"></div>
-                    <button type="submit" class="next" id="nextButton" disabled="disabled">Next</button>
+                    <button type="submit" class="next" id="nextButton" disabled="disabled">NEXT</button>
                     <input type="hidden" name="selectedAnswer" id="selectedAnswer" value="">
                     </div>
                 </form>
