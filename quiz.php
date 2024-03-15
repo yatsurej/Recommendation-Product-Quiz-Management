@@ -43,7 +43,7 @@
             ?>
 
             <div class="body-wrapper bg4">
-                <div class="wrapper">
+                <div class="wrapper show-wrapper">
                     <form action="quiz.php" method="post" id="quizForm">
                         <div class="spacer"></div>
                         <div class="q-container">
@@ -67,7 +67,7 @@
                             while ($conditionalAnswerRow = mysqli_fetch_assoc($conditionalAnswerResult)) {
                                 $conditionalAnswerID = $conditionalAnswerRow['answerID'];
                                 $conditionalAnswerContent = $conditionalAnswerRow['answerContent'];
-                                echo "<button type='button' class='conditional-answer-btn' data-answer-id='$conditionalAnswerID' onclick='selectAnswer($conditionalAnswerID)'>$conditionalAnswerContent</button><br>";
+                                echo "<button type='button' class='conditional-answer-btn' data-answer-id='$conditionalAnswerID' onclick='selectAnswer($conditionalAnswerID)'>$conditionalAnswerContent</button>";
                             }
                             ?>
                        </div>
@@ -142,7 +142,7 @@
                         while ($answerRow = mysqli_fetch_assoc($answerResult)) {
                             $answerID = $answerRow['answerID'];
                             $answerContent = $answerRow['answerContent'];
-                            echo "<button type='button' class='parent-answer-btn' data-answer-id='$answerID' onclick='selectAnswer($answerID)'>$answerContent</button><br>";
+                            echo "<button type='button' class='parent-answer-btn' data-answer-id='$answerID' onclick='selectAnswer($answerID)'>$answerContent</button>";
                         }
                         ?>
                     <div class="spacer"></div>

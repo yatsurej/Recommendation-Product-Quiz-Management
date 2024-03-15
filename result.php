@@ -97,22 +97,22 @@
                 session_destroy(); 
             ?>
         </div>
-    <?php elseif ($bonusQuestion): ?>
-        <div class="nav-buttons">
-            <button onclick="window.location.href='bonus.php'">GET VOUCHER</button>
-            <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
-        </div>
+    <?php elseif ($bonusQuestion): ?> 
+        <form action="process.php" method="post">
+            <div class="nav-buttons">
+                <button type="submit" name="bonus">GET VOUCHER</button>
+                <button type="submit" name="home">BACK TO HOME</button>
+            </div>
+        </form>
     <?php else: ?>
         <div class="nav-buttons">
-            <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
+            <button onclick="window.location.href= 'index.php';">BACK TO HOME</button>
         </div>
-        <?php
+    <?php
         session_unset();
         session_destroy(); 
-        ?>
-    <?php endif;
-    // session_unset();
-    // session_destroy();  ?>
+    ?>
+    <?php endif;  ?>
     </div>
 </div>
 
