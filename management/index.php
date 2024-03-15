@@ -17,13 +17,20 @@
         $userLastName  = $userRow['lastName'];    
     }
     $pageTitle = "Quiz Management";
-    include '../header.php';
+    include 'header.php';
     include 'navbar.php';
 ?>
 
 <div class="container w-75 text-center mt-5">
     <p class="fs-3">Welcome, 
         <?php 
+            if ($_SESSION['user_role'] == 'admin') {
+                echo "Admin ";
+            } elseif ($_SESSION['user_role'] == 'client') {
+                header("Location: analytics.php");
+            } else {
+                echo "Unknown Role ";
+            }
             echo $userFirstName . ' ' . $userLastName;
         ?>
     </p>

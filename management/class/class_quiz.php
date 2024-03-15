@@ -7,8 +7,9 @@
                 $query = "SELECT * FROM user WHERE username = '$username' AND password = '$password'";
                 $result = mysqli_query($conn, $query);
 
-                if (mysqli_fetch_assoc($result)){
-                    return true;
+                if ($row = mysqli_fetch_assoc($result)){
+                    $role = $row['role'];
+                    return $role;
                 } else{
                     return false;
                 }
@@ -22,7 +23,7 @@
                 $maxOrderRow = mysqli_fetch_assoc($maxOrderResult);
                 $nextOrder = $maxOrderRow['maxOrder'] + 1;
 
-                $query = "INSERT INTO parent_question(pqContent, pqNumOptions, pqMinAnswer, categoryID, pqOrder)
+                $query = "INSERT INTO parent_question(pqContent, pqNumOptions, pqMaxAnswer, categoryID, pqOrder)
                         VALUES ('$parentQuestion', '$numOptions', '$numAnswer', '$categoryID', '$nextOrder')";
                 $result = mysqli_query($conn, $query);
             
@@ -56,7 +57,7 @@
             public function addConditionalQuestion($mainQuestion, $mainQuestionAnswer, $conditionalQuestion, $cqNumOptions, $cqNumAnswer, $answersData){
                 global $conn;
                 
-                $query = "INSERT INTO conditional_question(cqContent, cqNumOptions, cqMinAnswer)
+                $query = "INSERT INTO conditional_question(cqContent, cqNumOptions, cqMaxAnswer)
                         VALUES ('$conditionalQuestion', '$cqNumOptions', '$cqNumAnswer')";
                 $result = mysqli_query($conn, $query);
             

@@ -11,6 +11,7 @@
             $result = $classQuiz->login($username, $password);
 
             if ($result){
+                $_SESSION['user_role'] = $result;
                 $_SESSION['user_authenticated'] = true;
                 $_SESSION['username'] = $username;
 

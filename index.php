@@ -9,8 +9,14 @@
         header("Location: category-page.php");
         exit();
     }
+    
+    if (!isset($_SESSION['guestID'])) {
+        $guestID = rand(10, 999999999999);
+        $_SESSION['guestID'] = $guestID;
+    } else {
+        $guestID = $_SESSION['guestID'];
+    }
 ?>
-
 <div class="body-wrapper bg2">
     <div class="wrapper">
         <div class="spacer"></div>
