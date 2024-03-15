@@ -111,6 +111,7 @@ button {
   border-radius: 30px;
   border: 2px solid #8e7242;
   color: #fff;
+  letter-spacing: 1px;
 }
 
 button:hover {
@@ -249,6 +250,10 @@ button:active {
 
 .view-product-button {
   font-size: 11px;
+  width: 100%;
+}
+
+.voucher {
   width: 100%;
 }
 
@@ -512,4 +517,11 @@ button:active {
 
 #eye-icon {
   color: #9ba3be;
+}
+
+/* Admin Dashboard Styles */
+
+.page-link {
+  background-color: #495057 !important;
+  border-color: #343a40 !important;
 }
