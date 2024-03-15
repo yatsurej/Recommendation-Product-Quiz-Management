@@ -70,13 +70,16 @@
                 if ($_SESSION['bonusAnswered']) {
                     $voucherQuery = "SELECT voucherCode FROM voucher WHERE categoryID = '$selectedCategory'";
                     $voucherResult = mysqli_query($conn, $voucherQuery);
-
+                    
                     if ($voucherResult && $voucher = mysqli_fetch_assoc($voucherResult)['voucherCode']) {
-                        echo "<h4><strong>Congratulations!</strong><br>Here's your voucher code</h4>";
-                        echo "<h1 id='voucher'>$voucher</h1>";
                         ?>
+                        <h4><strong>Congratulations!</strong><br>Here's your voucher code</h4>
+                        <div class="voucher-code-container">
+                            <h1 id='voucher'><?php echo $voucher; ?></h1>
+                            <i onclick="copyToClipboard('#voucher')" class="fa-regular fa-clone" id="copy"></i>
+                            
+                        </div>
                         <div class="nav-buttons">
-                            <button onclick="copyToClipboard('#voucher')">COPY VOUCHER</button>
                             <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
                         </div>
                     <?php
@@ -113,13 +116,6 @@
     </div>
 </div>
 
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <p id="modalMessage"></p>
-  </div>
-</div>
-
 <script>
     document.getElementById('voucher').style.cursor = 'pointer'; // Change cursor to pointer when hovering over the voucher code
     document.getElementById('voucher').addEventListener('click', function() {
@@ -134,24 +130,12 @@
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        
-        // Show modal
-        var modal = document.getElementById("myModal");
-        var modalMessage = document.getElementById("modalMessage");
-        modalMessage.innerHTML = "Voucher code copied to clipboard: <strong>" + voucherCode + "</strong>";
-        modal.style.display = "flex";
 
-        // Close the modal when the user clicks on <span> (x)
-        var span = document.getElementsByClassName("close")[0];
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        // Close the modal when the user clicks anywhere outside of the modal
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+        // Adding display:block to the copy-code div
+        var copyDiv = document.getElementById("copy");
+        if (copyDiv) {
+            copyDiv.classList.remove("fa-regular", "fa-clone");
+            copyDiv.classList.add("fa-solid", "fa-check");
         }
     }
 </script>
