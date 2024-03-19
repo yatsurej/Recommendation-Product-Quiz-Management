@@ -53,6 +53,28 @@
                                 $prodDescription    = $productDetailsRow['prodDescription'];
 
                                 $_SESSION['prodID'] = $prodID;
+                                if (!isset($_SESSION['insertion_done'])) {
+                                    $guestID = "2";
+                                    $device = "desktop";
+                                    $source = "lazada";
+                                    $prod = $_SESSION['prodID'];
+                                
+                                    $query = "INSERT INTO session(guestID, device_type, prodID, source) VALUES ('$guestID', '$device', '$prod', '$source')";
+                                    $result = mysqli_query($conn, $query);
+                                
+                                    if ($result) {
+                                        $sessionID = mysqli_insert_id($conn);
+                                
+                                        foreach ($answers as $answer) {
+                                            $queryAnswer = "INSERT INTO session_answers(sessionID, answerID) VALUES ('$sessionID', '$answer')";
+                                            $resultAnswer = mysqli_query($conn, $queryAnswer);
+                                            if (!$resultAnswer) {
+                                                echo "Error inserting answer: " . mysqli_error($conn);
+                                            }
+                                        }
+                                        $_SESSION['insertion_done'] = true;
+                                    } 
+                                }
                                 ?>
                                 <img src="management/<?php echo $prodImage; ?>" class="suggested-image" alt="Product Image" class="img-fluid">
                                 <p><?php echo $maxTallyProduct['name']; ?></p>
