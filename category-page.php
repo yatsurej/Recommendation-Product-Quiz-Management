@@ -14,6 +14,7 @@
     while($row = mysqli_fetch_assoc($result)){
         $categoryDescription    = $row['categoryDescription'];
         $categoryName           = $row['categoryName'];
+        $categoryTitle          = $row['categoryTitle'];
 ?>
 
 <div class="body-wrapper bg3">
@@ -22,6 +23,7 @@
         <div class="header-container">
             <h2>READY FOR A</h2>
             <h1 class="quiz">QUIZ?</h1>
+            <h3><?php echo $categoryTitle; ?></h3>
         </div>
         <div class="content-container">
             <h2><?php echo $categoryName; ?></h2>

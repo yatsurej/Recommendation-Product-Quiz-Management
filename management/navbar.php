@@ -8,7 +8,7 @@
         session_start();
     }
 
-    $allowedPages = array('product.php', 'question.php', 'analytics.php');
+    $allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.php');
 ?>
 <style>
     .navbar {
@@ -39,6 +39,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'question.php' || basename($_SERVER['PHP_SELF']) == 'conditional-question.php') ? 'active' : 'inactive'; ?>" href="question.php">Questions</a>            
+                    </li>
+                    <li class="nav-item">
+                        <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'voucher.php' || basename($_SERVER['PHP_SELF']) == 'conditional-voucher.php') ? 'active' : 'inactive'; ?>" href="voucher.php">Vouchers</a>            
                     </li>
                     <li class="nav-item">
                         <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'analytics.php') ? 'active' : 'inactive'; ?>" href="analytics.php">Analytics</a>            

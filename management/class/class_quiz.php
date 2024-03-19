@@ -2,6 +2,7 @@
     require '../db.php';
     if (!class_exists('Quiz')){
         class Quiz {
+            // Login
             public function login($username, $password){
                 global $conn;
                 $query = "SELECT * FROM user WHERE username = '$username' AND password = '$password'";
@@ -15,6 +16,7 @@
                 }
             }
             
+            // Main Question CRUD
             public function addMainQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
                 global $conn;
                 
@@ -54,6 +56,7 @@
                 }
             }
 
+            // Conditional Question CRUD
             public function addConditionalQuestion($mainQuestion, $mainQuestionAnswer, $conditionalQuestion, $cqNumOptions, $cqNumAnswer, $answersData){
                 global $conn;
                 
@@ -92,6 +95,7 @@
                 }
             }
 
+            // Voucher Question CRUD
             public function addVoucherQuestion($voucherQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
                 global $conn;
                 
@@ -126,6 +130,77 @@
                 }
             }
 
+            // Category CRUD
+            public function addCategory($categoryName, $categoryTitle, $categoryDescription){
+                global $conn;
+                $query = "SELECT * FROM category WHERE categoryName = '$categoryName'";
+                $result = mysqli_query($conn, $query);
+
+                if(mysqli_num_rows($result) > 0){
+                    echo "<script>alert('Category name is already taken');window.location.href='./categories.php';</script>";
+                } else{
+                    $categoryTitle = mysqli_real_escape_string($conn, $categoryTitle);
+                    $query      = "INSERT INTO category(categoryName, categoryTitle, categoryDescription)
+                                   VALUES ('$categoryName', '$categoryTitle', '$categoryDescription')";
+                    $result     = mysqli_query($conn, $query);
+    
+                    if($result){
+                        return true;
+                    } else{
+                        return false;
+                    }
+                }
+            }
+            public function updateCategory($categoryID, $categoryName, $categoryTitle, $categoryDescription){
+                global $conn;
+                $categoryTitle = mysqli_real_escape_string($conn, $categoryTitle);
+                $query = "UPDATE category
+                          SET categoryName = '$categoryName', categoryTitle = '$categoryTitle', categoryDescription = '$categoryDescription'
+                          WHERE categoryID = '$categoryID'";
+                $result = mysqli_query($conn, $query);
+
+                if ($result){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            // Voucher CRUD
+            public function addVoucher($voucherCode, $categoryID){
+                global $conn;
+                $query  = "SELECT * FROM voucher WHERE voucherCode = '$voucherCode'";
+                $result = mysqli_query($conn, $query);
+
+                if (mysqli_num_rows($result) > 0){
+                    echo "<script>alert('Voucher code already exists');window.location.href='./voucher.php';</script>";
+                } else {
+                    $query = "INSERT INTO voucher(voucherCode, categoryID)
+                              VALUES('$voucherCode', '$categoryID')";
+                    $result = mysqli_query($conn, $query);
+
+                    if ($result){
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            public function updateVoucher($voucherID, $voucherCode, $categoryID){
+                global $conn;
+                $query = "UPDATE voucher
+                          SET voucherCode = '$voucherCode', categoryID = '$categoryID'
+                          WHERE voucherID = '$voucherID'";
+                $result = mysqli_query($conn, $query);
+
+                if($result){
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            // Product CRUD
             public function addProduct($prodName, $prodDescription, $prodImage, $prodURL, $categoryID){
                 global $conn;
                 $prodDescription = mysqli_real_escape_string($conn,$prodDescription);
@@ -140,20 +215,6 @@
                     return false;
                 }
             }
-        
-            public function addCategory($categoryName){
-                global $conn;
-                $query      = "INSERT INTO category(categoryName)
-                               VALUES ('$categoryName')";
-                $result     = mysqli_query($conn, $query);
-
-                if($result){
-                    return true;
-                } else{
-                    return false;
-                }
-            }
-            
             public function updateProductWithImage($prodID, $prodName, $prodDescription, $targetFile, $prodURL){
                 global $conn;
                 $query  = "UPDATE product
@@ -167,7 +228,6 @@
                     return false;
                 }
             }
-            
             public function updateProductWithoutImage($prodID, $prodName, $prodDescription, $prodURL){
                 global $conn;
                 $query  = "UPDATE product

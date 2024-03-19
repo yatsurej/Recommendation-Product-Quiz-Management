@@ -190,6 +190,7 @@
                                         $existingNumOptions     = $existingData['pqNumOptions'];
                                         $existingMaxAnswer      = $existingData['pqMaxAnswer'];
                                     ?>
+                                    <form action="functions.php" method="post">
                                         <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
                                         <!-- Card -->
                                         <div class="card">
@@ -254,36 +255,17 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group my-2">
-                                                    <label for="answers">Answers:</label>
-                                                    <span class="float-end">Associated Product/s:</span>
-                                                    <ul class="list-group" name="answers">
-                                                        <?php
-                                                        $answersArray = explode(',', $answerContents);
-                                                        $associatedProducts = explode(',', $prodNames);
-    
-                                                        foreach ($answersArray as $index => $answer) {
-                                                            echo '<li class="list-group-item list-group-item-secondary">';
-                                                            echo $answer;
-    
-                                                            if (isset($associatedProducts[$index])) {
-                                                                $productsForAnswer = explode(',', $associatedProducts[$index]);
-                                                                echo '<span class="float-end text-muted small">';
-                                                                echo implode(', ', $productsForAnswer);
-                                                                echo '</span>';
-                                                            } else {
-                                                                echo '<span class="float-end text-muted small">No associated product</span>';
-                                                            }
-    
-                                                            echo '</li>';
-                                                        }
-                                                        ?>
-                                                    </ul>
+                                                    <div class="form-floating">
+                                                        <select name="countries" id="answer_type" multiple>
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
+                                    </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button class="btn btn-success" name="updateQuestion" type="submit">Save changes</button>
+                                        <button class="btn btn-success" name="updateMainQuestion" type="submit">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -469,4 +451,5 @@
             submitButton.disabled           = false;
         }
     }
+    new MultiSelectTag('countries') 
 </script>
