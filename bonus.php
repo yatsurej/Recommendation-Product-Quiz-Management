@@ -72,7 +72,7 @@
             <?php endforeach; ?>
             <input type="hidden" name="bonusAnswer" id="selectedBonusAnswer" value="">
             <div class="spacer"></div>
-            <button type="submit">Submit</button>
+            <button type="submit" class="next">SUBMIT</button>
             <div class="spacer"></div>
             <?php else: ?>
                 <p>No bonus questions found for this category.</p>

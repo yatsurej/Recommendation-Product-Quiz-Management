@@ -3,6 +3,7 @@
     include 'header.php';
     include 'navbar.php';
     include '../db.php';
+
     if (isset($_SESSION['username'])) {
         $username   = $_SESSION['username'];
         $userQuery  = "SELECT * FROM user WHERE username = '$username'";
@@ -16,20 +17,6 @@
     } else {
         header('Location: index.php');
         exit();
-    }
-
-    $mainQuestionQuery = "SELECT pq.pqContent, a.answerContent
-                          FROM parent_question pq
-                          LEFT JOIN question_answer qa ON qa.pqID = pq.pqID
-                          LEFT JOIN answer a ON a.answerID = qa.answerID
-                          LEFT JOIN session_answers sa ON sa.answerID = a.answerID
-                          WHERE pq.pqID = qa.pqID
-                          ORDER BY pq.pqID";
-    $mainQuestionResult = mysqli_query($conn, $mainQuestionQuery);
-
-    while($row = mysqli_fetch_assoc($mainQuestionResult)){
-        $pqContent = $row['pqContent'];
-        $answerContent = $row['answerContent'];
     }
 
     // Fetch category details from the category table
@@ -46,8 +33,6 @@
     while ($categoryRow = $categoryResult->fetch_assoc()) {
         $categories[$categoryRow['categoryID']] = $categoryRow['categoryName'];
     }
-
-    include 'getDataForAllCategories.php';
 
     $conn->close();
 ?>
@@ -91,7 +76,7 @@
     }
 </style>
 <div class="container mx-auto w-full md:w-4/5 lg:w-4/5 p-4">
-        <div class="flex justify-between items-center p-4 bg-gray-800 text-white">
+<div class="flex justify-between items-center p-4 bg-gray-800 text-white">
             <label for="categoryDropdown" class="text-sm font-bold">Select Category:</label>
             <nav>
                 <ul class="flex">
@@ -143,35 +128,11 @@
             </div>
 
  
-
-
-
     <div id="totalQuizSection" class="mx-auto text-center">
-        <div class = "mx-auto text-center">
-            <h4 class="text-lg font-bold mb-2">Total Quiz Completed</h4>
-            <table class="totalQuiz mx-auto mb-2">
-                <tr>
-                    <td class="label text-center pr-4 pb-2  border-none">Event Count</td>
-                    <td class="label text-center pb-2 border-none">Total Users</td>
-                </tr>
-                <tr>
-                    <td class="border-none pr-4 text-center"><?= $eventCount ?></td>
-                    <td class="border-none text-center"><?= $totalUsers ?></td>
-                </tr>
-            </table>
-        </div>
     </div>
 
-    <div id="siteVisits" class="mx-auto text-center">
-        <div class = "mx-auto text-center">
-            <h4 class="text-lg font-bold mb-2">Site Visits</h4>
-            <table class="totalQuiz mx-auto mb-2">
-                <tr>
-                    <td class="border-none pr-4 text-center"><?= $siteVisitCount ?></td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <!-- <div id="siteVisits" class="mx-auto text-center">
+    </div> -->
 
     <div class="flex justify-center">
             
@@ -195,7 +156,7 @@
         
         <div id="selectedCategoryQuizData"></div>
 
-        <div class="flex justify-center">
+        <div id= "categoryTopContainer" class="flex justify-center">
             <div id="selectedCategoryDeviceData" class = "p-2 bg-white rounded shadow-md mb-2"></div>
             <div id="selectedCategoryMostRecommendedData" class = "p-2 bg-white rounded shadow-md mb-2"></div>
         </div>
@@ -236,190 +197,188 @@
             }
         });
     });
-    // Load the Visualization API and the corechart package.
-    google.charts.load('current', {'packages':['corechart']});
+ 
+    function drawTotalSessionsChart(totalSessions) {
+                // Convert data to the format expected by Google Charts
+                const chartData = [['Category', 'Total Sessions']];
+                totalSessions.forEach(item => {
+                    // Log the parsed values for debugging
+                    console.log(`Category: ${item.Category}, Total Sessions: ${parseInt(item['Total Sessions'])}`);
+                    chartData.push([item.Category, parseInt(item['Total Sessions'])]);
+                });
 
+                // Load the Google Charts visualization library
+                google.charts.load('current', {'packages':['corechart']});
+                
+                // Set a callback to run when the Google Charts library is loaded
+                google.charts.setOnLoadCallback(() => {
+                    // Create the data table
+                    const data = google.visualization.arrayToDataTable(chartData);
 
+                    // Set chart options
+                    var options = {
+                        chartArea: {
+                            width: '50%', // adjust width (percentage or absolute value)
+                            height: '50%' // adjust height (percentage or absolute value)
+                        },
+                        title: 'Total Sessions for Each Category',
+                        pieHole: 0.4, // To make it a doughnut chart
+                        pieSliceText: 'value', // Display actual values
+                    };
 
-    function drawCharts() {
-        // Draw doughnut chart for total sessions
-        drawTotalSessionsChart();
+                    // Instantiate and draw the chart
+                    const chart = new google.visualization.PieChart(document.getElementById('totalSessionsChart'));
+                    chart.draw(data, options);
+                });
+            }
 
-        // Draw doughnut chart for device types
-        drawDeviceTypeChart();
+    function drawDeviceTypeChart(deviceTypesData) {
+                // Convert data to the format expected by Google Charts
+                const chartData = [['Device Type', 'Count']];
+                for (const deviceType in deviceTypesData) {
+                    chartData.push([deviceType, parseInt(deviceTypesData[deviceType])]);
+                }
 
-        drawRecommendedProductsChart();
-    }
+                // Load the Google Charts visualization library
+                google.charts.load('current', {'packages':['corechart']});
+                
+                // Set a callback to run when the Google Charts library is loaded
+                google.charts.setOnLoadCallback(() => {
+                    // Create the data table
+                    const data = google.visualization.arrayToDataTable(chartData);
 
-    function drawTotalSessionsChartss() {
-        // Create the data table.
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Category');
-        data.addColumn('number', 'Total Sessions');
-        
-        // Add data to the chart
-        <?php foreach ($totalSessionsData as $data): ?>
-            data.addRow(['<?= $data['Category'] ?>', <?= $data['Total Sessions'] ?>]);
-        <?php endforeach; ?>
+                    // Set chart options
+                    var options = {
+                        chartArea: {
+                            width: '50%', // adjust width (percentage or absolute value)
+                            height: '50%' // adjust height (percentage or absolute value)
+                        },
+                        title: 'Device Distribution',
+                        pieHole: 0.4, // To make it a doughnut chart
+                        pieSliceText: 'value', // Display actual values
+                    };
 
-        // Set chart options
-        var options = {
-            chartArea: {
-                width: '50%', // adjust width (percentage or absolute value)
-                height: '50%' // adjust height (percentage or absolute value)
-            },
-            title: 'Total Sessions for Each Category',
-            pieHole: 0.4, // To make it a doughnut chart
-            pieSliceText: 'value', // Display actual values
-        };
+                    // Instantiate and draw the chart
+                    const chart = new google.visualization.PieChart(document.getElementById('deviceTypeChart'));
+                    chart.draw(data, options);
+                });
+            }
 
-        // Instantiate and draw the chart.
-        var chart = new google.visualization.PieChart(document.getElementById('totalSessionsChart'));
-        chart.draw(data, options);
-    }
+    function drawRecommendedProductsChart(recommendedProductsData) {
+                // Load the Google Charts visualization library
+                google.charts.load('current', {'packages':['corechart']});
 
-    function drawTotalSessionsChart(totalSessionsData) {
-    // Convert data to the format expected by Google Charts
-    const chartData = [['Category', 'Total Sessions']];
-    totalSessionsData.forEach(item => {
-        // Log the parsed values for debugging
-        console.log(`Category: ${item.Category}, Total Sessions: ${parseInt(item['Total Sessions'])}`);
-        chartData.push([item.Category, parseInt(item['Total Sessions'])]);
-    });
+                // Set a callback to run when the Google Charts library is loaded
+                google.charts.setOnLoadCallback(() => {
+                    // Create the data table for recommended products
+                    const data = new google.visualization.DataTable();
+                    data.addColumn('string', 'Product');
+                    data.addColumn('number', 'Recommendation Count');
 
-    // Load the Google Charts visualization library
-    google.charts.load('current', {'packages':['corechart']});
-    
-    // Set a callback to run when the Google Charts library is loaded
-    google.charts.setOnLoadCallback(() => {
-        // Create the data table
-        const data = google.visualization.arrayToDataTable(chartData);
+                    // Add data to the recommended products chart
+                    recommendedProductsData.forEach(product => {
+                        data.addRow([product.Product, parseInt(product.RecommendationCount)]);
+                    });
 
-        // Set chart options
-        var options = {
-            chartArea: {
-                width: '50%', // adjust width (percentage or absolute value)
-                height: '50%' // adjust height (percentage or absolute value)
-            },
-            title: 'Total Sessions for Each Category',
-            pieHole: 0.4, // To make it a doughnut chart
-            pieSliceText: 'value', // Display actual values
-        };
+                    // Set chart options for recommended products
+                    const options = {
+                        chartArea: {
+                            width: '50%',
+                            height: '50%'
+                        },
+                        title: 'Most Recommended Products',
+                        vAxis: {
+                            title: '',
+                            minValue: 0,
+                            textStyle: {
+                        fontSize: 10 // Set the font size for the horizontal axis labels
+                    }
+                        },
+                        hAxis: {
+                            title: '',
+                            textStyle: {
+                        fontSize: 10 // Set the font size for the horizontal axis labels
+                    }
+                        },
+                        legend: 'none' // Set legend to none to remove it
+                    };
 
-        // Instantiate and draw the chart
-        const chart = new google.visualization.PieChart(document.getElementById('totalSessionsChart'));
-        chart.draw(data, options);
-    });
-}
-
-function drawDeviceTypeChart(deviceTypesData) {
-    // Convert data to the format expected by Google Charts
-    const chartData = [['Device Type', 'Count']];
-    for (const deviceType in deviceTypesData) {
-        chartData.push([deviceType, parseInt(deviceTypesData[deviceType])]);
-    }
-
-    // Load the Google Charts visualization library
-    google.charts.load('current', {'packages':['corechart']});
-    
-    // Set a callback to run when the Google Charts library is loaded
-    google.charts.setOnLoadCallback(() => {
-        // Create the data table
-        const data = google.visualization.arrayToDataTable(chartData);
-
-        // Set chart options
-        var options = {
-            chartArea: {
-                width: '50%', // adjust width (percentage or absolute value)
-                height: '50%' // adjust height (percentage or absolute value)
-            },
-            title: 'Total Sessions for Each Category',
-            pieHole: 0.4, // To make it a doughnut chart
-            pieSliceText: 'value', // Display actual values
-        };
-
-        // Instantiate and draw the chart
-        const chart = new google.visualization.PieChart(document.getElementById('deviceTypeChart'));
-        chart.draw(data, options);
-    });
-}
-
-        function drawRecommendedProductsChart(recommendedProductsData) {
-    // Load the Google Charts visualization library
-    google.charts.load('current', {'packages':['corechart']});
-
-    // Set a callback to run when the Google Charts library is loaded
-    google.charts.setOnLoadCallback(() => {
-        // Create the data table for recommended products
-        const data = new google.visualization.DataTable();
-        data.addColumn('string', 'Product');
-        data.addColumn('number', 'Recommendation Count');
-
-        // Add data to the recommended products chart
-        recommendedProductsData.forEach(product => {
-            data.addRow([product.Product, parseInt(product.RecommendationCount)]);
-        });
-
-        // Set chart options for recommended products
-        const options = {
-            chartArea: {
-                width: '50%',
-                height: '50%'
-            },
-            title: 'Recommended Products',
-            vAxis: {
-                title: '',
-                minValue: 0,
-                textStyle: {
-            fontSize: 10 // Set the font size for the horizontal axis labels
-        }
-            },
-            hAxis: {
-                title: '',
-                textStyle: {
-            fontSize: 10 // Set the font size for the horizontal axis labels
-        }
-            },
-            legend: 'none' // Set legend to none to remove it
-        };
-
-        // Instantiate and draw the recommended products chart
-        const chart = new google.visualization.ColumnChart(document.getElementById('recommendedProductsChart'));
-        chart.draw(data, options);
-    });
-}
+                    // Instantiate and draw the recommended products chart
+                    const chart = new google.visualization.ColumnChart(document.getElementById('recommendedProductsChart'));
+                    chart.draw(data, options);
+                });
+            }
 
 
             
-            var chartData = null;
-            // Add event listener for the export button outside the function
-                document.getElementById('exportButton').addEventListener('click', function () {
-                    exportChartDataToCSV(chartData);
-                    });
-                    // Cache frequently accessed DOM elements
-        const elements = {
+            let ExportData = null;
+            let chartData = null;
+    document.getElementById('exportButton').addEventListener('click', function () {
+               
+                exportDataToCSV(chartData);
+            });
+                    
+    const elements = {
             selectedCategoryCharts: document.getElementById('selectedCategoryCharts'),
             startDate: document.getElementById('startDate'),
             endDate: document.getElementById('endDate'),
             dateRange: document.getElementById('dateRange')
         };
+    function drawTotalQuizTable(eventCount, totalUsers) {
+            const totalQuizSection = document.getElementById("totalQuizSection");
 
-        function fetchDataForAllCategories(startDate, endDate) {
+            totalQuizSection.innerHTML = `
+                <div class="mx-auto text-center">
+                    <h4 class="text-lg font-bold mb-2">Total Quiz Completed</h4>
+                    <table class="totalQuiz mx-auto mb-2">
+                        <tr>
+                            <td class="label text-center pr-4 pb-2 border-none">Event Count</td>
+                            <td class="label text-center pb-2 border-none">Total Users</td>
+                        </tr>
+                        <tr>
+                            <td class="border-none pr-4 text-center">${eventCount}</td>
+                            <td class="border-none text-center">${totalUsers}</td>
+                        </tr>
+                    </table>
+                </div>`;
+            }
+
+    function drawSiteVisitsTable(siteVisitCount) {
+            const siteVisitsSection = document.getElementById("siteVisits");
+
+            siteVisitsSection.innerHTML = `
+                <div class="mx-auto text-center">
+                    <h4 class="text-lg font-bold mb-2">Site Visits</h4>
+                    <table class="siteVisits mx-auto mb-2">
+                        <tr>
+                            <td class="border-none pr-4 text-center">${siteVisitCount}</td>
+                        </tr>
+                    </table>
+                </div>`;
+            }
+    function fetchDataForAllCategories(startDate, endDate) {
                 
-                console.log(startDate);
-                console.log(endDate);
-                const allCategoriesURL = `getDataForAllCategories.php?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(endDate);
+
+                // Check if the conversion was successful (optional)
+                if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
+                    console.error('Invalid date format.');
+                    return;
+                }
+                const allCategoriesURL = `getDataForAllCategories.php?startDate=${encodeURIComponent(startDateObj.toISOString())}&endDate=${encodeURIComponent(endDateObj.toISOString())}`;
 
                 // Make a request to fetch data for all categories
                 const xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                     if (this.readyState == 4) {
                         if (this.status == 200) {
-                            console.log(this.responseText);
                             const responseData = JSON.parse(this.responseText);
                             drawTotalSessionsChart(responseData.TotalSessions);
                             drawDeviceTypeChart(responseData.DeviceTypes);
                             drawRecommendedProductsChart(responseData.RecommendedProducts);
+                            drawTotalQuizTable(responseData.EventCount, responseData.TotalUsers);
+                            drawSiteVisitsTable(responseData.SiteVisitCount);
                         } else {
                             console.error(`Error in fetching data for all categories: ${this.status}`);
                             // Add error handling logic here...
@@ -433,8 +392,8 @@ function drawDeviceTypeChart(deviceTypesData) {
                 // Run displaySelectedCategory with null categoryID on page load
                 displaySelectedCategory(null);
             };
-        let selectedCategoryID = null;
-        function displaySelectedCategory(categoryID) {
+    let selectedCategoryID = null;
+    function displaySelectedCategory(categoryID) {
                 document.getElementById('selectedCategoryCharts').innerHTML = '';
 
                  // Validate and sanitize categoryID, startDate, and endDate
@@ -442,14 +401,16 @@ function drawDeviceTypeChart(deviceTypesData) {
                 document.getElementById('startDate').value = '';
                 document.getElementById('endDate').value = '';
                 document.getElementById('dateRange').value = 'allTime';
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
+                let startDate = document.getElementById('startDate').value;
+                let endDate = document.getElementById('endDate').value;
 
                 // Check if categoryID is null
                 if (categoryID === null) {
                     // Fetch data for all categories
                     console.log("no category selected");
                     selectedCategoryID = null;
+                    startDate = '2000-01-01';
+                    endDate = new Date();
                     fetchDataForAllCategories(startDate, endDate);
                     return; // Exit the function
                 }
@@ -466,12 +427,11 @@ function drawDeviceTypeChart(deviceTypesData) {
 
                 const toggleViewButton = document.getElementById('toggleButton');
                 const exportButton = document.getElementById('exportButton');
+               
 
                 if (toggleViewButton) {
                         toggleViewButton.style.display = (categoryID !== "") ? 'block' : 'none';
                     }
-
-               
 
                 // Define URLs for data retrieval
                 const urls = {
@@ -486,8 +446,8 @@ function drawDeviceTypeChart(deviceTypesData) {
                     'bonusQuestions': "getBonusQuestionsData.php"
                 };
 
-                // Make asynchronous requests for each data type
-                Object.keys(urls).forEach(key => {
+                 // Make asynchronous requests for each data type
+                 Object.keys(urls).forEach(key => {
                     const url = `${urls[key]}?categoryID=${categoryID}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
                     const xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function () {
@@ -498,7 +458,7 @@ function drawDeviceTypeChart(deviceTypesData) {
                                         document.getElementById('selectedCategoryTables').innerHTML = this.responseText;
                                         break;
                                     case 'charts':
-                                        const chartData = JSON.parse(this.responseText);
+                                        chartData = JSON.parse(this.responseText);
                                         for (const question in chartData) {
                                             if (chartData.hasOwnProperty(question)) {
                                                 drawColumnChart(question, chartData[question]);
@@ -506,7 +466,8 @@ function drawDeviceTypeChart(deviceTypesData) {
                                         }
                                         break;
                                     case 'quizCompleted':
-                                        document.getElementById('selectedCategoryQuizData').innerHTML = this.responseText;
+                                        const quizCompletedData = JSON.parse(this.responseText);
+                                        createQuizCompleted(quizCompletedData);
                                         break;
                                     case 'deviceTypeData':
                                         const deviceTypeData = JSON.parse(this.responseText);
@@ -555,7 +516,7 @@ function drawDeviceTypeChart(deviceTypesData) {
                 });
 
             }
-            function applyFilter() {
+    function applyFilter() {
             // Define constants for element IDs
             document.getElementById('selectedCategoryCharts').innerHTML = '';
             const elementIDs = ['startDate', 'endDate', 'dateRange'];
@@ -674,7 +635,7 @@ function drawDeviceTypeChart(deviceTypesData) {
             const urls = {
                 'tables': "getTablesForCategory.php",
                 'charts': "getChartsForCategory.php",
-                'quizData': "getQuizDataForCategory.php",
+                'quizCompleted': "getQuizDataForCategory.php",
                 'deviceTypeData': "getDeviceDataForCategory.php",
                 'mostRecommendedProducts': "getMostRecommendedForCategory.php",
                 'sources': "getSourcesForCategory.php",
@@ -695,15 +656,16 @@ function drawDeviceTypeChart(deviceTypesData) {
                                     document.getElementById('selectedCategoryTables').innerHTML = this.responseText;
                                     break;
                                 case 'charts':
-                                    const chartData = JSON.parse(this.responseText);
+                                    chartData = JSON.parse(this.responseText);
                                     for (const question in chartData) {
                                         if (chartData.hasOwnProperty(question)) {
                                             drawColumnChart(question, chartData[question]);
                                         }
                                     }
                                     break;
-                                case 'quizData':
-                                    document.getElementById('selectedCategoryQuizData').innerHTML = this.responseText;
+                                case 'quizCompleted':
+                                        const quizCompletedData = JSON.parse(this.responseText);
+                                        createQuizCompleted(quizCompletedData);
                                     break;
                                 case 'deviceTypeData':
                                     const deviceTypeData = JSON.parse(this.responseText);
@@ -752,18 +714,18 @@ function drawDeviceTypeChart(deviceTypesData) {
         }
 
     function clearFilters() {
-        document.getElementById('startDate').value = '';
-        document.getElementById('endDate').value = '';
-        document.getElementById('dateRange').value = 'allTime';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('dateRange').value = 'allTime';
 
-        applyFilter();
-    }
+            applyFilter();
+        }
     function formatDate(date) {
-    return date.toISOString().split('T')[0];
-}
+            return date.toISOString().split('T')[0];
+        }
 
         // Function to draw the Google Column Chart for a specific question
-            function drawColumnChart(question, questionData) {
+    function drawColumnChart(question, questionData) {
                 google.charts.setOnLoadCallback(drawChart);
 
                 function drawChart() {
@@ -805,14 +767,14 @@ function drawDeviceTypeChart(deviceTypesData) {
 
             }
              // Function to draw the Google Column Chart for a specific question
-             function drawConditionalChart(question, questionData) {
+    function drawConditionalChart(question, questionData) {
                 google.charts.setOnLoadCallback(drawChart);
 
-                function drawChart() {
+    function drawChart() {
                     var data = new google.visualization.DataTable();
                     data.addColumn('string', 'Answer');
                     data.addColumn('number', 'Click Count');
-                    data.addColumn('number', 'Total Sessions');
+                    data.addColumn('number', 'Total Session');
 
                     // Add data rows
                     questionData.forEach(function (answerData) {
@@ -848,7 +810,7 @@ function drawDeviceTypeChart(deviceTypesData) {
             }
 
             // Function to draw the Google Column Chart for a specific question
-            function drawBonusChart(question, questionData) {
+    function drawBonusChart(question, questionData) {
                 google.charts.setOnLoadCallback(drawChart);
 
                 function drawChart() {
@@ -889,7 +851,7 @@ function drawDeviceTypeChart(deviceTypesData) {
                 }
 
             }
-            function drawSelectedCategoryDeviceTypeChart(deviceTypeData) {
+    function drawSelectedCategoryDeviceTypeChart(deviceTypeData) {
                 // Ensure that Google Charts is loaded
                 google.charts.load('current', {'packages':['corechart']});
 
@@ -922,12 +884,12 @@ function drawDeviceTypeChart(deviceTypesData) {
                     chart.draw(data, options);
                 }
             }
-            function drawMostRecommendedProducts(mostRecommendedProductData) {
+    function drawMostRecommendedProducts(mostRecommendedProductData) {
                 google.charts.load('current', {'packages':['corechart']});
 
                 // Set a callback function to draw the chart when Google Charts is loaded
                 google.charts.setOnLoadCallback(drawChart);
-                function drawChart() {
+    function drawChart() {
                     // Create the data table
                         var data = new google.visualization.DataTable();
                         data.addColumn('string', 'Product Name');
@@ -952,133 +914,107 @@ function drawDeviceTypeChart(deviceTypesData) {
                         chart.draw(data, options);
                 }
             }
-            function createSourcesTable(sources) {
-                    // Get the container element
-                    var container = document.getElementById("selectedCategorySources");
-                    
-                    // Clear existing table if any
-                    container.innerHTML = "";
+    function createQuizCompleted(quizCompletedData) {
+                const container = document.getElementById("selectedCategoryQuizData");
 
-                    // Create the new table
-                    var table = document.createElement("table");
-                    table.classList.add("min-w-full", "bg-white", "border", "border-gray-300", "shadow-md", "mb-4");
-                    var thead = table.createTHead();
-                    thead.classList.add("bg-gray-50");
-                    var tbody = document.createElement("tbody");
+                container.innerHTML = `
+                    <div id="quizCompleted" class="mx-auto text-center">
+                        <h4 class="text-lg font-bold mb-2">Quiz Completed</h4>
+                        <table class="totalQuiz mx-auto mb-2">
+                            <tr>
+                                <td class="label text-center pr-4 pb-2 border-none">Total Sessions</td>
+                                <td class="label text-center pb-2 border-none">Total Users</td>
+                            </tr>
+                            <tr>
+                                <td class="border-none pr-4 text-center">${quizCompletedData.totalSessions}</td>
+                                <td class="border-none text-center">${quizCompletedData.totalUsers}</td>
+                            </tr>
+                        </table>
+                    </div>`;
+            }
 
-                    // Create table headers
-                    var headerRow = thead.insertRow();
-                    Object.keys(sources[0]).forEach(function (key) {
-                        if (key !== "sourceCount") { // Exclude "Source Count" column
-                            var th = document.createElement("th");
-                            th.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize first letter
-                            th.classList.add("px-6", "py-3", "text-left", "text-xs", "font-medium", "text-gray-500", "uppercase", "tracking-wider");
-                            headerRow.appendChild(th);
-                        }
+    function createSourcesTable(sources) {
+                const container = document.getElementById("selectedCategorySources");
+                container.innerHTML = `
+                    <table class="min-w-full bg-white border border-gray-300 shadow-md mb-4">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                ${Object.keys(sources[0]).filter(key => key !== "sourceCount").map(key => `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${key.charAt(0).toUpperCase() + key.slice(1)}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sources.length === 0 ? `<tr><td colspan="${Object.keys(sources[0]).length - 1}" class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">No data available</td></tr>` :
+                                sources.map(item => `
+                                    <tr class="bg-white">
+                                        ${Object.entries(item).filter(([key]) => key !== "sourceCount").map(([, value]) => `<td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">${value}</td>`).join('')}
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>`;
+            }
+
+    function createOutboundTable(outbound) {
+                const container = document.getElementById("selectedCategoryOutbound");
+                container.innerHTML = `
+                    <table class="min-w-full bg-white border border-gray-300 shadow-md">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outbound</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Click Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${outbound.map(rowData => `
+                                <tr>
+                                    ${Object.keys(rowData).map(header => `<td class="px-6 py-4 whitespace-no-wrap text-sm leading-5 text-gray-900">${header === "prodURL" && rowData[header].length > 50 ? rowData[header].substr(0, 50) + "..." : rowData[header]}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>`;
+            }
+
+
+    function exportDataToCSV(data) {
+        const csvRows = [];
+
+            // Header row
+            csvRows.push('Question,Answer,ClickCount,TotalSessions');
+
+            // Data rows
+            for (const question in chartData) {
+                if (chartData.hasOwnProperty(question)) {
+                    const questionData = chartData[question];
+                    questionData.forEach(entry => {
+                        const rowData = [
+                            escapeCSVValue(question),
+                            escapeCSVValue(entry.answer),
+                            entry.clickCount,
+                            entry.totalSessions
+                        ];
+                        csvRows.push(rowData.join(','));
                     });
-
-                    if (sources.length === 0) {
-                        var noDataRow = tbody.insertRow();
-                        var cell = noDataRow.insertCell();
-                        cell.textContent = "No data available";
-                        cell.colSpan = Object.keys(sources[0]).length - 1; // Adjust colspan based on the number of columns
-                        cell.classList.add("px-6", "py-4", "whitespace-no-wrap", "text-sm", "leading-5", "text-gray-900");
-                    }
-                    else {
-                    // Create table rows
-                    sources.forEach(function (item) {
-                        var row = tbody.insertRow();
-                        row.classList.add("bg-white");
-                        Object.entries(item).forEach(function ([key, value]) {
-                            if (key !== "sourceCount") { // Exclude "Source Count" column
-                                var cell = row.insertCell();
-                                cell.textContent = value;
-                                cell.classList.add("px-6", "py-4", "whitespace-no-wrap", "text-sm", "leading-5", "text-gray-900");
-                            }
-                        });
-                    });
-                    }
-                    table.appendChild(tbody);
-                    container.appendChild(table); // Append the table to the container
                 }
-            function createOutboundTable(outbound) {
-                    var container = document.getElementById("selectedCategoryOutbound");
-                    container.innerHTML = ""; // Clear existing content
+            }
 
-                    var table = document.createElement("table");
-                    table.classList.add("min-w-full", "bg-white", "border", "border-gray-300", "shadow-md");
+            // Create a CSV string
+            const csvContent = csvRows.join('\n');
 
-                    // Create table header
-                    var thead = document.createElement("thead");
-                    thead.classList.add("bg-gray-50");
-                    var headerRow = thead.insertRow();
-                    var headers = Object.keys(outbound[0]);
-                    headers.forEach(function(headerText) {
-                        var th = document.createElement("th");
-                        th.textContent = headerText;
-                        th.classList.add("px-6", "py-3", "text-left", "text-xs", "font-medium", "text-gray-500", "uppercase", "tracking-wider");
-                        headerRow.appendChild(th);
-                    });
-                    table.appendChild(thead);
+            // Create a data URI for the CSV content
+            const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
 
-                    // Create table body
-                    var tbody = document.createElement("tbody");
-                    outbound.forEach(function(rowData) {
-                        var row = tbody.insertRow();
-                        headers.forEach(function(header) {
-                            var cell = row.insertCell();
-                            var text = rowData[header];
-                            if (header === "prodURL" && text.length > 50) { // Limiting prodURL to 30 characters
-                                text = text.substr(0, 50) + "..."; // Truncate and add ellipsis
-                            }
-                            cell.textContent = text;
-                            cell.classList.add("px-6", "py-4", "whitespace-no-wrap", "text-sm", "leading-5", "text-gray-900");
-                        });
-                    });
-                    table.appendChild(tbody);
+            // Create a link element and trigger the download
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'chartData.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+               
+            }
 
-                    // Append table to the container element
-                    container.appendChild(table);
-                }
 
-            function exportChartDataToCSV(chartData) {
-                    const csvRows = [];
 
-                    // Header row
-                    csvRows.push('Question,Answer,ClickCount,TotalSessions');
-
-                    // Data rows
-                    for (const question in chartData) {
-                        if (chartData.hasOwnProperty(question)) {
-                            const questionData = chartData[question];
-                            questionData.forEach(entry => {
-                                const rowData = [
-                                    escapeCSVValue(question),
-                                    escapeCSVValue(entry.answer),
-                                    entry.clickCount,
-                                    entry.totalSessions
-                                ];
-                                csvRows.push(rowData.join(','));
-                            });
-                        }
-                    }
-
-                    // Create a CSV string
-                    const csvContent = csvRows.join('\n');
-
-                    // Create a data URI for the CSV content
-                    const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
-
-                    // Create a link element and trigger the download
-                    const link = document.createElement('a');
-                    link.setAttribute('href', encodedUri);
-                    link.setAttribute('download', 'chartData.csv');
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-
-                function escapeCSVValue(value) {
+    function escapeCSVValue(value) {
                     // Enclose the value in double quotes and escape any existing double quotes
                     const escapedValue = String(value).replace(/"/g, '""');
 
@@ -1100,4 +1036,6 @@ function drawDeviceTypeChart(deviceTypesData) {
                     }
                     return value;
                 }
+
+        
 </script>

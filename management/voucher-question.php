@@ -207,7 +207,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="text-center">Add Main Question Form</h3>
+                <h3 class="text-center">Add Voucher Question Form</h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -269,11 +269,11 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Answer inputs -->
-                    <br>
-                    <div id="mainForm_answerInputsContainer">
-                    </div>
+                <!-- Answer inputs -->
+                <br>
+                <div id="mainForm_answerInputsContainer">
                 </div>
+            </div>
             </div>
             <div class="modal-footer">
                 <button name="addVoucherQuestion" class="btn btn-success" type="submit" id="submitAdd" disabled>Submit</button>

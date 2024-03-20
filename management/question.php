@@ -24,7 +24,7 @@
     $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
 
     $query = "SELECT pq.*, c.categoryName, 
-                GROUP_CONCAT(a.answerContent) as answerContents, 
+                GROUP_CONCAT(a.answerContent SEPARATOR '|') as answerContents, 
                 GROUP_CONCAT(p.prodName) as prodNames
                 FROM parent_question pq 
                 LEFT JOIN category c ON pq.categoryID = c.categoryID
@@ -127,145 +127,36 @@
                                                 <div class="form-group my-2">
                                                     <div class="row">
                                                         <div class="col">
-                                                            <label for="numberOptions">Number of Options:</label>
-                                                            <input type="text" name="numberOptions" class="form-control" value="<?php echo $pqNumOptions;?>" readonly>
-                                                        </div>
-                                                        <div class="col">
-                                                            <label for="MaxAnswer">Maximum Number of Answers:</label>
-                                                            <input type="text" class="form-control" value="<?php echo $pqMaxAnswer;?>" readonly>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group my-2">
-                                                    <label for="answers">Answers:</label>
-                                                    <span class="float-end">Associated Product/s:</span>
-                                                    <ul class="list-group" name="answers">
-                                                        <?php
-                                                        $answersArray = explode(',', $answerContents);
-                                                        $associatedProducts = explode(',', $prodNames);
-    
-                                                        foreach ($answersArray as $index => $answer) {
-                                                            echo '<li class="list-group-item list-group-item-secondary">';
-                                                            echo $answer;
-    
-                                                            if (isset($associatedProducts[$index])) {
-                                                                $productsForAnswer = explode(',', $associatedProducts[$index]);
-                                                                echo '<span class="float-end text-muted small">';
-                                                                echo implode(', ', $productsForAnswer);
-                                                                echo '</span>';
-                                                            } else {
-                                                                echo '<span class="float-end text-muted small">No associated product</span>';
-                                                            }
-    
-                                                            echo '</li>';
-                                                        }
-                                                        ?>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Update Question Details -->
-                        <div class="modal fade" id="editQuestionModal<?php echo $pqID; ?>" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h3 class="text-center">Update Question</h3>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                    <?php
-                                        $existingDataQuery = "SELECT pq.*, c.categoryName
-                                                            FROM parent_question pq
-                                                            LEFT JOIN category c ON pq.categoryID = c.categoryID
-                                                            WHERE pq.pqID = $pqID";
-                                        $existingDataResult = mysqli_query($conn, $existingDataQuery);
-                                        $existingData = mysqli_fetch_assoc($existingDataResult);
-                                        
-                                        $existingCategoryID     = $existingData['categoryID'];
-                                        $existingCategoryName   = $existingData['categoryName'];
-                                        $existingNumOptions     = $existingData['pqNumOptions'];
-                                        $existingMaxAnswer      = $existingData['pqMaxAnswer'];
-                                    ?>
-                                    <form action="functions.php" method="post">
-                                        <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
-                                        <!-- Card -->
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="form-group my-2">
-                                                    <div class="form-floating">
-                                                        <select name="category" id="mainForm_category" class="form-control w-100" >
-                                                            <option value="">Select category</option>
-                                                            <?php
-                                                                $categoryQuery = "SELECT * FROM category";
-                                                                $categoryResult = mysqli_query($conn, $categoryQuery);
-    
-                                                                while($row = mysqli_fetch_assoc($categoryResult)){
-                                                                    $categoryID   = $row['categoryID'];
-                                                                    $categoryName = $row['categoryName'];
-    
-                                                                    echo "<option value=\"$categoryID\"";
-                                                                    echo ($categoryID == $existingCategoryID) ? ' selected' : '';
-                                                                    echo ">$categoryName</option>";
+                                                            <label for="answers">Answers:</label>
+                                                            <span class="float-end">Associated Product/s:</span>
+                                                            <ul class="list-group" name="answers">
+                                                                <?php
+                                                                $answersWithProducts = [];
+                                                                $answersArray = explode('|', $answerContents);
+                                                                $associatedProducts = explode(',', $prodNames);
+
+                                                                foreach ($answersArray as $index => $answer) {
+                                                                    $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
+                                                                    $answersWithProducts[$answer][] = $product;
                                                                 }
-                                                            ?>
-                                                        </select>
-                                                        <label for="mainForm_category">Choose Category</label>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group my-2">
-                                                    <div class="form-floating">
-                                                        <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription"><?php echo $pqContent; ?></textarea>                                                
-                                                        <label for="numberOptions">Question: </label>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group my-2">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <div class="form-floating">
-                                                                <select name="numOptions" class="form-control w-100" required>
-                                                                    <?php
-                                                                    for ($i = 0; $i <= 5; $i++) {
-                                                                        echo "<option value=\"$i\"";
-                                                                        echo ($i == $pqNumOptions) ? ' selected' : '';
-                                                                        echo ">$i</option>";
-                                                                    }
-                                                                    ?>
-                                                                </select>
-                                                                <label for="numberOptions">Number of Options:</label>
-                                                            </div>
+
+                                                                foreach ($answersWithProducts as $answer => $products) {
+                                                                    echo '<li class="list-group-item list-group-item-secondary">';
+                                                                    echo $answer;
+
+                                                                    echo '<span class="float-end text-muted small">';
+                                                                    echo implode('<br> ', $products);
+                                                                    echo '</span>';
+
+                                                                    echo '</li>';
+                                                                }
+                                                                ?>
+                                                            </ul>
                                                         </div>
-                                                        <div class="col">
-                                                            <div class="form-floating">
-                                                                <select name="MaxAnswer" class="form-control w-100" required>
-                                                                    <?php
-                                                                    for ($i = 0; $i <= 5; $i++) {
-                                                                        echo "<option value=\"$i\"";
-                                                                        echo ($i == $pqMaxAnswer) ? ' selected' : '';
-                                                                        echo ">$i</option>";
-                                                                    }
-                                                                    ?>
-                                                                </select>
-                                                                <label for="MaxAnswer">Maximum Number of Answers:</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group my-2">
-                                                    <div class="form-floating">
-                                                        <select name="countries" id="answer_type" multiple>
-                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button class="btn btn-success" name="updateMainQuestion" type="submit">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -324,14 +215,14 @@
                                 <?php
                                     $categoryQuery = "SELECT * FROM category";
                                     $categoryResult = mysqli_query($conn, $categoryQuery);
-                                    
+                                        
                                     while($row = mysqli_fetch_assoc($categoryResult)){
                                         $categoryID   = $row['categoryID'];
                                         $categoryName = $row['categoryName'];
-                                        
+                                            
                                         echo "<option value=\"$categoryID\">$categoryName</option>";
                                     }
-                                    ?>
+                                ?>
                             </select>
                             <label for="mainForm_category">Choose Category</label>
                         </div>
@@ -372,11 +263,11 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Answer inputs -->
-                    <br>
-                    <div id="mainForm_answerInputsContainer">
-                    </div>
+                <!-- Answer inputs -->
+                <br>
+                <div id="mainForm_answerInputsContainer">
                 </div>
+            </div>
             </div>
             <div class="modal-footer">
                 <button name="addMainQuestion" class="btn btn-success" type="submit" id="submitAdd" disabled>Submit</button>
@@ -451,5 +342,4 @@
             submitButton.disabled           = false;
         }
     }
-    new MultiSelectTag('countries') 
 </script>

@@ -25,6 +25,7 @@ h1 {
   line-height: 1.2em;
   text-align: center;
   color: #8e7242;
+  margin: 0;
 }
 
 h2 {
@@ -33,6 +34,7 @@ h2 {
   color: #8e7242;
   font-weight: bold;
   text-transform: uppercase;
+  margin: 0;
 }
 
 h3 {
@@ -42,6 +44,7 @@ h3 {
   font-weight: bold;
   line-height: 1.2em;
   letter-spacing: 1px;
+  margin: 0;
 }
 
 h4 {
@@ -98,6 +101,7 @@ h4 {
 
 .header-container {
   width: 100%;
+  margin-bottom: 30px;
 }
 
 .options-container,
@@ -193,7 +197,7 @@ button:active {
   align-items: center;
   background-color: #fff;
   border: 2px solid #dabb7b;
-  padding: 20px 10px 15px 10px;
+  padding: 30px 20px 20px 20px;
   border-radius: 10px;
   color: #8e7242;
   position: relative;
@@ -293,6 +297,7 @@ button:active {
 .view-product-button {
   font-size: 11px;
   width: 100%;
+  margin-bottom: 0px;
 }
 
 .voucher {
@@ -323,6 +328,7 @@ button:active {
   align-items: center;
   gap: 10px;
   justify-content: center;
+  margin-bottom: 30px;
 }
 
 .fa-regular.fa-clone {

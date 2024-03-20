@@ -31,23 +31,15 @@ $totalUsersResult = $conn->query($totalUsersQuery);
 $totalSessionsRow = $totalSessionsResult->fetch_assoc();
 $totalUsersRow = $totalUsersResult->fetch_assoc();
 
-$totalSessions = $totalSessionsRow['totalSessions'];
-$totalUsers = $totalUsersRow['totalUsers'];
+// Store the results in an array
+$data = array(
+    'totalSessions' => $totalSessionsRow['totalSessions'],
+    'totalUsers' => $totalUsersRow['totalUsers']
+);
 
-/// Generate HTML for the total sessions and total users in the specified style
-$html = '<div id="quizCompleted" class="mx-auto text-center">';
-$html .= '<h4 class="text-lg font-bold mb-2">Quiz Completed</h4>';
-$html .= '<table class="totalQuiz mx-auto mb-2">';
-$html .= '<tr>';
-$html .= '<td class="label text-center pr-4 pb-2 border-none">Total Sessions</td>';
-$html .= '<td class="label text-center pb-2 border-none">Total Users</td>';
-$html .= '</tr>';
-$html .= '<tr>';
-$html .= '<td class="border-none pr-4 text-center">' . $totalSessions . '</td>';
-$html .= '<td class="border-none text-center">' . $totalUsers . '</td>';
-$html .= '</tr>';
-$html .= '</table>';
-$html .= '</div>';
+// Convert the array to JSON
+$jsonData = json_encode($data);
 
-echo $html;
+// Output the JSON
+echo $jsonData;
 ?>
