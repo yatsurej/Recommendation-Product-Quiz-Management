@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 13, 2024 at 03:32 AM
+-- Generation Time: Mar 20, 2024 at 09:31 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,7 +91,7 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 (158, 'Cool menthol to beat dandrufff, itchiness, and an oily scalp.'),
 (159, 'Smooth & Silky prevents dandruff while keeping hair soft.'),
 (160, 'Argan oil hydrates and conditions the hair to make it soft and manageable.'),
-(161, ' Pro-V Formula penetrates the hair shaft to repair damage from within.');
+(161, 'Pro-V Formula penetrates the hair shaft to repair damage from within.');
 
 -- --------------------------------------------------------
 
@@ -124,18 +124,18 @@ INSERT INTO `bonus_question` (`bqID`, `bqContent`, `bqNumOptions`, `bqMaxAnswer`
 CREATE TABLE `category` (
   `categoryID` int(11) NOT NULL,
   `categoryName` text NOT NULL,
-  `categoryDescription` text NOT NULL,
-  `userClick` int(11) NOT NULL
+  `categoryTitle` text NOT NULL,
+  `categoryDescription` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `category`
 --
 
-INSERT INTO `category` (`categoryID`, `categoryName`, `categoryDescription`, `userClick`) VALUES
-(4, 'Skin care', 'Take our skincare quiz to find the perfect addition to your beauty routine. Embrace the spirit of the Olympics 2024, and make every day feel like a gold medal win with the right skin-ssential from P&G!', 0),
-(5, 'Fabric care', 'Take our fabric care quiz to find the perfect addition to your laundry routine.', 0),
-(6, 'Hair care', 'Take our hair care quiz to find the perfect addition to your hair care routine.', 0);
+INSERT INTO `category` (`categoryID`, `categoryName`, `categoryTitle`, `categoryDescription`) VALUES
+(4, 'Skin care', 'What\'s the perfect skin-ssential for you?', 'Take our skincare quiz to find the perfect addition to your beauty routine. Embrace the spirit of the Olympics 2024, and make every day feel like a gold medal win with the right skin-ssential from P&G!'),
+(5, 'Fabric care', 'Which fabric care champion is perfect for your laundry day?', 'Take your laundry game to championship levels, just in time for Olympics 2024! Create your own winning laundry routine, and find the right fabric care product for your needs when you take this special quiz from P&G.'),
+(6, 'Hair care', 'What\'s your winning haircare-ssential?', 'Release your inner everyday winner, and champion your locks in the spirit of Olympics 2024! Take the haircare quiz and craft your path to glorious hair with the right haircare-ssential for you.');
 
 -- --------------------------------------------------------
 
@@ -305,7 +305,8 @@ INSERT INTO `product_answer` (`paID`, `prodID`, `answerID`) VALUES
 (106, 39, 161),
 (107, 41, 161),
 (108, 42, 161),
-(109, 44, 161);
+(109, 44, 161),
+(110, 47, 90);
 
 -- --------------------------------------------------------
 
@@ -385,6 +386,181 @@ INSERT INTO `question_answer` (`qaID`, `pqID`, `cqID`, `bqID`, `answerID`) VALUE
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `session`
+--
+
+CREATE TABLE `session` (
+  `sessionID` int(11) NOT NULL,
+  `guestID` varchar(20) NOT NULL,
+  `device_type` text NOT NULL,
+  `prodID` int(11) NOT NULL,
+  `source` varchar(50) NOT NULL,
+  `outbound` int(11) NOT NULL DEFAULT 0 COMMENT '0 = false, 1 = true',
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `session`
+--
+
+INSERT INTO `session` (`sessionID`, `guestID`, `device_type`, `prodID`, `source`, `outbound`, `timestamp`) VALUES
+(47, '924855512177', 'desktop', 24, 'lazada', 0, '2024-03-15 08:13:09'),
+(48, '924855512177', 'desktop', 23, 'lazada', 0, '2024-03-15 08:19:51'),
+(49, '924855512177', 'desktop', 23, 'lazada', 0, '2024-03-15 08:21:36'),
+(50, '924855512177', 'desktop', 32, 'lazada', 0, '2024-03-15 08:31:23'),
+(51, '924855512177', 'desktop', 23, 'lazada', 0, '2024-03-15 08:38:48'),
+(52, '924855512177', 'desktop', 24, 'lazada', 0, '2024-03-15 08:39:36'),
+(53, '924855512177', 'desktop', 23, 'lazada', 0, '2024-03-15 08:59:59'),
+(54, '924855512177', 'desktop', 23, 'lazada', 0, '2024-03-15 09:00:08'),
+(55, '924855512177', 'desktop', 33, 'lazada', 0, '2024-03-15 09:17:27'),
+(56, '2', 'desktop', 23, 'lazada', 0, '2024-03-19 09:16:03'),
+(57, '2', 'desktop', 47, 'lazada', 0, '2024-03-19 09:40:32'),
+(58, '2', 'desktop', 39, 'lazada', 0, '2024-03-19 09:44:52'),
+(59, '2', 'desktop', 51, 'lazada', 0, '2024-03-19 10:00:52'),
+(60, '2', 'desktop', 50, 'lazada', 0, '2024-03-19 10:04:52'),
+(61, '2', 'desktop', 23, 'lazada', 0, '2024-03-20 01:45:20'),
+(62, '2', 'desktop', 39, 'lazada', 0, '2024-03-20 01:53:59'),
+(63, '2', 'desktop', 23, 'lazada', 0, '2024-03-20 02:16:32'),
+(64, '2', 'desktop', 47, 'lazada', 0, '2024-03-20 05:26:13'),
+(65, '2', 'desktop', 47, 'lazada', 0, '2024-03-20 05:26:26'),
+(66, '2', 'desktop', 47, 'lazada', 0, '2024-03-20 05:26:33'),
+(67, '2', 'desktop', 23, 'lazada', 0, '2024-03-20 06:01:29'),
+(68, '2', 'desktop', 47, 'lazada', 0, '2024-03-20 06:01:51'),
+(69, '2', 'desktop', 47, 'lazada', 0, '2024-03-20 06:05:22'),
+(70, '2', 'desktop', 47, 'lazada', 0, '2024-03-20 06:09:49'),
+(71, '2', 'desktop', 50, 'lazada', 0, '2024-03-20 06:10:10'),
+(72, '2', 'desktop', 23, 'lazada', 0, '2024-03-20 06:13:16'),
+(73, '2', 'desktop', 23, 'lazada', 0, '2024-03-20 06:47:44');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `session_answers`
+--
+
+CREATE TABLE `session_answers` (
+  `saID` int(11) NOT NULL,
+  `sessionID` int(11) NOT NULL,
+  `answerID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `session_answers`
+--
+
+INSERT INTO `session_answers` (`saID`, `sessionID`, `answerID`) VALUES
+(1, 49, 59),
+(2, 49, 63),
+(3, 49, 68),
+(4, 49, 71),
+(5, 49, 118),
+(6, 50, 61),
+(7, 50, 64),
+(8, 50, 69),
+(9, 50, 73),
+(10, 50, 119),
+(11, 52, 59),
+(12, 52, 63),
+(13, 52, 67),
+(14, 52, 72),
+(15, 52, 118),
+(16, 53, 59),
+(17, 53, 63),
+(18, 53, 68),
+(19, 53, 71),
+(20, 53, 118),
+(21, 54, 59),
+(22, 54, 63),
+(23, 54, 68),
+(24, 54, 71),
+(25, 54, 118),
+(26, 55, 62),
+(27, 55, 66),
+(28, 55, 70),
+(29, 55, 73),
+(30, 55, 120),
+(31, 56, 59),
+(32, 56, 63),
+(33, 56, 67),
+(34, 56, 71),
+(35, 56, 118),
+(36, 57, 85),
+(37, 57, 88),
+(38, 57, 146),
+(39, 58, 97),
+(40, 58, 102),
+(41, 58, 105),
+(42, 58, 108),
+(43, 58, 113),
+(44, 59, 85),
+(45, 59, 88),
+(46, 59, 150),
+(47, 60, 86),
+(48, 60, 89),
+(49, 60, 149),
+(50, 61, 59),
+(51, 61, 63),
+(52, 61, 67),
+(53, 61, 71),
+(54, 61, 118),
+(55, 62, 98),
+(56, 62, 101),
+(57, 62, 106),
+(58, 62, 108),
+(59, 62, 114),
+(60, 63, 59),
+(61, 63, 63),
+(62, 63, 67),
+(63, 63, 71),
+(64, 63, 118),
+(65, 64, 86),
+(66, 64, 88),
+(67, 64, 90),
+(68, 64, 146),
+(69, 65, 86),
+(70, 65, 88),
+(71, 65, 90),
+(72, 65, 146),
+(73, 66, 86),
+(74, 66, 89),
+(75, 66, 90),
+(76, 66, 147),
+(77, 67, 59),
+(78, 67, 63),
+(79, 67, 68),
+(80, 67, 71),
+(81, 67, 118),
+(82, 68, 60),
+(83, 68, 88),
+(84, 68, 90),
+(85, 68, 146),
+(86, 69, 59),
+(87, 69, 64),
+(88, 69, 90),
+(89, 69, 146),
+(90, 70, 59),
+(91, 70, 64),
+(92, 70, 90),
+(93, 70, 146),
+(94, 71, 59),
+(95, 71, 88),
+(96, 71, 91),
+(97, 71, 149),
+(98, 72, 61),
+(99, 72, 62),
+(100, 72, 65),
+(101, 72, 67),
+(102, 72, 71),
+(103, 72, 118),
+(104, 73, 59),
+(105, 73, 63),
+(106, 73, 67),
+(107, 73, 71),
+(108, 73, 118);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `trigger_condition`
 --
 
@@ -413,16 +589,17 @@ CREATE TABLE `user` (
   `firstName` text NOT NULL,
   `lastName` text NOT NULL,
   `username` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL
+  `password` varchar(20) NOT NULL,
+  `role` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`userID`, `firstName`, `lastName`, `username`, `password`) VALUES
-(1, 'Ash', 'Ketchum', 'admin', 'admin'),
-(2, 'Hello', 'World', 'test1', 'test1');
+INSERT INTO `user` (`userID`, `firstName`, `lastName`, `username`, `password`, `role`) VALUES
+(1, 'ADA Iloilo', 'PH', 'admin', 'admin', 'admin'),
+(2, 'P &', 'G', 'client', 'client', 'client');
 
 -- --------------------------------------------------------
 
@@ -507,6 +684,21 @@ ALTER TABLE `question_answer`
   ADD KEY `qa_fk2` (`cqID`);
 
 --
+-- Indexes for table `session`
+--
+ALTER TABLE `session`
+  ADD PRIMARY KEY (`sessionID`),
+  ADD KEY `session_fk1` (`prodID`);
+
+--
+-- Indexes for table `session_answers`
+--
+ALTER TABLE `session_answers`
+  ADD PRIMARY KEY (`saID`),
+  ADD KEY `sa_fk1` (`sessionID`),
+  ADD KEY `sa_fk2` (`answerID`);
+
+--
 -- Indexes for table `trigger_condition`
 --
 ALTER TABLE `trigger_condition`
@@ -536,7 +728,7 @@ ALTER TABLE `voucher`
 -- AUTO_INCREMENT for table `answer`
 --
 ALTER TABLE `answer`
-  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
+  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
 
 --
 -- AUTO_INCREMENT for table `bonus_question`
@@ -548,7 +740,7 @@ ALTER TABLE `bonus_question`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `categoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `categoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `conditional_question`
@@ -560,25 +752,37 @@ ALTER TABLE `conditional_question`
 -- AUTO_INCREMENT for table `parent_question`
 --
 ALTER TABLE `parent_question`
-  MODIFY `pqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `pqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `prodID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `prodID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `product_answer`
 --
 ALTER TABLE `product_answer`
-  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT for table `question_answer`
 --
 ALTER TABLE `question_answer`
-  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
+  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+
+--
+-- AUTO_INCREMENT for table `session`
+--
+ALTER TABLE `session`
+  MODIFY `sessionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+
+--
+-- AUTO_INCREMENT for table `session_answers`
+--
+ALTER TABLE `session_answers`
+  MODIFY `saID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT for table `trigger_condition`
@@ -596,7 +800,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `voucher`
 --
 ALTER TABLE `voucher`
-  MODIFY `voucherID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `voucherID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -635,6 +839,19 @@ ALTER TABLE `question_answer`
   ADD CONSTRAINT `qa_fk2` FOREIGN KEY (`cqID`) REFERENCES `conditional_question` (`cqID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `qa_fk3` FOREIGN KEY (`answerID`) REFERENCES `answer` (`answerID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `qa_fk4` FOREIGN KEY (`bqID`) REFERENCES `bonus_question` (`bqID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `session`
+--
+ALTER TABLE `session`
+  ADD CONSTRAINT `session_fk1` FOREIGN KEY (`prodID`) REFERENCES `product` (`prodID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `session_answers`
+--
+ALTER TABLE `session_answers`
+  ADD CONSTRAINT `sa_fk1` FOREIGN KEY (`sessionID`) REFERENCES `session` (`sessionID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `sa_fk2` FOREIGN KEY (`answerID`) REFERENCES `answer` (`answerID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `trigger_condition`
