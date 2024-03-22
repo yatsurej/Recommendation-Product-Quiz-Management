@@ -21,49 +21,287 @@
 
     $timeFilterStart = isset($_GET['timestamp_start']) ? $_GET['timestamp_start'] : '';
     $timeFilterEnd = isset($_GET['timestamp_end']) ? $_GET['timestamp_end'] : '';
-    $query = "SELECT COUNT(DISTINCT s.guestID) AS totalUsers, COUNT(*) AS totalEvents, c.categoryName
-                FROM session s
-                LEFT JOIN product p ON s.prodID = p.prodID
-                LEFT JOIN category c ON p.categoryID = c.categoryID
-                WHERE s.prodID IS NOT NULL ";
+    $query = "SELECT COUNT(DISTINCT s.guestID) AS totalUsers, 
+                     COUNT(*) AS totalSessions, 
+                     SUM(CASE WHEN s.isFinished = 0 THEN 1 ELSE 0 END) AS dropOffSessions,
+                     SUM(CASE WHEN s.isFinished = 1 THEN 1 ELSE 0 END) AS completedSessions,
+                     DATE(s.timestamp) AS sessionDate,
+                     s.device_type, 
+                     c.categoryName,
+                     p.prodName
+              FROM session s
+              LEFT JOIN product p ON s.prodID = p.prodID
+              LEFT JOIN category c ON p.categoryID = c.categoryID
+              WHERE s.prodID IS NOT NULL ";
 
     if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
         $formattedTimestampStart = date("Y-m-d H:i:s", strtotime($timeFilterStart));
-        $formattedTimestampEnd = date("Y-m-d H:i:s", strtotime($timeFilterEnd));
+        $formattedTimestampEnd = date("Y-m-d H:i:s", strtotime($timeFilterEnd . ' + 1 day'));
         $query .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
     }
 
-    $query .= " GROUP BY c.categoryName"; // Group by category
+    $query .= " GROUP BY c.categoryName"; 
 
     $result = mysqli_query($conn, $query);
 
-    $totalUsers = 0; 
-    $totalEvents = 0;
-    $categoryCounts = []; // Initialize array to store category counts
+    $totalUsers             = 0; 
+    $totalSessions          = 0;
+    $completedSessions      = 0;
+    $dropOffSessions        = 0;
+    $categoryCounts         = []; 
+    $deviceCounts           = []; 
+    $productCounts          = []; 
+    $sessionDates           = [];
+    $completedSessionsData  = [];
+    $dropOffSessionsData    = [];
 
     while($row = mysqli_fetch_assoc($result)){
-        $totalUsers = $row['totalUsers'];
-        $totalEvents = $row['totalEvents'];
-        $categoryName = $row['categoryName'];
+        $totalUsers                 += $row['totalUsers'];
+        $totalSessions              += $row['totalSessions'];
+        $categoryName               = $row['categoryName'];
+        $sessionDates[]             = $row['sessionDate'];
+        $completedSessions          += $row['completedSessions']; 
+        $dropOffSessions            += $row['dropOffSessions']; 
+        $completedSessionsData[]    = $row['completedSessions'];
+        $dropOffSessionsData[]      = $row['dropOffSessions']; 
+        $deviceType                 = $row['device_type'];
+        $prodName                   = $row['prodName'];
         
-        // Store category counts in array
-        $categoryCounts[$categoryName] = $row['totalEvents'];
+        $categoryCounts[$categoryName] = $row['totalSessions'];
+        $prodCounts[$prodName] = $row['totalSessions'];
+        
+        if(isset($deviceCounts[$deviceType])) {
+            $deviceCounts[$deviceType] += $row['totalSessions'];
+        } else {
+            $deviceCounts[$deviceType] = $row['totalSessions'];
+        }
     }
 ?>
 <div class="container w-50">
     <form>
-        <label for="timestamp_start">From:</label>
-        <input type="date" class="form-control" name="timestamp_start" id="timestamp_start" value="<?php echo $timeFilterStart; ?>">
-        <label for="timestamp_end">To:</label>
-        <input type="date" class="form-control" name="timestamp_end" id="timestamp_end" value="<?php echo $timeFilterEnd; ?>">
-        <button type="submit" class="btn btn-primary">Filter</button>
+        <div class="row align-items-center my-3">
+            <div class="col">
+                <label for="timestamp_start">Start Date:</label>
+                <input type="date" class="form-control" name="timestamp_start" id="timestamp_start" value="<?php echo $timeFilterStart ? $timeFilterStart : date('Y-m-01'); ?>">
+            </div>
+            <div class="col">
+                <label for="timestamp_end">End Date:</label>
+                <input type="date" class="form-control" name="timestamp_end" id="timestamp_end" value="<?php echo $timeFilterEnd ? $timeFilterEnd : date('Y-m-t'); ?>">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary w-100" style="margin-top: 30px;">FILTER</button>
+            </div>
+        </div>
     </form>
-    <?php
-    echo "Total Users: " . $totalUsers . "<br>";
-    echo "Total Events: " . $totalEvents . "<br>";
-    // Display category counts
-    foreach ($categoryCounts as $category => $count){
-        echo "Category: $category - Count: $count<br>";
-    }
-    ?>
+    <div class="row my-3">
+        <div class="col mb-1">
+            <div class="card" style="height: 10rem;">
+                <div class="card-body text-center">
+                    <h5>Total Users</h5><br>
+                    <h2><?php echo $totalUsers;?></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-1">
+            <div class="card" style="height: 10rem;">
+                <div class="card-body text-center">
+                    <h5>Total Sessions</h5><br>
+                    <h2><?php echo $totalSessions;?></h2>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-1">
+            <div class="card" style="height: 10rem;">
+                <div class="card-body text-center">
+                    <h5>Category Session Count</h5><br>
+                    <?php foreach ($categoryCounts as $category => $c_count){ ?>
+                            <h2><?php echo $category . " : " . $c_count;?></h2>
+                        <?php
+                        }
+                    ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-6 mb-1">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Device Count</h5>
+                    <div id="deviceChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-1">
+            <div class="card">
+                <div class="card-body">
+                    <div class="col">
+                        <div id="completedDropOffChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-6 mb-1">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Most Recommended Products</h5>
+                    <div id="productRecommendedChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-1">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Session per Category</h5>
+                    <div id="categoryChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDateInput = document.getElementById('timestamp_start');
+        const endDateInput = document.getElementById('timestamp_end');
+
+        startDateInput.addEventListener('change', function() {
+            endDateInput.min = this.value; 
+            if (endDateInput.value < this.value) {
+                endDateInput.value = ''; 
+            }
+        });
+        
+        // Prepare data for pie chart
+        var deviceCounts = <?php echo json_encode($deviceCounts); ?>;
+        var totalSessions = Object.values(deviceCounts).reduce((acc, val) => acc + val, 0);
+        var deviceChartData = Object.values(deviceCounts).map(count => (count / totalSessions) * 100);
+        var deviceLabels = Object.keys(deviceCounts);
+        
+        var deviceChartOptions = {
+            chart: {
+                type: 'pie',
+                height: 240,
+            },
+            series: deviceChartData,
+            labels: deviceLabels,
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+        };
+
+        var deviceChart = new ApexCharts(document.querySelector("#deviceChart"), deviceChartOptions);
+        deviceChart.render();
+
+        // Prepare data for session per category pie chart
+        var categoryCounts = <?php echo json_encode($categoryCounts); ?>;
+        var totalSessions = Object.values(categoryCounts).reduce((acc, val) => acc + val, 0);
+        var categoryChartData = Object.values(categoryCounts).map(count => (count / totalSessions) * 100);
+        var categoryLabels = Object.keys(categoryCounts);
+        
+        var categoryChartOptions = {
+            chart: {
+                type: 'pie',
+                height: 240,
+            },
+            series: categoryChartData,
+            labels: categoryLabels,
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+        };
+
+        var categoryChart = new ApexCharts(document.querySelector("#categoryChart"), categoryChartOptions);
+        categoryChart.render();
+
+        var prodCounts = <?php echo json_encode($prodCounts); ?>;
+        var products = Object.keys(prodCounts);
+        var counts = Object.values(prodCounts);
+
+        var productRecommendedOptions = {
+            chart: {
+                type: 'bar',
+                height: 240,
+            },
+            series: [{
+                name: 'Sessions',
+                data: counts
+            }],
+            xaxis: {
+                categories: products,
+                labels: {
+                    show: true,
+                    rotate: -45,
+                    rotateAlways: true,
+                    trim: false,
+                }
+            }
+        };
+
+        var productRecommendedChart = new ApexCharts(document.querySelector("#productRecommendedChart"), productRecommendedOptions);
+        productRecommendedChart.render();
+
+        var completedDropOffOptions = {
+    chart: {
+        height: 350,
+        type: 'line',
+    },
+    series: [{
+        name: 'Completed',
+        data: <?php echo json_encode($completedSessionsData); ?>
+    }, {
+        name: 'Drop Off',
+        data: <?php echo json_encode($dropOffSessionsData); ?>
+    }],
+    xaxis: {
+        categories: <?php echo json_encode($sessionDates); ?>,
+    },
+    legend: {
+        position: 'bottom',
+        horizontalAlign: 'right',
+        offsetY: 0,
+        onItemClick: {
+            toggleDataSeries: false
+        },
+        onItemHover: {
+            highlightDataSeries: false
+        },
+        formatter: function(seriesName, opts) {
+            var total = 0;
+            <?php foreach ($completedSessionsData as $value) { ?>
+                total += <?php echo $value; ?>;
+            <?php } ?>
+            if (seriesName === 'Completed') {
+                return seriesName + ': ' + total;
+            } else if (seriesName === 'Drop Off') {
+                return seriesName + ': ' + total;
+            }
+            return seriesName;
+        }
+    },
+};
+
+var completedDropOffChart = new ApexCharts(document.querySelector("#completedDropOffChart"), completedDropOffOptions);
+completedDropOffChart.render();
+
+    });
+</script>
