@@ -183,6 +183,7 @@ include './header.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 
+<<<<<<< Updated upstream
 <div class="bg-cover min-h-screen flex flex-col items-center justify-center" style="background-image: url('../assets/images/background.png');">
     <div class="absolute top-[1%] right-[1%]">
         <img src="../assets/images/ada.png" alt="ADALogo" class="w-[70px] md:w-[75px] lg:w-[80px]">
@@ -207,9 +208,15 @@ include './header.php';
 
             <button type="submit" class="w-full h-12 bg-adminblue text-white rounded border-none">Login</button>
         </form>
-    </div>
-</div>
+=======
+<div class="login-page">
 
+    <div class="logocontainer">
+        <img src="../assets/images/ada.png" alt="ADALogo" class="ADALogo">
+>>>>>>> Stashed changes
+    </div>
+
+<<<<<<< Updated upstream
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const passwordInput = document.getElementById('password');
@@ -224,4 +231,51 @@ include './header.php';
         });
     });
 </script>
+>>>>>>> Stashed changes
+=======
+    <div class="login">
+
+        <div class="title">
+            <h1>Quiz Dashboard</h1>
+        </div>
+
+        <div class="login-form">
+            <form action="functions.php" method="post" autocomplete="off">
+                <div class="container">
+
+                    <input type="text" placeholder="Your Mail" name="username" id="username" required><br>
+
+                    <div class="password-container">
+                        <input type="password" id="password" placeholder="Your Password" name="password" required>
+                        <button type="button" id="togglePassword">
+                            <i class="fas fa-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+
+
+                    <button type="submit" class="loginpage-button" name="login" style="background-color: rgb(97, 119, 196);">Login</button>
+                </div>
+            </form>
+        </div>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const passwordInput = document.getElementById('password');
+                const togglePasswordButton = document.getElementById('togglePassword'); // Update the id here
+                const eyeIcon = document.getElementById('eye-icon');
+
+                togglePasswordButton.addEventListener('click', () => {
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+
+                    eyeIcon.classList.toggle('fa-eye-slash');
+                });
+            });
+        </script>
+
+
+    </div>
+
+</div>
 >>>>>>> Stashed changes
