@@ -23,8 +23,8 @@
     $timeFilterEnd = isset($_GET['timestamp_end']) ? $_GET['timestamp_end'] : '';
     $query = "SELECT COUNT(DISTINCT s.guestID) AS totalUsers, 
                      COUNT(*) AS totalSessions, 
-                     SUM(CASE WHEN s.isFinished = 0 THEN 1 ELSE 0 END) AS dropOffSessions,
-                     SUM(CASE WHEN s.isFinished = 1 THEN 1 ELSE 0 END) AS completedSessions,
+                     SUM(CASE WHEN s.status = 1 THEN 1 ELSE 0 END) AS dropOffSessions,
+                     SUM(CASE WHEN s.status = 2 THEN 1 ELSE 0 END) AS completedSessions,
                      DATE(s.timestamp) AS sessionDate,
                      s.device_type, 
                      c.categoryName,
@@ -44,9 +44,8 @@
     $query .= " GROUP BY c.categoryName"; 
     $result = mysqli_query($conn, $query);
 
-    $subquery = "SELECT DISTINCT s.source 
-                FROM session s
-                WHERE s.prodID IS NOT NULL ";
+    $subquery = "SELECT DISTINCT s.source, COUNT(*) AS totalSessions
+                FROM session s";
 
     if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
         $subquery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
@@ -55,9 +54,11 @@
     $subquery .= " ORDER BY s.source";
     $subresult = mysqli_query($conn, $subquery);
 
-    $sources = [];
+    $sessions = 0;
+    $sources  = [];
     while ($subrow = mysqli_fetch_assoc($subresult)) {
         $sources[] = $subrow['source'];
+        $sessions  = $subrow['totalSessions'];
     }
 
     $totalUsers             = 0; 
@@ -124,8 +125,8 @@
         <div class="col mb-1">
             <div class="card" style="height: 10rem;">
                 <div class="card-body text-center">
-                    <h5>Total Sessions</h5><br>
-                    <h2><?php echo $totalSessions;?></h2>
+                    <h5>Total Site Visits</h5><br>
+                    <h2><?php echo $sessions;?></h2>
                 </div>
             </div>
         </div>

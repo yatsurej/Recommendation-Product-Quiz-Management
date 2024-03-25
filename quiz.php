@@ -5,6 +5,7 @@ include 'db.php';
 session_start();
 
 $_SESSION['quizProgress'] = true;
+unset($_SESSION['drop_insertion_done']);
 
 $selectedCategory = $_SESSION['selectedCategory'];
 if (!isset($_SESSION['selectedCategory'])) {

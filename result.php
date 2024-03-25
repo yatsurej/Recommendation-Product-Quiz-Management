@@ -57,13 +57,14 @@
                                 $prodDescription    = $productDetailsRow['prodDescription'];
 
                                 $_SESSION['prodID'] = $prodID;
-                                if (!isset($_SESSION['insertion_done'])) {
+                                if (!isset($_SESSION['finish_insertion_done'])) {
                                     $guestID = $_SESSION['guestID'];
                                     $device =  $_SESSION['deviceType'];
+                                    $country = $_SESSION['country'];
                                     $source = "lazada";
                                     $prod = $_SESSION['prodID'];
                                 
-                                    $query = "INSERT INTO session(guestID, device_type, prodID, source, isFinished) VALUES ('$guestID', '$device', '$prod', '$source', '1')";
+                                    $query = "INSERT INTO session(guestID, device_type, prodID, source, isFinished, locationFrom) VALUES ('$guestID', '$device', '$prod', '$source', '2', '$country')";
                                     $result = mysqli_query($conn, $query);
                                 
                                     if ($result) {
@@ -76,7 +77,7 @@
                                                 echo "Error inserting answer: " . mysqli_error($conn);
                                             }
                                         }
-                                        $_SESSION['insertion_done'] = true;
+                                        $_SESSION['finish_insertion_done'] = true;
                                     } 
                                 }
                                 ?>
@@ -126,7 +127,7 @@
                 unset($_SESSION['productTally']);
                 unset($_SESSION['prodID']);
                 unset($_SESSION['bonusAnswered']);
-                unset($_SESSION['insertion_done']);
+                unset($_SESSION['finish_insertion_done']);
                 unset($_SESSION['device_type']); 
             ?>
         </div>
@@ -147,7 +148,7 @@
         unset($_SESSION['currentQuestion']);
         unset($_SESSION['productTally']);
         unset($_SESSION['prodID']);
-        unset($_SESSION['insertion_done']);
+        unset($_SESSION['finish_insertion_done']);
         unset($_SESSION['device_type']);
     ?>
     <?php endif;  ?>

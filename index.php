@@ -3,15 +3,14 @@
     $pageTitle = "Quiz";
     include 'header.php';
     include 'db.php';
-    
+
     // Device Type
     $deviceType = "";
-    if(isset($_POST['deviceType'])) {
+    if (isset($_POST['deviceType'])) {
         $deviceType = $_POST['deviceType'];
-        $_SESSION['deviceType'] = $deviceType; 
-        exit(); 
+        $_SESSION['deviceType'] = $deviceType;
     }
-    // unset($_SESSION['guestID']);
+
     // Guest ID
     if (!isset($_SESSION['guestID'])) {
         $guestID = rand(10, 999999999);
@@ -20,11 +19,57 @@
         $guestID = $_SESSION['guestID'];
     }
 
-    // echo $_SESSION['deviceType'] . $_SESSION['guestID'];
+    if (isset($_POST['country'])) {
+        $country = $_POST['country'];
+        $_SESSION['country'] = $country;
+    }
 
-    // Check if user dropped off the quiz 
-    if (isset($_SESSION['quizProgress'])) {
-        unset($_SESSION['quizProgress']); 
+    $referrer = "";
+    if (isset($_POST['referrer'])) {
+        $referrer = $_POST['referrer'];
+        $_SESSION['referrer'] = $referrer;
+    }
+
+    var_dump($_SESSION['deviceType']);
+    echo "<br>";
+    var_dump($_SESSION['guestID']);
+    echo "<br>";
+    var_dump($_SESSION['country']);
+    echo "<br>";
+    var_dump($_SESSION['referrer']);
+    // Site Visit
+    if (!isset($_SESSION['visit_insertion_done'])) {
+        $guestID = $_SESSION['guestID'];
+        $device = isset($_SESSION['deviceType']) ? $_SESSION['deviceType'] : ""; // Handling undefined key
+        $country = isset($_SESSION['country']) ? $_SESSION['country'] : ""; // Handling undefined key
+        $source = isset($_SESSION['referrer']) ? $_SESSION['referrer'] : ""; // Handling undefined key
+
+        $query = "INSERT INTO session(guestID, device_type, source, status, locationFrom) VALUES ('$guestID', '$device', '$source', '0', '$country')";
+        $result = mysqli_query($conn, $query);
+        if ($result) {
+            $_SESSION['visit_insertion_done'] = true;
+        }
+    }
+
+    // Check if user dropped off the quiz
+    if (isset($_SESSION['quizProgress']) || isset($_SESSION['siteVisit'])) {
+        if (!isset($_SESSION['drop_insertion_done'])) {
+            $guestID = $_SESSION['guestID'];
+            $device = $_SESSION['deviceType'];
+            $country = $_SESSION['country'];
+            $source = $_SESSION['referrer'];
+
+            $query = "UPDATE session
+                    SET status = '1', device_type = '$device', locationFrom = '$country'
+                    WHERE guestID = '$guestID'";
+
+            $result = mysqli_query($conn, $query);
+
+            if ($result) {
+                $_SESSION['drop_insertion_done'] = true;
+            }
+        }
+        unset($_SESSION['quizProgress']);
         unset($_SESSION['selectedAnswers']);
         unset($_SESSION['currentQuestion']);
         unset($_SESSION['productTally']);
@@ -50,7 +95,7 @@
                 <?php
                 $categoryQuery = "SELECT * FROM category";
                 $categoryResult = mysqli_query($conn, $categoryQuery);
-                
+
                 while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
                     $categoryID = $categoryRow['categoryID'];
                     $categoryName = $categoryRow['categoryName'];
@@ -60,41 +105,10 @@
                             <?php echo $categoryName; ?>
                         </button>
                     </div>
-                    <?php
+                <?php
                 }
                 ?>
             </form>
         </div>
     </div>
 </div>
-<script>
-    var userAgent = navigator.userAgent.toLowerCase(),
-    width = screen.availWidth,
-    height = screen.availHeight,
-    userIsOnMobileDevice = checkIfUserIsOnMobileDevice(userAgent);
-    
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            console.log("Device type sent successfully.");
-        }
-    };
-    xhttp.open("POST", "<?php echo $_SERVER['PHP_SELF']; ?>", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send("deviceType=" + (userIsOnMobileDevice ? "mobile" : "desktop"));
-
-    function checkIfUserIsOnMobileDevice(userAgent) {
-        if(userAgent.includes('mobi') || userAgent.includes('tablet')) {
-            return true;
-        }
-        if(userAgent.includes('android')) {
-            if(height > width && width < 800) {
-                return true;
-            }
-            if(width > height && height < 800) {
-                return true;
-            }
-        }
-        return false;
-    }
-</script>

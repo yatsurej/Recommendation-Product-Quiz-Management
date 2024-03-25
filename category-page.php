@@ -9,13 +9,30 @@
     include 'db.php';
     $selectedCategory = $_SESSION['selectedCategory'];
 
-    if (isset($_SESSION['quizProgress'])) {
+    if (isset($_SESSION['quizProgress']) || isset($_SESSION['siteVisit'])){
+        if (!isset($_SESSION['drop_insertion_done'])) {
+            $guestID = $_SESSION['guestID'];
+            $device =  $_SESSION['deviceType'];
+            $country = $_SESSION['country'];
+            $source  = $_SESSION['referrer'];
+        
+            $query = "UPDATE session
+                      SET status = '1'
+                      WHERE guestID = '$guestID'";
+
+            $result = mysqli_query($conn, $query);
+        
+            if ($result) {
+                $_SESSION['drop_insertion_done'] = true;
+            } 
+        }
         unset($_SESSION['quizProgress']); 
         unset($_SESSION['selectedAnswers']);
         unset($_SESSION['currentQuestion']);
         unset($_SESSION['productTally']);
     }
     
+    if (isset($_SESSION['visit_']))
     $query = "SELECT * FROM category WHERE categoryID = '$selectedCategory'";
     $result = mysqli_query($conn, $query);
     while($row = mysqli_fetch_assoc($result)){
