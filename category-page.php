@@ -9,6 +9,13 @@
     include 'db.php';
     $selectedCategory = $_SESSION['selectedCategory'];
 
+    if (isset($_SESSION['quizProgress'])) {
+        unset($_SESSION['quizProgress']); 
+        unset($_SESSION['selectedAnswers']);
+        unset($_SESSION['currentQuestion']);
+        unset($_SESSION['productTally']);
+    }
+    
     $query = "SELECT * FROM category WHERE categoryID = '$selectedCategory'";
     $result = mysqli_query($conn, $query);
     while($row = mysqli_fetch_assoc($result)){

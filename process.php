@@ -8,7 +8,7 @@
         unset($_SESSION['productTally']);
         unset($_SESSION['prodID']);
         unset($_SESSION['insertion_done']);
-        unset($_SESSION['device_type']);
+        unset($_SESSION['deviceType']);
         
         header("Location: index.php");
         exit();

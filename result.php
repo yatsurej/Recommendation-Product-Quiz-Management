@@ -3,7 +3,10 @@
     include 'header.php';
     include 'db.php';
     session_start();
-
+    if (isset($_SESSION['quizProgress'])) {
+        unset($_SESSION['quizProgress']);
+    }
+    
     if (!isset($_SESSION['selectedCategory']) || !isset($_SESSION['productTally'])) {
         header('Location: index.php');
         exit();
@@ -29,6 +32,7 @@
             $maxTallyProducts = array($product);
         }
     }
+    echo $_SESSION['guestID'];
 ?>
 
 <div class="body-wrapper bg5">
@@ -54,12 +58,12 @@
 
                                 $_SESSION['prodID'] = $prodID;
                                 if (!isset($_SESSION['insertion_done'])) {
-                                    $guestID = "2";
-                                    $device = "desktop";
+                                    $guestID = $_SESSION['guestID'];
+                                    $device =  $_SESSION['deviceType'];
                                     $source = "lazada";
                                     $prod = $_SESSION['prodID'];
                                 
-                                    $query = "INSERT INTO session(guestID, device_type, prodID, source) VALUES ('$guestID', '$device', '$prod', '$source')";
+                                    $query = "INSERT INTO session(guestID, device_type, prodID, source, isFinished) VALUES ('$guestID', '$device', '$prod', '$source', '1')";
                                     $result = mysqli_query($conn, $query);
                                 
                                     if ($result) {

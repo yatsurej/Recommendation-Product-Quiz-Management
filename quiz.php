@@ -4,6 +4,8 @@ include 'header.php';
 include 'db.php';
 session_start();
 
+$_SESSION['quizProgress'] = true;
+
 $selectedCategory = $_SESSION['selectedCategory'];
 if (!isset($_SESSION['selectedCategory'])) {
     header('Location: index.php');

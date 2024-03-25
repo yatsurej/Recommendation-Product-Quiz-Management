@@ -28,7 +28,8 @@
                      DATE(s.timestamp) AS sessionDate,
                      s.device_type, 
                      c.categoryName,
-                     p.prodName
+                     p.prodName,
+                     s.locationFrom
               FROM session s
               LEFT JOIN product p ON s.prodID = p.prodID
               LEFT JOIN category c ON p.categoryID = c.categoryID
@@ -41,8 +42,23 @@
     }
 
     $query .= " GROUP BY c.categoryName"; 
-
     $result = mysqli_query($conn, $query);
+
+    $subquery = "SELECT DISTINCT s.source 
+                FROM session s
+                WHERE s.prodID IS NOT NULL ";
+
+    if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
+        $subquery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
+    }
+
+    $subquery .= " ORDER BY s.source";
+    $subresult = mysqli_query($conn, $subquery);
+
+    $sources = [];
+    while ($subrow = mysqli_fetch_assoc($subresult)) {
+        $sources[] = $subrow['source'];
+    }
 
     $totalUsers             = 0; 
     $totalSessions          = 0;
@@ -54,6 +70,7 @@
     $sessionDates           = [];
     $completedSessionsData  = [];
     $dropOffSessionsData    = [];
+    $countryCounts          = [];
 
     while($row = mysqli_fetch_assoc($result)){
         $totalUsers                 += $row['totalUsers'];
@@ -66,12 +83,14 @@
         $dropOffSessionsData[]      = $row['dropOffSessions']; 
         $deviceType                 = $row['device_type'];
         $prodName                   = $row['prodName'];
+        $country                    = $row['locationFrom'];
         
-        $categoryCounts[$categoryName] = $row['totalSessions'];
-        $prodCounts[$prodName] = $row['totalSessions'];
+        $countryCounts[$country]        = $row['totalSessions'];
+        $categoryCounts[$categoryName]  = $row['totalSessions'];
+        $prodCounts[$prodName]          = $row['totalSessions'];
         
         if(isset($deviceCounts[$deviceType])) {
-            $deviceCounts[$deviceType] += $row['totalSessions'];
+            $deviceCounts[$deviceType] = $row['totalSessions'];
         } else {
             $deviceCounts[$deviceType] = $row['totalSessions'];
         }
@@ -138,6 +157,12 @@
                     <div class="col">
                         <div id="completedDropOffChart"></div>
                     </div>
+                    <div class="col">
+                        <h1>Completed:</h1>
+                        <h1><?php echo $completedSessions;?></h1>
+                        <h1>Drop off:</h1>
+                        <h1><?php echo $dropOffSessions;?></h1>
+                    </div>
                 </div>
             </div>
         </div>
@@ -156,6 +181,48 @@
                 <div class="card-body">
                     <h5 class="card-title text-center">Session per Category</h5>
                     <div id="categoryChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row my-3">
+        <div class="col-md-6 mb-1">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Source</h5>
+                    <div class="text-center">
+                        <table  class="table text-center">
+                            <thead>
+                                <tr>
+                                    <th>Source</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($sources as $source) { ?>
+                                    <tr>
+                                        <td><?php echo $source; ?></td>
+                                        <td>
+                                            <?php 
+                                            $countQuery = "SELECT COUNT(*) AS count FROM session WHERE source = '$source'";
+                                            $countResult = mysqli_query($conn, $countQuery);
+                                            $countRow = mysqli_fetch_assoc($countResult);
+                                            echo $countRow['count']; 
+                                            ?>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-1">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Country</h5>
+                    <div id="countryChart"></div>
                 </div>
             </div>
         </div>
@@ -204,7 +271,6 @@
         var deviceChart = new ApexCharts(document.querySelector("#deviceChart"), deviceChartOptions);
         deviceChart.render();
 
-        // Prepare data for session per category pie chart
         var categoryCounts = <?php echo json_encode($categoryCounts); ?>;
         var totalSessions = Object.values(categoryCounts).reduce((acc, val) => acc + val, 0);
         var categoryChartData = Object.values(categoryCounts).map(count => (count / totalSessions) * 100);
@@ -261,47 +327,51 @@
         productRecommendedChart.render();
 
         var completedDropOffOptions = {
-    chart: {
-        height: 350,
-        type: 'line',
-    },
-    series: [{
-        name: 'Completed',
-        data: <?php echo json_encode($completedSessionsData); ?>
-    }, {
-        name: 'Drop Off',
-        data: <?php echo json_encode($dropOffSessionsData); ?>
-    }],
-    xaxis: {
-        categories: <?php echo json_encode($sessionDates); ?>,
-    },
-    legend: {
-        position: 'bottom',
-        horizontalAlign: 'right',
-        offsetY: 0,
-        onItemClick: {
-            toggleDataSeries: false
-        },
-        onItemHover: {
-            highlightDataSeries: false
-        },
-        formatter: function(seriesName, opts) {
-            var total = 0;
-            <?php foreach ($completedSessionsData as $value) { ?>
-                total += <?php echo $value; ?>;
-            <?php } ?>
-            if (seriesName === 'Completed') {
-                return seriesName + ': ' + total;
-            } else if (seriesName === 'Drop Off') {
-                return seriesName + ': ' + total;
-            }
-            return seriesName;
-        }
-    },
-};
+            chart: {
+                height: 350,
+                type: 'line',
+            },
+            series: [{
+                name: 'Completed',
+                data: <?php echo json_encode($completedSessionsData); ?>
+            }, {
+                name: 'Drop Off',
+                data: <?php echo json_encode($dropOffSessionsData); ?>
+            }],
+            xaxis: {
+                categories: <?php echo json_encode($sessionDates); ?>,
+            },
+        };
 
-var completedDropOffChart = new ApexCharts(document.querySelector("#completedDropOffChart"), completedDropOffOptions);
-completedDropOffChart.render();
+        var completedDropOffChart = new ApexCharts(document.querySelector("#completedDropOffChart"), completedDropOffOptions);
+        completedDropOffChart.render();
 
+        var countryCounts = <?php echo json_encode($countryCounts); ?>;
+        var totalSessions = Object.values(countryCounts).reduce((acc, val) => acc + val, 0);
+        var countryChartData = Object.values(countryCounts).map(count => (count / totalSessions) * 100);
+        var countryLabels = Object.keys(countryCounts);
+        
+        var countryChartOptions = {
+            chart: {
+                type: 'pie',
+                height: 240,
+            },
+            series: countryChartData,
+            labels: countryLabels,
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
+        };
+
+        var countryChart = new ApexCharts(document.querySelector("#countryChart"), countryChartOptions);
+        countryChart.render();
     });
 </script>
