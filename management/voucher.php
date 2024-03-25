@@ -17,8 +17,8 @@ if (isset($_SESSION['username'])) {
     exit();
 }
 ?>
-
 <div class="admin-page">
+
     <div class="container">
         <h1 class="text-center fw-bold mt-4">Voucher Management</h1>
         <hr style="height:1px;border-width:0;color:gray;background-color:gray">
@@ -173,5 +173,4 @@ if (isset($_SESSION['username'])) {
             </div>
         </div>
     </div>
-
 </div>

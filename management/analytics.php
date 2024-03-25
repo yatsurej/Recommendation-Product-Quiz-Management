@@ -1,14 +1,4 @@
 <?php
-<<<<<<< Updated upstream
-    include '../header.php';
-    include 'navbar.php';
-    $pageTitle = "Analytics";
-?>
-
-<div class="container w-50 text-center">
-    <h1 class="mt-5">Analytics. Hello World!</h1>
-</div>
-=======
 $pageTitle = "Analytics";
 include 'header.php';
 include 'navbar.php';
@@ -387,4 +377,3 @@ while ($row = mysqli_fetch_assoc($result)) {
         countryChart.render();
     });
 </script>
->>>>>>> Stashed changes

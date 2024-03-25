@@ -41,8 +41,8 @@ $query .= " GROUP BY bq.bqID DESC
 
 $result = mysqli_query($conn, $query);
 ?>
-<div class="admin-page">
 
+<div class="admin-page">
     <div class="container">
         <?php include 'question_nav.php'; ?>
         <form class="form-inline d-inline">
