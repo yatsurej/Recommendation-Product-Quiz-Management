@@ -51,10 +51,10 @@ $allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.p
                                 <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'analytics.php') ? 'active' : 'inactive'; ?>" href="analytics.php">Analytics</a>
                             </li>
                         <?php endif; ?>
-                        <li class="nav-item">
-                            <a class="navb nav-link" href="logout.php">Logout</a>
-                        </li>
                     <?php endif; ?>
+                    <li class="nav-item">
+                        <a class="navb nav-link" href="logout.php">Logout</a>
+                    </li>
                 </ul>
             </div>
     </div>
