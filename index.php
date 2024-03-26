@@ -1,6 +1,6 @@
 <?php
     session_start();
-    $pageTitle = "Quiz";
+    $pageTitle = "P&G Laz-Run Quiz";
     include 'header.php';
     include 'db.php';
     include_once 'detect.php'; 
@@ -68,16 +68,8 @@
     // Referrer
     if (!isset($_SESSION['referrer'])) {
         $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-        $_SESSION['referrer'] = $referrer;
+        $_SESSION['referrer'] = !empty($referrer) ? $referrer : 'direct';
     }
-
-    var_dump($_SESSION['deviceType']);
-    echo "<br>";
-    var_dump($_SESSION['guestID']);
-    echo "<br>";
-    var_dump($_SESSION['country']);
-    echo "<br>";
-    var_dump($_SESSION['referrer']);
 
     // Site Visit
     if (!isset($_SESSION['visit_insertion_done'])) {
@@ -142,8 +134,6 @@
         header("Location: category-page.php");
         exit();
     }
-
-    echo $_SESSION['last_session_id']
 ?>
 <div class="body-wrapper bg2">
     <div class="wrapper">

@@ -73,29 +73,29 @@
                       const country = data.country_name;
                       sendCountryToIndexPHP(country);
                       console.log(country);
-                      // switch (country) {
-                        //   case "Philippines":
-                        //     window.location.href = "https://ph.olympics-laz.com/";
-                        //     break;
-                        //   case "Singapore":
-                        //     window.location.href = "https://sg.olympics-laz.com/";
-                        //     break;
-                        //   case "Thailand":
-                        //     window.location.href = "https://th.olympics-laz.com/";
-                        //     break;
-                        //   case "Indonesia":
-                        //     window.location.href = "https://id.olympics-laz.com/";
-                        //     break;
-                        //   case "Vietnam":
-                        //     window.location.href = "https://vn.olympics-laz.com/";
-                        //     break;
-                        //   case "Malaysia":
-                        //     window.location.href = "https://my.olympics-laz.com/";
-                        //     break;
-                        //   default:
-                        //     window.location.href = "https://olympics-laz.com/";
-                        //     break;
-                        // }
+                      switch (country) {
+                          case "Philippines":
+                            window.location.href = "https://ph.olympics-laz.com/";
+                            break;
+                          case "Singapore":
+                            window.location.href = "https://sg.olympics-laz.com/";
+                            break;
+                          case "Thailand":
+                            window.location.href = "https://th.olympics-laz.com/";
+                            break;
+                          case "Indonesia":
+                            window.location.href = "https://id.olympics-laz.com/";
+                            break;
+                          case "Vietnam":
+                            window.location.href = "https://vn.olympics-laz.com/";
+                            break;
+                          case "Malaysia":
+                            window.location.href = "https://my.olympics-laz.com/";
+                            break;
+                          default:
+                            window.location.href = "https://olympics-laz.com/";
+                            break;
+                        }
                   })
                   .catch(error => {
                       console.error("Error fetching country data:", error);

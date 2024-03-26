@@ -1,5 +1,5 @@
 <?php
-    $pageTitle = "Quiz Result";
+    $pageTitle = "P&G Laz-Run Quiz";
     include 'header.php';
     include 'db.php';
     session_start();
@@ -106,7 +106,9 @@
                                 ?>
                                 <img src="management/<?php echo $prodImage; ?>" class="suggested-image" alt="Product Image" class="img-fluid">
                                 <p><?php echo $maxTallyProduct['name']; ?></p>
-                                <button onclick="window.open('<?php echo $prodURL; ?>', '_blank')" class="view-product-button">VIEW PRODUCT</button>
+                                <form action="process.php" method="post" style="margin:0px;">
+                                    <button name="outbound" onclick="window.open('<?php echo $prodURL; ?>', '_blank')" class="view-product-button">VIEW PRODUCT</button>
+                                </form>
                             <?php } ?>
                         </div>
                     </div>
@@ -130,28 +132,23 @@
                             <i onclick="copyToClipboard('#voucher')" class="fa-regular fa-clone" id="copy"></i>
                             
                         </div>
-                        <div class="nav-buttons">
-                            <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
-                        </div>
+                        <form action="process.php" method="post">
+                            <div class="nav-buttons">
+                                <button type="submit" name="home">BACK TO HOME</button>
+                            </div>
+                        </form>
                     <?php
                     } 
                 } else {
                     echo "<p>Thanks for trying! Unfortunately, you didn't get the correct answer.</p>";
                     ?>
-                    <div class="nav-buttons">
-                        <button onclick="window.location.href = 'index.php';">BACK TO HOME</button>
-                    </div>
+                    <form action="process.php" method="post">
+                        <div class="nav-buttons">
+                            <button type="submit" name="home">BACK TO HOME</button>
+                        </div>
+                    </form>
                 <?php
                 }
-
-                unset($_SESSION['selectedCategory']);
-                unset($_SESSION['selectedAnswers']);
-                unset($_SESSION['currentQuestion']);
-                unset($_SESSION['productTally']);
-                unset($_SESSION['prodID']);
-                unset($_SESSION['bonusAnswered']);
-                unset($_SESSION['finish_insertion_done']);
-                unset($_SESSION['device_type']); 
             ?>
         </div>
     <?php elseif ($bonusQuestion): ?> 
@@ -162,18 +159,11 @@
             </div>
         </form>
     <?php else: ?>
-        <div class="nav-buttons">
-            <button onclick="window.location.href= 'index.php';">BACK TO HOME</button>
-        </div>
-    <?php
-        unset($_SESSION['selectedCategory']);
-        unset($_SESSION['selectedAnswers']);
-        unset($_SESSION['currentQuestion']);
-        unset($_SESSION['productTally']);
-        unset($_SESSION['prodID']);
-        unset($_SESSION['finish_insertion_done']);
-        unset($_SESSION['device_type']);
-    ?>
+        <form action="process.php" method="post">
+            <div class="nav-buttons">
+                <button type="submit" name="home">BACK TO HOME</button>
+            </div>
+        </form>
     <?php endif;  ?>
     </div>
 </div>

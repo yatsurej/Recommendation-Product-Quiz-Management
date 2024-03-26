@@ -14,5 +14,16 @@
         exit();
     } elseif (isset($_POST['bonus'])){
         header("Location: bonus.php");
+    } elseif (isset($_POST['outbound'])){
+        include 'db.php';
+        $guestID    = $_SESSION['guestID'];
+        $prod       = $_SESSION['prodID'];
+        $lastID     = $_SESSION['last_session_id'];
+
+        $query = "UPDATE session
+                  SET outbound = '1'
+                  WHERE sessionID = '$lastID'";
+        $result = mysqli_query($conn, $query);
+        header("Location: result.php");
     }
 ?>

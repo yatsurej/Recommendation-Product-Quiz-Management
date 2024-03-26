@@ -1,5 +1,5 @@
 <?php
-    $pageTitle = "Quiz";
+    $pageTitle = "P&G Laz-Run Quiz";
     session_start();
     if (!isset($_SESSION['selectedCategory'])) {
         header('Location: index.php');
@@ -9,6 +9,7 @@
     include 'db.php';
     $selectedCategory = $_SESSION['selectedCategory'];
 
+    // Check if user dropped off the quiz
     if (isset($_SESSION['quizProgress'])) {
         if (!isset($_SESSION['drop_insertion_done'])) {
             $guestID = $_SESSION['guestID'];
@@ -17,13 +18,13 @@
             $source  = $_SESSION['referrer'];
             $lastID  = $_SESSION['last_session_id'];
     
-            $query  = "SELECT * FROM session WHERE sessionID = '$lastID' AND prodID IS NULL";
+            $query  = "SELECT * FROM session WHERE sessionID = '$lastID' AND prodID IS NULL AND guestID IS NULL";
             $result = mysqli_query($conn, $query);
     
             if(mysqli_num_rows($result) > 0){
                 $query = "UPDATE session
-                        SET status = '1'
-                        WHERE guestID = '$guestID' AND sessionID = '$lastID'";
+                        SET status = '1', guestID = '$guestID'
+                        WHERE sessionID = '$lastID'";
 
                 $result = mysqli_query($conn, $query);
 

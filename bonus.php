@@ -1,5 +1,5 @@
 <?php
-    $pageTitle = "Bonus Question";
+    $pageTitle = "P&G Laz-Run Quiz";
     include 'header.php';
     include 'db.php';
     session_start();
