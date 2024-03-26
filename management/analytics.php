@@ -3,7 +3,6 @@ $pageTitle = "Analytics";
 include 'header.php';
 include 'navbar.php';
 include '../db.php';
-
 $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
 
 if (isset($_SESSION['username'])) {
@@ -20,12 +19,12 @@ if (isset($_SESSION['username'])) {
     header('Location: index.php');
     exit();
 }
+
 $timeFilterStart = isset($_GET['timestamp_start']) ? $_GET['timestamp_start'] : '';
 $timeFilterEnd = isset($_GET['timestamp_end']) ? $_GET['timestamp_end'] : '';
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : 'general';
 
-$query = "SELECT COUNT(DISTINCT s.guestID) AS totalUsers, 
-                     COUNT(*) AS siteVisits, 
+$query = "SELECT COUNT(*) AS siteVisits, 
                      SUM(CASE WHEN s.status = 1 THEN 1 ELSE 0 END) AS dropOffSessions,
                      SUM(CASE WHEN s.status = 2 THEN 1 ELSE 0 END) AS completedSessions,
                      SUM(CASE WHEN s.status IN (1, 2) THEN 1 ELSE 0 END) AS totalSessions,
@@ -37,45 +36,25 @@ $query = "SELECT COUNT(DISTINCT s.guestID) AS totalUsers,
               FROM session s
               LEFT JOIN product p ON s.prodID = p.prodID
               LEFT JOIN category c ON p.categoryID = c.categoryID";
+//Removed condition WHERE prodID = NULL to Count Site Visits correctly
 
+
+// Append Conditions when a category is selected
 if ($selectedCategory === 'general') {
     $query .= " WHERE 1=1"; // This ensures that the following conditions can be appended with "AND"
 } elseif (!empty($selectedCategory)) {
     $query .= " WHERE p.categoryID = $selectedCategory";
 }
-
+// Append Conditions when a date filter is selected
 if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
     $formattedTimestampStart = date("Y-m-d H:i:s", strtotime($timeFilterStart));
     $formattedTimestampEnd = date("Y-m-d H:i:s", strtotime($timeFilterEnd . ' + 1 day'));
     $query .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
 }
 
-$query .= " GROUP BY c.categoryName, s.device_type, s.locationFrom, s.prodID ";
+$query .= " GROUP BY c.categoryName, s.device_type, s.guestID, s.locationFrom, s.prodID";
 $result = mysqli_query($conn, $query);
 
-$subquery = "SELECT DISTINCT s.source 
-            FROM session s
-            LEFT JOIN product p ON s.prodID = p.prodID
-            LEFT JOIN category c ON p.categoryID = c.categoryID
-            WHERE s.prodID IS NOT NULL ";
-
-if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
-    $subquery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
-}
-
-if ($selectedCategory !== 'general') {
-    $subquery .= " AND p.categoryID = $selectedCategory";
-}
-
-$subquery .= " ORDER BY s.source";
-$subresult = mysqli_query($conn, $subquery);
-
-$sources = [];
-while ($subrow = mysqli_fetch_assoc($subresult)) {
-    $sources[] = $subrow['source'];
-}
-
-$totalUsers             = 0;
 $totalSessions          = 0;
 $siteVisits             = 0;
 $completedSessions      = 0;
@@ -89,7 +68,6 @@ $dropOffSessionsData    = [];
 $countryCounts          = [];
 
 while ($row = mysqli_fetch_assoc($result)) {
-    $totalUsers                 += $row['totalUsers'];
     $totalSessions              += $row['totalSessions'];
     $siteVisits                 += $row['siteVisits'];
     $categoryName               = $row['categoryName'];
@@ -102,20 +80,88 @@ while ($row = mysqli_fetch_assoc($result)) {
     $prodName                   = $row['prodName'];
     $country                    = $row['locationFrom'];
 
-    $countryCounts[$country] = ($countryCounts[$country] ?? 0) + $row['totalSessions'];
-
-
-    // Add condition to remove key-value pair if category name is NULL
+    // Add condition to remove key-value pair if category name is NULL, it can be NULL if drop off and site visit
     if ($categoryName !== NULL) {
         $categoryCounts[$categoryName] = ($categoryCounts[$categoryName] ?? 0) + $row['totalSessions'];
     }
-    $prodCounts[$prodName]          = ($prodCounts[$prodName]  ?? 0) + $row['totalSessions'];
+    if ($prodName !== NULL) {
+        $prodCounts[$prodName] = ($prodCounts[$prodName] ?? 0) + $row['totalSessions'];
+    }
+    $deviceCounts[$deviceType]      = ($deviceCounts[$deviceType] ?? 0) + $row['totalSessions'];
+    $countryCounts[$country] = ($countryCounts[$country] ?? 0) + $row['totalSessions'];
+}
+// Source query
+$sourceQuery = "SELECT DISTINCT s.source 
+     FROM session s
+     LEFT JOIN product p ON s.prodID = p.prodID
+     LEFT JOIN category c ON p.categoryID = c.categoryID
+     WHERE s.prodID IS NOT NULL ";
 
-    $deviceCounts[$deviceType] = ($deviceCounts[$deviceType] ?? 0) + $row['totalSessions'];
+if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
+    $sourceQuery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
+}
+
+if ($selectedCategory !== 'general') {
+    $sourceQuery .= " AND p.categoryID = $selectedCategory";
+}
+
+$sourceQuery .= " ORDER BY s.source";
+$sourceResult = mysqli_query($conn, $sourceQuery);
+
+$sources = [];
+while ($subrow = mysqli_fetch_assoc($sourceResult)) {
+    $sources[] = $subrow['source'];
+}
+
+$outBoundQuery = "  SELECT p.prodURL, p.prodName,
+                        COUNT(s.outbound) AS count
+                        FROM session s
+                        INNER JOIN product p ON s.prodID = p.prodID
+                        WHERE s.outbound = 1
+    ";
+
+if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
+    $outBoundQuery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
+}
+
+if ($selectedCategory !== 'general') {
+    $outBoundQuery .= " AND p.categoryID = $selectedCategory";
+}
+
+$outBoundQuery .= " GROUP BY p.prodURL";
+$outBoundResult = mysqli_query($conn, $outBoundQuery);
+
+$outBoundData = array();
+while ($row = mysqli_fetch_assoc($outBoundResult)) {
+    $outBoundData[] = array(
+        'prodName' => $row['prodName'],
+        'prodURL' => $row['prodURL'],
+        'count' => $row['count']
+    );
+}
+// Separated Total Users Query because and error occurs when combined in the main query
+$totalUsersQuery = "SELECT COUNT(DISTINCT guestID) AS totalUsers 
+    FROM session s
+    LEFT JOIN product p ON s.prodID = p.prodID
+    LEFT JOIN category c ON p.categoryID = c.categoryID
+    WHERE s.status <> 0";
+
+if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
+    $formattedTimestampStart = date("Y-m-d H:i:s", strtotime($timeFilterStart));
+    $formattedTimestampEnd = date("Y-m-d H:i:s", strtotime($timeFilterEnd . ' + 1 day'));
+    $totalUsersQuery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
+}
+
+if ($selectedCategory !== 'general') {
+    $totalUsersQuery .= " AND p.categoryID = $selectedCategory";
 }
 
 
-var_dump($siteVisits);
+$totalUsersResult = mysqli_query($conn, $totalUsersQuery);
+$totalUsersRow = mysqli_fetch_assoc($totalUsersResult);
+$users = $totalUsersRow['totalUsers'];
+
+// Query the Top three Products per Category For GENERAL
 $productsQuery = "SELECT 
     c.categoryName,
     p.prodName,
@@ -130,18 +176,18 @@ if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
 }
 
 $productsQuery .= " GROUP BY c.categoryName, p.prodName
-ORDER BY c.categoryName, productCount DESC";
+                        ORDER BY c.categoryName, productCount DESC";
 
 $result = mysqli_query($conn, $productsQuery);
 
-$topProductsPerCategory = []; // Associative array to store top 3 products per category
+$topProductsPerCategory = []; // Associative array to store top 3 products per category for GENERAL
 
 while ($row = mysqli_fetch_assoc($result)) {
     $categoryName = $row['categoryName'];
     $prodName = $row['prodName'];
     $productCount = $row['productCount'];
 
-    // Initialize category array if not already initialized
+    // Initialize category array
     if (!isset($topProductsPerCategory[$categoryName])) {
         $topProductsPerCategory[$categoryName] = [
             "Top 1 Products" => [],
@@ -161,13 +207,13 @@ while ($row = mysqli_fetch_assoc($result)) {
         }
     }
 }
-
-$productChartData = [];
+// Use to create the chart
+$generalProductChartData = [];
 
 foreach ($topProductsPerCategory as $category => $tops) {
     foreach ($tops as $top => $products) {
         foreach ($products as $product) {
-            $productChartData[$category][$top][] = [
+            $generalProductChartData[$category][$top][] = [
                 'name' => $product['prodName'],
                 'count' => $product['productCount']
             ];
@@ -175,28 +221,67 @@ foreach ($topProductsPerCategory as $category => $tops) {
     }
 }
 
-// Convert data to JSON for JavaScript
-$productChartData = json_encode($productChartData);
+//Execute the query to fetch question answer data ONLY IF a category is selected
 
-?>
-<div>
-    <?php
-    // Fetch category details from the category table
-    $categoryQuery = "SELECT categoryID, categoryName FROM category";
-    $categoryResult = mysqli_query($conn, $categoryQuery);
-    $categories = array();
+if (isset($selectedCategory) && $selectedCategory !== 'general') {
+    // Query to get data for the selected category with optional date filtering
+    $queryQuestionAnswer = "SELECT pq.pqID, pq.pqContent AS question, a.answerContent AS answer,
+                                COUNT(DISTINCT s.guestID) AS totalUsers,
+                                COUNT(sa.saID) AS clickCount
+                                FROM parent_question pq
+                                LEFT JOIN question_answer qa ON pq.pqID = qa.pqID
+                                LEFT JOIN answer a ON qa.answerID = a.answerID
+                                LEFT JOIN session_answers sa ON a.answerID = sa.answerID
+                                LEFT JOIN session s ON sa.sessionID = s.sessionID
+                                LEFT JOIN product p ON s.prodID = p.prodID
+                                WHERE p.categoryID = $selectedCategory";
 
-    while ($categoryRow = $categoryResult->fetch_assoc()) {
-        $categories[$categoryRow['categoryID']] = $categoryRow['categoryName'];
+    if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
+        $queryQuestionAnswer .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
     }
-    ?>
+    $queryQuestionAnswer .= " GROUP BY pq.pqID, pq.pqContent, a.answerID, a.answerContent";
 
-</div>
+    $resultQuestionAnswer = mysqli_query($conn, $queryQuestionAnswer);
+
+    $questionAnswerData = [];
+
+    while ($row = mysqli_fetch_assoc($resultQuestionAnswer)) {
+        $question = $row['question'];
+        $answer = $row['answer'];
+        $clickCount = (int)$row['clickCount'];
+        $totalUsers = (int)$row['totalUsers'];
+
+        // Add data to the array
+        $questionAnswerData[$question][] = [
+            'answer' => $answer,
+            'clickCount' => $clickCount,
+            'totalUsers' => $totalUsers,
+        ];
+    }
+}
+
+// Use to hide divs if in general category
+$hideIfGeneral = !isset($selectedCategory) || $selectedCategory === 'general';
+
+// Use to hide divs if in a selected category
+$hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
+?>
+
 <div class="container">
     <form id="filterForm" action="" method="GET">
-        <div class="row align-items-center my-3">
+        <div class="row align-items-center my-3 md-my-5 sm-my-5">
             <div class="col">
-                <label for="category">Select Category:</label>
+                <?php
+                // Fetch category details from the category table
+                $categoryQuery = "SELECT categoryID, categoryName FROM category";
+                $categoryResult = mysqli_query($conn, $categoryQuery);
+                $categories = array();
+
+                while ($categoryRow = $categoryResult->fetch_assoc()) {
+                    $categories[$categoryRow['categoryID']] = $categoryRow['categoryName'];
+                }
+                ?>
+                <label for="categoryDropdown">Select Category:</label>
                 <form class="form-inline d-inline">
                     <select class="custom-select mr-3" name="category" id="category" onchange="window.location.href=this.value;" style="border: none; margin-bottom: 30px; width: 100%; height: 46px;">
                         <option value="analytics.php">General</option>
@@ -221,19 +306,21 @@ $productChartData = json_encode($productChartData);
         </div>
     </form>
     <div class="row my-3">
-        <div class="col mb-1">
-            <div class="card" style="height: 10rem;">
-                <div class="card-body text-center">
-                    <h5>Site Visits</h5><br>
-                    <h2><?php echo $siteVisits; ?></h2>
+        <?php if (!$hideIfCategory) : ?>
+            <div class="col mb-1">
+                <div class="card" style="height: 10rem;">
+                    <div class="card-body text-center">
+                        <h5>Site Visits</h5><br>
+                        <h2><?php echo $siteVisits; ?></h2>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
         <div class="col mb-1">
             <div class="card" style="height: 10rem;">
                 <div class="card-body text-center">
                     <h5>Users</h5><br>
-                    <h2><?php echo $totalUsers; ?></h2>
+                    <h2><?php echo $users; ?></h2>
                 </div>
             </div>
         </div>
@@ -248,7 +335,7 @@ $productChartData = json_encode($productChartData);
     </div>
     <div class="row my-3">
         <div class="col-md-6 mb-1">
-            <div class="card">
+            <div class="card" style="height: 20rem;">
                 <div class="card-body">
                     <h5 class="card-title text-center">Device Count</h5>
                     <div id="deviceChart"></div>
@@ -256,37 +343,41 @@ $productChartData = json_encode($productChartData);
             </div>
         </div>
         <div class="col-md-6 mb-1">
-            <div class="card">
+            <div class="card" style="height: 20rem;">
                 <div class="card-body">
-                    <div class="col">
-                        <div id="completedDropOffChart"></div>
-                    </div>
-                    <div class="col">
-                        <h5>Completed: <?php echo $completedSessions; ?></h5>
-                        <h5>Drop off:<?php echo $dropOffSessions; ?></h5>
-                    </div>
+                    <h5 class="card-title text-center">Completed & Drop Off Sessions</h5>
+                    <div id="completedDropOffChart"></div>
+
                 </div>
             </div>
         </div>
     </div>
     <div class="row my-3">
         <div class="col-md-6 mb-1">
-            <div class="card">
+            <div class="card" style="height: 20rem;">
                 <div class="card-body">
                     <h5 class="card-title text-center">Most Recommended Products</h5>
-                    <div id="productRecommendedChartGeneral"></div>
-                    <div id="productRecommendedChartCategory"></div>
+                    <?php if (!$hideIfCategory) : ?><div id="productRecommendedChartGeneral"></div><?php endif; ?>
+                    <?php if (!$hideIfGeneral) : ?><div id="productRecommendedChartCategory"></div><?php endif; ?>
                 </div>
             </div>
         </div>
-        <div class="col-md-6 mb-1">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title text-center">Session per Category</h5>
-                    <div id="categoryChart"></div>
+        <?php if (!$hideIfCategory) : ?>
+            <div class="col-md-6 mb-1">
+                <div class="card" style="height: 20rem;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Session per Category</h5>
+                        <div id="categoryChart"></div>
+                    </div>
                 </div>
             </div>
+        <?php endif; ?>
+    </div>
+    <div class="row my-3">
+        <div class="card">
+            <div id="questionAnswerChart"></div>
         </div>
+
     </div>
     <div class="row my-3">
         <div class="col-md-6 mb-1">
@@ -340,6 +431,31 @@ $productChartData = json_encode($productChartData);
                 <div class="card-body">
                     <h5 class="card-title text-center">Country</h5>
                     <div id="countryChart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Source</h5>
+                    <div class="text-center">
+                        <table class="table text-center">
+                            <thead>
+                                <tr>
+                                    <th>Out Bound Clicks</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($outBoundData as $row) : ?>
+                                    <tr>
+                                        <td> <a href="<?php echo $row['prodURL']; ?>" target="_blank"> <?php echo $row['prodName']; ?></a></td>
+                                        <td><?php echo $row['count']; ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -426,32 +542,32 @@ $productChartData = json_encode($productChartData);
         var categoryChart = new ApexCharts(document.querySelector("#categoryChart"), categoryChartOptions);
         categoryChart.render();
 
-
+        <?php $combinedData = array($completedSessions, $dropOffSessions); ?>
+        var combinedData = <?php echo json_encode($combinedData); ?>;
         var completedDropOffOptions = {
             chart: {
-                height: 350,
-                type: 'line',
+                height: 250,
+                type: 'bar', // Change chart type to bar
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true // Make bars horizontal
+                }
             },
             series: [{
-                name: 'Completed',
-                data: <?php echo json_encode($completedSessionsData); ?>
-            }, {
-                name: 'Drop Off',
-                data: <?php echo json_encode($dropOffSessionsData); ?>
+                data: combinedData // Use the combined data directly as series data
             }],
             xaxis: {
-                categories: <?php echo json_encode($sessionDates); ?>,
-            },
-            stroke: {
-                curve: 'smooth'
+                categories: ['Completed', 'Drop Off'], // Specify categories for y-axis
             },
         };
 
         var completedDropOffChart = new ApexCharts(document.querySelector("#completedDropOffChart"), completedDropOffOptions);
         completedDropOffChart.render();
 
-        // top products per category chart
-        var productChartData = <?php echo $productChartData; ?>;
+
+        // top products per category chart - GENERAL
+        var generalProductChartData = <?php echo json_encode($generalProductChartData); ?>;
 
         // Prepare data for chart
         let categories = [];
@@ -459,20 +575,21 @@ $productChartData = json_encode($productChartData);
         let seriesTop2 = [];
         let seriesTop3 = [];
 
-        for (let category in productChartData) {
+        for (let category in generalProductChartData) {
             categories.push(category);
-            let top1Count = productChartData[category]["Top 1 Products"] ? parseInt(productChartData[category]["Top 1 Products"][0].count) : 0;
-            let top2Count = productChartData[category]["Top 2 Products"] ? parseInt(productChartData[category]["Top 2 Products"][0].count) : 0;
-            let top3Count = productChartData[category]["Top 3 Products"] ? parseInt(productChartData[category]["Top 3 Products"][0].count) : 0;
+            let top1Count = generalProductChartData[category]["Top 1 Products"] ? parseInt(generalProductChartData[category]["Top 1 Products"][0].count) : 0;
+            let top2Count = generalProductChartData[category]["Top 2 Products"] ? parseInt(generalProductChartData[category]["Top 2 Products"][0].count) : 0;
+            let top3Count = generalProductChartData[category]["Top 3 Products"] ? parseInt(generalProductChartData[category]["Top 3 Products"][0].count) : 0;
 
             seriesTop1.push(top1Count);
             seriesTop2.push(top2Count);
             seriesTop3.push(top3Count);
         }
 
-        var options = {
+        var generalProductOptions = {
             chart: {
-                type: 'bar'
+                type: 'bar',
+                height: 250
             },
             plotOptions: {
                 bar: {
@@ -513,13 +630,13 @@ $productChartData = json_encode($productChartData);
                         let product = null;
                         switch (seriesIndex) {
                             case 0:
-                                product = productChartData[categories[dataPointIndex]]["Top 1 Products"];
+                                product = generalProductChartData[categories[dataPointIndex]]["Top 1 Products"];
                                 break;
                             case 1:
-                                product = productChartData[categories[dataPointIndex]]["Top 2 Products"];
+                                product = generalProductChartData[categories[dataPointIndex]]["Top 2 Products"];
                                 break;
                             case 2:
-                                product = productChartData[categories[dataPointIndex]]["Top 3 Products"];
+                                product = generalProductChartData[categories[dataPointIndex]]["Top 3 Products"];
                                 break;
                         }
                         if (product && product.length > 0) {
@@ -532,11 +649,184 @@ $productChartData = json_encode($productChartData);
             }
         };
 
-        var chart = new ApexCharts(document.querySelector("#productRecommendedChartGeneral"), options);
-        chart.render();
+        var generalProductChart = new ApexCharts(document.querySelector("#productRecommendedChartGeneral"), generalProductOptions);
+        generalProductChart.render();
 
+
+        <?php arsort($prodCounts); ?> // Sort Products descending order by prodCount
+
+        // If a category is selected - Most Recommended Products
+        var categoryProductChartData = <?php echo json_encode($prodCounts); ?>;
+        var products = Object.keys(categoryProductChartData);
+        var counts = Object.values(categoryProductChartData).map(count => Number(count));
+
+        var productRecommendedOptions = {
+            chart: {
+                type: 'bar',
+                height: 240,
+            },
+            series: [{
+                name: 'Sessions',
+                data: counts
+            }],
+            xaxis: {
+                categories: products,
+                labels: {
+                    show: true,
+                    rotate: -45,
+                    rotateAlways: true,
+                    trim: false,
+                }
+            }
+        };
+
+        var categoryProductRecommendedChart = new ApexCharts(document.querySelector("#productRecommendedChartCategory"), productRecommendedOptions);
+        categoryProductRecommendedChart.render();
+
+
+        <?php if (!$hideIfGeneral) : ?> // Don't execute if no category is selected
+            var questionAnswerData = <?php echo json_encode($questionAnswerData); ?>;
+            for (const question in questionAnswerData) { // draw chart for each question
+                if (questionAnswerData.hasOwnProperty(question)) {
+                    drawQuestionAnswerChart(question, questionAnswerData[question]);
+                }
+            }
+
+            function drawQuestionAnswerChart(question, questionData) {
+                var chartContainerId = 'chartContainer_' + question; // Unique ID for each chart container
+
+                // Create a new div element for each chart
+                var chartContainer = document.createElement('div');
+                chartContainer.id = chartContainerId;
+                chartContainer.classList.add('p-4', 'bg-white', 'rounded', 'shadow-md', 'mb-4');
+                document.getElementById('questionAnswerChart').appendChild(chartContainer);
+
+                // Define the maximum label length
+                const MAX_LABEL_LENGTH = 20; // Adjust this value as needed
+
+                // Modify questionData to wrap long labels into multiple lines
+                const modifiedQuestionData = questionData.map(answerData => {
+                    const label = answerData.answer;
+                    if (label.length > MAX_LABEL_LENGTH) {
+                        const words = label.split(' '); // Split by space
+                        const lines = [];
+                        let currentLine = '';
+                        for (const word of words) {
+                            if (currentLine.length + word.length > MAX_LABEL_LENGTH) {
+                                lines.push(currentLine.trim());
+                                currentLine = '';
+                            }
+                            currentLine += word + ' ';
+                        }
+                        lines.push(currentLine.trim()); // Add the last line
+                        return {
+                            ...answerData,
+                            answer: lines
+                        }; // Use multi-line array as label
+                    }
+                    return answerData; // Keep as-is if not too long
+                });
+
+                // Define options object
+                var options = {
+                    title: {
+                        text: question,
+                        align: 'center',
+                    },
+                    colors: ["#1A56DB", "#FDBA8C"],
+
+                    series: [{
+                        name: 'Click Count',
+                        data: questionData.map(answerData => answerData.clickCount)
+                    }, {
+                        name: 'Total Users',
+                        data: questionData.map(answerData => answerData.totalUsers)
+                    }],
+                    chart: {
+                        type: "bar",
+                        height: "320px",
+                        fontFamily: "Inter, sans-serif",
+                        toolbar: {
+                            show: false,
+                        },
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                            columnWidth: "65%",
+                            borderRadiusApplication: "end",
+                            borderRadius: 10,
+                        },
+                    },
+                    tooltip: {
+                        shared: true,
+                        intersect: false,
+                        style: {
+                            fontFamily: "Inter, sans-serif",
+                        },
+                    },
+                    states: {
+                        hover: {
+                            filter: {
+                                type: "darken",
+                                value: 1,
+                            },
+                        },
+                    },
+                    stroke: {
+                        show: true,
+                        width: 0,
+                        colors: ["transparent"],
+                    },
+                    grid: {
+                        show: false,
+                        strokeDashArray: 4,
+                        padding: {
+                            left: 2,
+                            right: 2,
+                            top: -14
+                        },
+                    },
+                    dataLabels: {
+                        enabled: true,
+                    },
+                    legend: {
+                        show: true,
+                    },
+                    xaxis: {
+                        floating: false,
+                        categories: modifiedQuestionData.map(answerData => answerData.answer),
+                        labels: {
+                            rotate: 0,
+                            show: true,
+                            style: {
+                                fontFamily: "Inter, sans-serif",
+                                cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+                            },
+                        },
+                        axisBorder: {
+                            show: false,
+                        },
+                        axisTicks: {
+                            show: false,
+                        },
+                    },
+                    yaxis: {
+                        show: false,
+                    },
+                    fill: {
+                        opacity: 1,
+                    },
+
+                };
+
+                var chart = new ApexCharts(chartContainer, options);
+                chart.render();
+            }
+        <?php endif; ?>
+
+        // Countries Chart
         var countryCounts = <?php echo json_encode($countryCounts); ?>;
-        // var totalSessions = Object.values(countryCounts).reduce((acc, val) => acc + val, 0);
         var countryChartData = Object.values(countryCounts).map(count => Number(count));
         var countryLabels = Object.keys(countryCounts);
 
