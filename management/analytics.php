@@ -4,6 +4,8 @@ include 'header.php';
 include 'navbar.php';
 include '../db.php';
 
+$categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
+
 if (isset($_SESSION['username'])) {
     $username   = $_SESSION['username'];
     $userQuery  = "SELECT * FROM user WHERE username = '$username'";
@@ -18,7 +20,6 @@ if (isset($_SESSION['username'])) {
     header('Location: index.php');
     exit();
 }
-
 $timeFilterStart = isset($_GET['timestamp_start']) ? $_GET['timestamp_start'] : '';
 $timeFilterEnd = isset($_GET['timestamp_end']) ? $_GET['timestamp_end'] : '';
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : 'general';
@@ -129,7 +130,7 @@ if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
 }
 
 $productsQuery .= " GROUP BY c.categoryName, p.prodName
-                        ORDER BY c.categoryName, productCount DESC";
+ORDER BY c.categoryName, productCount DESC";
 
 $result = mysqli_query($conn, $productsQuery);
 
@@ -178,11 +179,6 @@ foreach ($topProductsPerCategory as $category => $tops) {
 $productChartData = json_encode($productChartData);
 
 ?>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<div class="container w-50">
-    <form>
-=======
 <div>
     <?php
     // Fetch category details from the category table
@@ -196,43 +192,20 @@ $productChartData = json_encode($productChartData);
     ?>
 
 </div>
-<div class="dropdown show">
-  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Dropdown link
-  </a>
-
-  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-    <a class="dropdown-item" href="#">Action</a>
-    <a class="dropdown-item" href="#">Another action</a>
-    <a class="dropdown-item" href="#">Something else here</a>
-  </div>
-</div>
 <div class="container">
     <form id="filterForm" action="" method="GET">
->>>>>>> Stashed changes
         <div class="row align-items-center my-3">
             <div class="col">
-                <label>Select Category:</label>
-                <div class="dropdown-content" id="myDropdown">
-                    <a href="analytics.php">General</a>
-                    <?php foreach ($categories as $categoryID => $categoryName) : ?>
-                        <a href="?category=<?php echo $categoryID; ?>"><?php echo $categoryName; ?></a>
-                    <?php endforeach; ?>
-                </div>
+                <label for="category">Select Category:</label>
+                <form class="form-inline d-inline">
+                    <select class="custom-select mr-3" name="category" id="category" onchange="window.location.href=this.value;" style="border: none; margin-bottom: 30px; width: 100%; height: 46px;">
+                        <option value="analytics.php">General</option>
+                        <?php foreach ($categories as $categoryID => $categoryName) : ?>
+                            <option value="?category=<?php echo $categoryID; ?>" <?php echo ($categoryFilter == $categoryID) ? 'selected' : ''; ?>><?php echo $categoryName; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
             </div>
-
-            <div class="dropdown show">
-                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown link
-                </a>
-
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-            </div>
-
             <div class="col">
                 <label for="timestamp_start">Start Date:</label>
                 <input type="date" class="form-control" name="timestamp_start" id="timestamp_start" value="<?php echo $timeFilterStart ? $timeFilterStart : date('Y-m-01'); ?>">
@@ -267,59 +240,8 @@ $productChartData = json_encode($productChartData);
         <div class="col mb-1">
             <div class="card" style="height: 10rem;">
                 <div class="card-body text-center">
-<<<<<<< Updated upstream
-                    <h5>Category Session Count</h5><br>
-                    <?php foreach ($categoryCounts as $category => $c_count){ ?>
-                            <h2><?php echo $category . " : " . $c_count;?></h2>
-=======
-<div class="admin-page">
-    <div class="container">
-        <form>
-            <div class="row align-items-center my-3">
-                <div class="col">
-                    <label for="timestamp_start">Start Date:</label>
-                    <input type="date" class="form-control" name="timestamp_start" id="timestamp_start" value="<?php echo $timeFilterStart ? $timeFilterStart : date('Y-m-01'); ?>">
-                </div>
-                <div class="col">
-                    <label for="timestamp_end">End Date:</label>
-                    <input type="date" class="form-control" name="timestamp_end" id="timestamp_end" value="<?php echo $timeFilterEnd ? $timeFilterEnd : date('Y-m-t'); ?>">
-                </div>
-                <div class="col">
-                    <button type="submit" class="btn btn-dark w-100">FILTER</button>
-                </div>
-            </div>
-        </form>
-        <div class="row my-3">
-            <div class="col mb-1">
-                <div class="card" style="height: 10rem;">
-                    <div class="card-body text-center">
-                        <h5>Total Users</h5>
-                        <h2><?php echo $totalUsers; ?></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col mb-1">
-                <div class="card" style="height: 10rem;">
-                    <div class="card-body text-center">
-                        <h5>Total Sessions</h5>
-                        <h2><?php echo $totalSessions; ?></h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col mb-1">
-                <div class="card" style="height: 10rem;">
-                    <div class="card-body text-center">
-                        <h5>Category Session Count</h5>
-                        <?php foreach ($categoryCounts as $category => $c_count) { ?>
-                            <h3><?php echo $category . " : " . $c_count; ?></h3>
->>>>>>> Stashed changes
-                        <?php
-                        }
-                    ?>
-=======
                     <h5>Sessions</h5><br>
                     <h2><?php echo $totalSessions; ?></h2>
->>>>>>> Stashed changes
                 </div>
             </div>
         </div>
@@ -340,49 +262,20 @@ $productChartData = json_encode($productChartData);
                         <div id="completedDropOffChart"></div>
                     </div>
                     <div class="col">
-                        <h1>Completed:</h1>
-                        <h1><?php echo $completedSessions; ?></h1>
-                        <h1>Drop off:</h1>
-                        <h1><?php echo $dropOffSessions; ?></h1>
+                        <h5>Completed: <?php echo $completedSessions; ?></h5>
+                        <h5>Drop off:<?php echo $dropOffSessions; ?></h5>
                     </div>
                 </div>
             </div>
         </div>
-<<<<<<< Updated upstream
     </div>
     <div class="row my-3">
         <div class="col-md-6 mb-1">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title text-center">Most Recommended Products</h5>
-<<<<<<< Updated upstream
-                    <div id="productRecommendedChart"></div>
-=======
-        <div class="row my-3">
-            <div class="col-md-6 mb-1">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Device Count</h5>
-                        <div id="deviceChart"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-1">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="col">
-                            <div id="completedDropOffChart"></div>
-                        </div>
-                        <div class="col">
-                            <p>Completed: <span class="h5"> <?php echo $completedSessions; ?></span></p>
-                            <p>Drop off: <span class="h5 "> <?php echo $dropOffSessions; ?></span></p>
-                        </div>
-                    </div>
->>>>>>> Stashed changes
-=======
                     <div id="productRecommendedChartGeneral"></div>
                     <div id="productRecommendedChartCategory"></div>
->>>>>>> Stashed changes
                 </div>
             </div>
         </div>

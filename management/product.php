@@ -119,7 +119,7 @@ $result = mysqli_query($conn, $query);
                                                 </div>
                                                 <div class="card-body text-center">
                                                     <img src="<?php echo $prodImage; ?>" href="<?php echo $prodURL ?>" style="width: 70%" alt="Product Image"><br>
-                                                    <a href="<?php echo $prodURL ?>" target="_blank" class="btn btn-primary my-2 rounded-pill">VIEW PRODUCT</a>
+                                                    <a href="<?php echo $prodURL ?>" target="_blank" class="btn btn-dark my-2 rounded-pill">VIEW PRODUCT</a>
                                                     <textarea type="text" style="resize: none" class="form-control mt-3" rows="7" id="prodDescription" name="prodDescription" readonly><?php echo $prodDescription; ?></textarea>
                                                 </div>
                                             </div>
