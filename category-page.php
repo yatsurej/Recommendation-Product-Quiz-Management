@@ -9,30 +9,46 @@
     include 'db.php';
     $selectedCategory = $_SESSION['selectedCategory'];
 
-    if (isset($_SESSION['quizProgress']) || isset($_SESSION['siteVisit'])){
+    if (isset($_SESSION['quizProgress'])) {
         if (!isset($_SESSION['drop_insertion_done'])) {
             $guestID = $_SESSION['guestID'];
-            $device =  $_SESSION['deviceType'];
+            $device  = $_SESSION['deviceType'];
             $country = $_SESSION['country'];
             $source  = $_SESSION['referrer'];
-        
-            $query = "UPDATE session
-                      SET status = '1'
-                      WHERE guestID = '$guestID'";
-
+            $lastID  = $_SESSION['last_session_id'];
+    
+            $query  = "SELECT * FROM session WHERE sessionID = '$lastID' AND prodID IS NULL";
             $result = mysqli_query($conn, $query);
-        
-            if ($result) {
-                $_SESSION['drop_insertion_done'] = true;
-            } 
+    
+            if(mysqli_num_rows($result) > 0){
+                $query = "UPDATE session
+                        SET status = '1'
+                        WHERE guestID = '$guestID' AND sessionID = '$lastID'";
+
+                $result = mysqli_query($conn, $query);
+
+                if ($result) {
+                    $_SESSION['drop_insertion_done'] = true;
+                }
+            } else {
+                $query = "INSERT INTO session(guestID, device_type, source, status, locationFrom) VALUES ('$guestID', '$device',  '$source', '1', '$country')";
+                $result = mysqli_query($conn, $query);
+    
+                if ($result) {
+                    if(isset($_SESSION['last_session_id'])){
+                        unset($_SESSION['last_session_id']);
+                        $_SESSION['last_session_id'] = mysqli_insert_id($conn);
+                    }
+                    $_SESSION['drop_insertion_done'] = true;
+                }
+            }
         }
-        unset($_SESSION['quizProgress']); 
+        unset($_SESSION['quizProgress']);
         unset($_SESSION['selectedAnswers']);
         unset($_SESSION['currentQuestion']);
         unset($_SESSION['productTally']);
     }
     
-    if (isset($_SESSION['visit_']))
     $query = "SELECT * FROM category WHERE categoryID = '$selectedCategory'";
     $result = mysqli_query($conn, $query);
     while($row = mysqli_fetch_assoc($result)){

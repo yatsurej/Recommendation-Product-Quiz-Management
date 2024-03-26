@@ -32,7 +32,6 @@
             $maxTallyProducts = array($product);
         }
     }
-    echo $_SESSION['guestID'];
 ?>
 
 <div class="body-wrapper bg5">
@@ -58,27 +57,51 @@
 
                                 $_SESSION['prodID'] = $prodID;
                                 if (!isset($_SESSION['finish_insertion_done'])) {
-                                    $guestID = $_SESSION['guestID'];
-                                    $device =  $_SESSION['deviceType'];
-                                    $country = $_SESSION['country'];
-                                    $source = "lazada";
-                                    $prod = $_SESSION['prodID'];
-                                
-                                    $query = "INSERT INTO session(guestID, device_type, prodID, source, isFinished, locationFrom) VALUES ('$guestID', '$device', '$prod', '$source', '2', '$country')";
+                                    $guestID    = $_SESSION['guestID'];
+                                    $device     = $_SESSION['deviceType'];
+                                    $country    = $_SESSION['country'];
+                                    $source     = $_SESSION['referrer'];
+                                    $prod       = $_SESSION['prodID'];
+                                    $lastID     = $_SESSION['last_session_id'];
+                                    
+                                    $query  = "SELECT * FROM session WHERE sessionID = '$lastID' AND prodID IS NULL";
                                     $result = mysqli_query($conn, $query);
-                                
-                                    if ($result) {
-                                        $sessionID = mysqli_insert_id($conn);
-                                
-                                        foreach ($answers as $answer) {
-                                            $queryAnswer = "INSERT INTO session_answers(sessionID, answerID) VALUES ('$sessionID', '$answer')";
-                                            $resultAnswer = mysqli_query($conn, $queryAnswer);
-                                            if (!$resultAnswer) {
-                                                echo "Error inserting answer: " . mysqli_error($conn);
+
+                                    if(mysqli_num_rows($result) > 0){
+                                        $query = "UPDATE session
+                                                SET status = '2', prodID = '$prodID'
+                                                WHERE guestID = '$guestID' AND sessionID = '$lastID'";
+                                        $result = mysqli_query($conn, $query);
+
+                                        if ($result) {
+                                            $sessionID = $lastID;
+                                    
+                                            foreach ($answers as $answer) {
+                                                $queryAnswer = "INSERT INTO session_answers(sessionID, answerID) VALUES ('$sessionID', '$answer')";
+                                                $resultAnswer = mysqli_query($conn, $queryAnswer);
+                                                if (!$resultAnswer) {
+                                                    echo "Error inserting answer: " . mysqli_error($conn);
+                                                }
                                             }
-                                        }
-                                        $_SESSION['finish_insertion_done'] = true;
-                                    } 
+                                            $_SESSION['finish_insertion_done'] = true;
+                                        } 
+                                    } else{
+                                        $query = "INSERT INTO session(guestID, device_type, prodID, source, status, locationFrom) VALUES ('$guestID', '$device', '$prod', '$source', '2', '$country')";
+                                        $result = mysqli_query($conn, $query);
+                                    
+                                        if ($result) {
+                                            $sessionID = mysqli_insert_id($conn);
+                                    
+                                            foreach ($answers as $answer) {
+                                                $queryAnswer = "INSERT INTO session_answers(sessionID, answerID) VALUES ('$sessionID', '$answer')";
+                                                $resultAnswer = mysqli_query($conn, $queryAnswer);
+                                                if (!$resultAnswer) {
+                                                    echo "Error inserting answer: " . mysqli_error($conn);
+                                                }
+                                            }
+                                            $_SESSION['finish_insertion_done'] = true;
+                                        } 
+                                    }
                                 }
                                 ?>
                                 <img src="management/<?php echo $prodImage; ?>" class="suggested-image" alt="Product Image" class="img-fluid">

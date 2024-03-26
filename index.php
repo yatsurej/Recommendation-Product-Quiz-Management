@@ -3,11 +3,23 @@
     $pageTitle = "Quiz";
     include 'header.php';
     include 'db.php';
+    include_once 'detect.php'; 
 
     // Device Type
+    $mdetect = new MobileDetect(); 
+ 
     $deviceType = "";
-    if (isset($_POST['deviceType'])) {
-        $deviceType = $_POST['deviceType'];
+    if($mdetect->isMobile()){ 
+        if($mdetect->isTablet()){ 
+            $deviceType = "tablet";
+        }else{ 
+            $deviceType = "mobile";
+        } 
+    } else{ 
+        $deviceType = "desktop";
+    }
+
+    if (isset($deviceType)) {
         $_SESSION['deviceType'] = $deviceType;
     }
 
@@ -19,14 +31,43 @@
         $guestID = $_SESSION['guestID'];
     }
 
-    if (isset($_POST['country'])) {
-        $country = $_POST['country'];
+    // Country
+    function get_IP_address(){
+        foreach (array('HTTP_CLIENT_IP',
+                    'HTTP_X_FORWARDED_FOR',
+                    'HTTP_X_FORWARDED',
+                    'HTTP_X_CLUSTER_CLIENT_IP',
+                    'HTTP_FORWARDED_FOR',
+                    'HTTP_FORWARDED',
+                    'REMOTE_ADDR') as $key){
+            if (array_key_exists($key, $_SERVER) === true){
+                foreach (explode(',', $_SERVER[$key]) as $IPaddress){
+                    $IPaddress = trim($IPaddress); // Just to be safe
+
+                    if (filter_var($IPaddress,
+                                FILTER_VALIDATE_IP,
+                                FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)
+                        !== false) {
+
+                        return $IPaddress;
+                    }
+                }
+            }
+        }
+    }
+
+    $ip = get_IP_address();
+    $loc = file_get_contents("http://ip-api.com/json/$ip");
+    $loc_o = json_decode($loc);
+    $country = $loc_o->country;
+
+    if (isset($country)) {
         $_SESSION['country'] = $country;
     }
 
-    $referrer = "";
-    if (isset($_POST['referrer'])) {
-        $referrer = $_POST['referrer'];
+    // Referrer
+    if (!isset($_SESSION['referrer'])) {
+        $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
         $_SESSION['referrer'] = $referrer;
     }
 
@@ -37,36 +78,55 @@
     var_dump($_SESSION['country']);
     echo "<br>";
     var_dump($_SESSION['referrer']);
+
     // Site Visit
     if (!isset($_SESSION['visit_insertion_done'])) {
         $guestID = $_SESSION['guestID'];
-        $device = isset($_SESSION['deviceType']) ? $_SESSION['deviceType'] : ""; // Handling undefined key
-        $country = isset($_SESSION['country']) ? $_SESSION['country'] : ""; // Handling undefined key
-        $source = isset($_SESSION['referrer']) ? $_SESSION['referrer'] : ""; // Handling undefined key
+        $device  = $_SESSION['deviceType'];
+        $country = $_SESSION['country'];
+        $source  = $_SESSION['referrer'];
 
-        $query = "INSERT INTO session(guestID, device_type, source, status, locationFrom) VALUES ('$guestID', '$device', '$source', '0', '$country')";
+        $query = "INSERT INTO session(device_type, source, status, locationFrom) VALUES ('$device', '$source', '0', '$country')";
         $result = mysqli_query($conn, $query);
         if ($result) {
             $_SESSION['visit_insertion_done'] = true;
+            $_SESSION['last_session_id'] = mysqli_insert_id($conn);
         }
     }
 
     // Check if user dropped off the quiz
-    if (isset($_SESSION['quizProgress']) || isset($_SESSION['siteVisit'])) {
+    if (isset($_SESSION['quizProgress'])) {
         if (!isset($_SESSION['drop_insertion_done'])) {
             $guestID = $_SESSION['guestID'];
-            $device = $_SESSION['deviceType'];
+            $device  = $_SESSION['deviceType'];
             $country = $_SESSION['country'];
-            $source = $_SESSION['referrer'];
-
-            $query = "UPDATE session
-                    SET status = '1', device_type = '$device', locationFrom = '$country'
-                    WHERE guestID = '$guestID'";
-
+            $source  = $_SESSION['referrer'];
+            $lastID  = $_SESSION['last_session_id'];
+    
+            $query  = "SELECT * FROM session WHERE sessionID = '$lastID' AND prodID IS NULL AND guestID IS NULL";
             $result = mysqli_query($conn, $query);
+    
+            if(mysqli_num_rows($result) > 0){
+                $query = "UPDATE session
+                        SET status = '1', guestID = '$guestID'
+                        WHERE sessionID = '$lastID'";
 
-            if ($result) {
-                $_SESSION['drop_insertion_done'] = true;
+                $result = mysqli_query($conn, $query);
+
+                if ($result) {
+                    $_SESSION['drop_insertion_done'] = true;
+                }
+            } else {
+                $query = "INSERT INTO session(guestID, device_type, source, status, locationFrom) VALUES ('$guestID', '$device',  '$source', '1', '$country')";
+                $result = mysqli_query($conn, $query);
+    
+                if ($result) {
+                    if(isset($_SESSION['last_session_id'])){
+                        unset($_SESSION['last_session_id']);
+                        $_SESSION['last_session_id'] = mysqli_insert_id($conn);
+                    }
+                    $_SESSION['drop_insertion_done'] = true;
+                }
             }
         }
         unset($_SESSION['quizProgress']);
@@ -74,6 +134,7 @@
         unset($_SESSION['currentQuestion']);
         unset($_SESSION['productTally']);
     }
+    
 
     // Category Session (DO NOT TOUCH)
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -82,6 +143,7 @@
         exit();
     }
 
+    echo $_SESSION['last_session_id']
 ?>
 <div class="body-wrapper bg2">
     <div class="wrapper">

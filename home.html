@@ -63,106 +63,48 @@
     </div>
     <script>
       function fetchCountryDataAndSend() {
-            fetch("https://api.ipify.org?format=json")
-                .then(response => response.json())
-                .then(data => {
-                    const ipAddress = data.ip;
-                    fetch(`https://ipapi.co/${ipAddress}/json/`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const country = data.country_name;
-                            sendCountryToIndexPHP(country);
-                            console.log(country);
-                            // switch (country) {
-                              //   case "Philippines":
-                              //     window.location.href = "https://ph.olympics-laz.com/";
-                              //     break;
-                              //   case "Singapore":
-                              //     window.location.href = "https://sg.olympics-laz.com/";
-                              //     break;
-                              //   case "Thailand":
-                              //     window.location.href = "https://th.olympics-laz.com/";
-                              //     break;
-                              //   case "Indonesia":
-                              //     window.location.href = "https://id.olympics-laz.com/";
-                              //     break;
-                              //   case "Vietnam":
-                              //     window.location.href = "https://vn.olympics-laz.com/";
-                              //     break;
-                              //   case "Malaysia":
-                              //     window.location.href = "https://my.olympics-laz.com/";
-                              //     break;
-                              //   default:
-                              //     window.location.href = "https://olympics-laz.com/";
-                              //     break;
-                              // }
-                        })
-                        .catch(error => {
-                            console.error("Error fetching country data:", error);
-                        });
-                })
-                .catch(error => {
-                    console.error("Error fetching IP address:", error);
-                });
+      fetch("https://api.ipify.org?format=json")
+          .then(response => response.json())
+          .then(data => {
+              const ipAddress = data.ip;
+              fetch(`https://ipapi.co/${ipAddress}/json/`)
+                  .then(response => response.json())
+                  .then(data => {
+                      const country = data.country_name;
+                      sendCountryToIndexPHP(country);
+                      console.log(country);
+                      // switch (country) {
+                        //   case "Philippines":
+                        //     window.location.href = "https://ph.olympics-laz.com/";
+                        //     break;
+                        //   case "Singapore":
+                        //     window.location.href = "https://sg.olympics-laz.com/";
+                        //     break;
+                        //   case "Thailand":
+                        //     window.location.href = "https://th.olympics-laz.com/";
+                        //     break;
+                        //   case "Indonesia":
+                        //     window.location.href = "https://id.olympics-laz.com/";
+                        //     break;
+                        //   case "Vietnam":
+                        //     window.location.href = "https://vn.olympics-laz.com/";
+                        //     break;
+                        //   case "Malaysia":
+                        //     window.location.href = "https://my.olympics-laz.com/";
+                        //     break;
+                        //   default:
+                        //     window.location.href = "https://olympics-laz.com/";
+                        //     break;
+                        // }
+                  })
+                  .catch(error => {
+                      console.error("Error fetching country data:", error);
+                  });
+          })
+          .catch(error => {
+              console.error("Error fetching IP address:", error);
+          });
         }
-
-        // Function to send country data to index.php using AJAX
-        function sendCountryToIndexPHP(country) {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log("Country sent successfully.");
-                }
-            };
-            xhttp.open("POST", "index.php", true);
-            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhttp.send("country=" + country);
-        }
-
-        // Call fetchCountryDataAndSend function when the page loads
-        window.onload = fetchCountryDataAndSend;
-
-        var userAgent = navigator.userAgent.toLowerCase(),
-            width = screen.availWidth,
-            height = screen.availHeight,
-            userIsOnMobileDevice = checkIfUserIsOnMobileDevice(userAgent);
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log("Device type sent successfully.");
-            }
-        };
-
-        xhttp.open("POST", "index.php", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("deviceType=" + (userIsOnMobileDevice ? "mobile" : "desktop"));
-
-        function checkIfUserIsOnMobileDevice(userAgent) {
-            if (userAgent.includes('mobi') || userAgent.includes('tablet')) {
-                return true;
-            }
-            if (userAgent.includes('android')) {
-                if (height > width && width < 800) {
-                    return true;
-                }
-                if (width > height && height < 800) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        var referrer = document.referrer || "";
-        var xhttpReferrer = new XMLHttpRequest();
-        xhttpReferrer.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log("Referrer sent successfully.");
-            }
-        };
-        xhttpReferrer.open("POST", "index.php", true);
-        xhttpReferrer.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttpReferrer.send("referrer=" + referrer);
     </script>
   </body>
 </html>
