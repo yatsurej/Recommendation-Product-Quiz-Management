@@ -16,7 +16,9 @@
           <h1>Select your country</h1>
         </div>
         <div class="countries-container">
-          <a href="http://localhost/quiz_finalfinal/index.php" class="country-card">
+          <a
+            href="http://localhost/quiz_finalfinal/index.php"
+            class="country-card">
             <img
               src="./assets/images/philippines-flag.svg"
               alt="Philippines Flag"
@@ -63,6 +65,7 @@
     </div>
     <script>
       function fetchCountryDataAndSend() {
+<<<<<<< Updated upstream
             fetch("https://api.ipify.org?format=json")
                 .then(response => response.json())
                 .then(data => {
@@ -163,6 +166,50 @@
         xhttpReferrer.open("POST", "index.php", true);
         xhttpReferrer.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttpReferrer.send("referrer=" + referrer);
+=======
+        fetch("https://api.ipify.org?format=json")
+          .then((response) => response.json())
+          .then((data) => {
+            const ipAddress = data.ip;
+            fetch(`https://ipapi.co/${ipAddress}/json/`)
+              .then((response) => response.json())
+              .then((data) => {
+                const country = data.country_name;
+                sendCountryToIndexPHP(country);
+                console.log(country);
+                // switch (country) {
+                //   case "Philippines":
+                //     window.location.href = "https://ph.olympics-laz.com/";
+                //     break;
+                //   case "Singapore":
+                //     window.location.href = "https://sg.olympics-laz.com/";
+                //     break;
+                //   case "Thailand":
+                //     window.location.href = "https://th.olympics-laz.com/";
+                //     break;
+                //   case "Indonesia":
+                //     window.location.href = "https://id.olympics-laz.com/";
+                //     break;
+                //   case "Vietnam":
+                //     window.location.href = "https://vn.olympics-laz.com/";
+                //     break;
+                //   case "Malaysia":
+                //     window.location.href = "https://my.olympics-laz.com/";
+                //     break;
+                //   default:
+                //     window.location.href = "https://olympics-laz.com/";
+                //     break;
+                // }
+              })
+              .catch((error) => {
+                console.error("Error fetching country data:", error);
+              });
+          })
+          .catch((error) => {
+            console.error("Error fetching IP address:", error);
+          });
+      }
+>>>>>>> Stashed changes
     </script>
   </body>
 </html>

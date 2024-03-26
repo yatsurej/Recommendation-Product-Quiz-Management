@@ -1,37 +1,37 @@
 <?php
-    session_start();
+session_start();
 
-    if (!isset($_SESSION['user_authenticated'])) {
-        header('Location: login.php');
-        exit();
-    }
+if (!isset($_SESSION['user_authenticated'])) {
+    header('Location: login.php');
+    exit();
+}
 
-    include '../db.php';
-    $username   = $_SESSION['username'];
-    $userQuery  = "SELECT * FROM user WHERE username = '$username'";
-    $userResult = mysqli_query($conn, $userQuery);
+include '../db.php';
+$username   = $_SESSION['username'];
+$userQuery  = "SELECT * FROM user WHERE username = '$username'";
+$userResult = mysqli_query($conn, $userQuery);
 
-    while($userRow = mysqli_fetch_assoc($userResult)){
-        $userID        = $userRow['userID'];
-        $userFirstName = $userRow['firstName'];
-        $userLastName  = $userRow['lastName'];    
-    }
-    $pageTitle = "Quiz Management";
-    include 'header.php';
-    include 'navbar.php';
+while ($userRow = mysqli_fetch_assoc($userResult)) {
+    $userID        = $userRow['userID'];
+    $userFirstName = $userRow['firstName'];
+    $userLastName  = $userRow['lastName'];
+}
+$pageTitle = "Quiz Management";
+include 'header.php';
+include 'navbar.php';
 ?>
 
-<div class="container w-75 text-center mt-5">
-    <p class="fs-3">Welcome, 
-        <?php 
-            if ($_SESSION['user_role'] == 'admin') {
-                echo "Admin ";
-            } elseif ($_SESSION['user_role'] == 'client') {
-                header("Location: analytics.php");
-            } else {
-                echo "Unknown Role ";
-            }
-            echo $userFirstName . ' ' . $userLastName;
+<div class="container text-center mt-5">
+    <p class="fs-3">Welcome,
+        <?php
+        if ($_SESSION['user_role'] == 'admin') {
+            echo "Admin ";
+        } elseif ($_SESSION['user_role'] == 'client') {
+            header("Location: analytics.php");
+        } else {
+            echo "Unknown Role ";
+        }
+        echo $userFirstName . ' ' . $userLastName;
         ?>
     </p>
 </div>

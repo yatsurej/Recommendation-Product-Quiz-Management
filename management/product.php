@@ -1,45 +1,45 @@
 <?php
-    $pageTitle = "Product Page";
-    include 'header.php';
-    include 'navbar.php';
-    if (isset($_SESSION['username'])) {
-        $username   = $_SESSION['username'];
-        $userQuery  = "SELECT * FROM user WHERE username = '$username'";
-        $userResult = mysqli_query($conn, $userQuery);
-    
-        while ($userRow = mysqli_fetch_assoc($userResult)) {
-            $userID     = $userRow['userID'];
+$pageTitle = "Product Page";
+include 'header.php';
+include 'navbar.php';
+if (isset($_SESSION['username'])) {
+    $username   = $_SESSION['username'];
+    $userQuery  = "SELECT * FROM user WHERE username = '$username'";
+    $userResult = mysqli_query($conn, $userQuery);
 
-            $_SESSION['userID'] = $userID;
-        }
-    } else {
-        header('Location: index.php');
-        exit();
+    while ($userRow = mysqli_fetch_assoc($userResult)) {
+        $userID     = $userRow['userID'];
+
+        $_SESSION['userID'] = $userID;
     }
+} else {
+    header('Location: index.php');
+    exit();
+}
 
-    $recordsPerPage = 10;
-    $page = isset($_GET['page']) ? $_GET['page'] : 1;
-    $offset = ($page - 1) * $recordsPerPage;
-    $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
+$recordsPerPage = 10;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($page - 1) * $recordsPerPage;
+$categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
 
-    $query = "SELECT c.categoryID, c.categoryName, p.*
+$query = "SELECT c.categoryID, c.categoryName, p.*
               FROM category c 
               NATURAL JOIN product p";
-    
-    if ($categoryFilter > 0) {
-        $query .= " WHERE c.categoryID = $categoryFilter";
-    }
 
-    $query .= " GROUP BY p.prodID DESC
+if ($categoryFilter > 0) {
+    $query .= " WHERE c.categoryID = $categoryFilter";
+}
+
+$query .= " GROUP BY p.prodID DESC
                LIMIT $offset, $recordsPerPage";
 
-    $result = mysqli_query($conn, $query);
+$result = mysqli_query($conn, $query);
 ?>
 
-<div class="container w-75 my-3">
+<div class="container my-3">
     <h1 class="text-center fw-bold mt-4">Product Management</h1>
     <hr style="height:1px;border-width:0;color:gray;background-color:gray">
-    <?php include 'product_nav.php';?>
+    <?php include 'product_nav.php'; ?>
     <form class="form-inline d-inline">
         <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
             <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
@@ -57,7 +57,7 @@
     </form>
     <button class="btn btn-dark float-end mb-2 me-5" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
 </div>
-<div class="container w-100">
+<div class="container">
     <div class="table-responsive">
         <table class="table table-hover">
             <thead class="text-center">
@@ -69,19 +69,19 @@
             </thead>
             <tbody>
                 <?php
-                    while($row = mysqli_fetch_assoc($result)){
-                        $categoryID      = $row['categoryID'];
-                        $categoryName    = $row['categoryName'];
-                        $prodID          = $row['prodID'];
-                        $prodName        = $row['prodName'];
-                        $prodDescription = $row['prodDescription'];
-                        $prodImage       = $row['prodImage'];
-                        $prodURL         = $row['prodURL'];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $categoryID      = $row['categoryID'];
+                    $categoryName    = $row['categoryName'];
+                    $prodID          = $row['prodID'];
+                    $prodName        = $row['prodName'];
+                    $prodDescription = $row['prodDescription'];
+                    $prodImage       = $row['prodImage'];
+                    $prodURL         = $row['prodURL'];
 
-                    ?>
+                ?>
                     <tr>
-                        <td><?php echo $prodName?></td>
-                        <td><?php echo $categoryName?></td>
+                        <td><?php echo $prodName ?></td>
+                        <td><?php echo $categoryName ?></td>
                         <td>
                             <div class="d-flex justify-content-center align-items-center">
                                 <!-- View Button -->
@@ -94,12 +94,12 @@
                                 </div>
                                 <!-- Edit Button -->
                                 <div class="text-center">
-                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $prodID; ?>">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </div>
-                                </button>
-                            </div>
+                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $prodID; ?>">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </div>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- View Product -->
@@ -118,71 +118,72 @@
                                                     <h4 class="card-title text-center"><?php echo $prodName; ?></h4>
                                                 </div>
                                                 <div class="card-body text-center">
-                                                    <img src="<?php echo $prodImage; ?>" href="<?php echo $prodURL ?>" style="width: 70%" alt="Product Image"><br>                                              
-                                                    <a href="<?php echo $prodURL?>" target="_blank" class="btn btn-primary my-2 rounded-pill">VIEW PRODUCT</a>
-                                                    <textarea type="text" style="resize: none" class="form-control mt-3" rows="7" id="prodDescription" name="prodDescription" readonly><?php echo $prodDescription; ?></textarea>                                                </div>
+                                                    <img src="<?php echo $prodImage; ?>" href="<?php echo $prodURL ?>" style="width: 70%" alt="Product Image"><br>
+                                                    <a href="<?php echo $prodURL ?>" target="_blank" class="btn btn-primary my-2 rounded-pill">VIEW PRODUCT</a>
+                                                    <textarea type="text" style="resize: none" class="form-control mt-3" rows="7" id="prodDescription" name="prodDescription" readonly><?php echo $prodDescription; ?></textarea>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+    </div>
 
-                            <!-- Update Product -->
-                            <div class="modal fade" id="editProductModal<?php echo $prodID; ?>" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h3 class="text-center">Update Product</h3>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action="functions.php" method="post" enctype="multipart/form-data">
-                                                <input type="hidden" name="prodID" value="<?php echo $prodID; ?>">
-                                                <!-- Card -->
-                                                <div class="card">
-                                                    <div class="card-body">
-                                                        <div class="text-center">
-                                                            <img src="<?php echo $prodImage; ?>" href="<?php echo $prodURL ?>" class="rounded" style="width: 70%" alt="Product Image">                                              
-                                                        </div>
-                                                        <div class="my-3">
-                                                            <label for="prodImage" class="text-muted mb-2">Product Image</label>
-                                                            <input type="file" class="form-control" name="prodImage" id="prodImage">
-                                                        </div>
-                                                        <div class="form-floating my-3">
-                                                            <input type="text" class="form-control" name="prodName" id="prodName" value="<?php echo $prodName;?>">
-                                                            <label for="prodName">Product Name</label>
-                                                        </div>
-                                                        <div class="form-floating my-3">
-                                                            <input type="text" class="form-control" name="prodURL" id="prodURL" value="<?php echo $prodURL;?>">
-                                                            <label for="prodURL">Product URL</label>
-                                                        </div>
-                                                        <div class="form-floating my-3">
-                                                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" id="prodDescription" name="prodDescription"><?php echo $prodDescription;?></textarea>
-                                                            <label for="prodDescription">Product Description</label>
-                                                        </div>
-                                                        <div class="text-end">
-                                                            <button class="btn btn-success my-2 mx-2" name="updateProduct" type="submit">Save changes</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+    <!-- Update Product -->
+    <div class="modal fade" id="editProductModal<?php echo $prodID; ?>" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="text-center">Update Product</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="functions.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="prodID" value="<?php echo $prodID; ?>">
+                        <!-- Card -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <img src="<?php echo $prodImage; ?>" href="<?php echo $prodURL ?>" class="rounded" style="width: 70%" alt="Product Image">
+                                </div>
+                                <div class="my-3">
+                                    <label for="prodImage" class="text-muted mb-2">Product Image</label>
+                                    <input type="file" class="form-control" name="prodImage" id="prodImage">
+                                </div>
+                                <div class="form-floating my-3">
+                                    <input type="text" class="form-control" name="prodName" id="prodName" value="<?php echo $prodName; ?>">
+                                    <label for="prodName">Product Name</label>
+                                </div>
+                                <div class="form-floating my-3">
+                                    <input type="text" class="form-control" name="prodURL" id="prodURL" value="<?php echo $prodURL; ?>">
+                                    <label for="prodURL">Product URL</label>
+                                </div>
+                                <div class="form-floating my-3">
+                                    <textarea type="text" style="resize: none; height: 100px;" class="form-control" id="prodDescription" name="prodDescription"><?php echo $prodDescription; ?></textarea>
+                                    <label for="prodDescription">Product Description</label>
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-success my-2 mx-2" name="updateProduct" type="submit">Save changes</button>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
-                    <?php
-                    }
-                ?>
-            </tbody>
-        </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+    </td>
+    </tr>
+<?php
+                }
+?>
+</tbody>
+</table>
+</div>
 </div>
 
 <!-- Pagination -->
-<div class="container w-75">
+<div class="container">
     <ul class="pagination justify-content-center">
         <?php
         $totalRecordsQuery = "SELECT COUNT(*) AS totalRecords FROM product";
@@ -241,7 +242,7 @@
                                 $categoryQuery = "SELECT * FROM category";
                                 $categoryResult = mysqli_query($conn, $categoryQuery);
 
-                                while($row = mysqli_fetch_assoc($categoryResult)){
+                                while ($row = mysqli_fetch_assoc($categoryResult)) {
                                     $categoryID     = $row['categoryID'];
                                     $categoryName   = $row['categoryName'];
 

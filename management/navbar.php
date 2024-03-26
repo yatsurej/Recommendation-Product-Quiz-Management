@@ -1,24 +1,25 @@
 <?php
-     if (basename(__FILE__) == basename($_SERVER["SCRIPT_FILENAME"])) {
-        header("Location: index.php");
-        exit();
-    }
+if (basename(__FILE__) == basename($_SERVER["SCRIPT_FILENAME"])) {
+    header("Location: index.php");
+    exit();
+}
 
-    if (!isset($_SESSION)) {
-        session_start();
-    }
+if (!isset($_SESSION)) {
+    session_start();
+}
 
-    $allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.php');
+$allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.php');
 ?>
 <style>
     .navbar {
-            background-color: #000;
-        }
+        background-color: #000;
+    }
 
     .navbar-brand {
         font-size: 2rem;
         font-weight: bold;
     }
+
     .navb {
         color: white !important;
         transition: background-color 0.3s, color 0.3s;
@@ -28,6 +29,7 @@
 </style>
 
 <nav class="navbar navbar-expand-lg navbar-dark">
+<<<<<<< Updated upstream
     <div class="container-fluid w-75 d-flex justify-content-between align-items-center">
         <a class="navbar-brand text-white" href="index.php">Quiz Management</a>
         <?php if (isset($_SESSION['user_authenticated'])): ?>
@@ -103,6 +105,16 @@
         <div class="collapse navbar-collapse" id="sidebarNav">
             <ul class="navbar-nav flex-column">
                 <?php if (isset($_SESSION['user_authenticated'])) : ?>
+=======
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <img src="../assets/images/PG.png" alt="P&G Logo" style="height: 30px; margin: 10px;">
+        <?php if (isset($_SESSION['user_authenticated'])) : ?>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav nav-underline ms-auto text-end">
+>>>>>>> Stashed changes
                     <?php if ($_SESSION['user_role'] == 'admin') : ?>
                         <li class="nav-item">
                             <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php' || basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>
@@ -117,6 +129,7 @@
                             <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'analytics.php') ? 'active' : 'inactive'; ?>" href="analytics.php">Analytics</a>
                         </li>
                     <?php endif; ?>
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes
                     <li class="nav-item">
                         <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php' || basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>                   
@@ -130,14 +143,14 @@
                     </li>
                     <li class="nav-item">
                         <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'analytics.php') ? 'active' : 'inactive'; ?>" href="analytics.php">Analytics</a>            
+=======
+                    <li class="nav-item">
+                        <a class="navb nav-link" href="logout.php">Logout</a>
+>>>>>>> Stashed changes
                     </li>
                 <?php endif; ?>
-                    <li class="nav-item">
-                        <a class="navb nav-link" href="logout.php">Logout</a>            
-                    </li>
-            <?php endif; ?>
-            </ul>
-        </div>
+                </ul>
+            </div>
     </div>
 </nav>
 =======

@@ -96,6 +96,7 @@ body {
   color: #9ba3be;
 }
 
+<<<<<<< Updated upstream
 .admin-page {
   margin-left: 250px;
 }
@@ -115,6 +116,10 @@ h3 {
 }
 
 /* Pagination Styles */
+=======
+/* Pagination Style */
+
+>>>>>>> Stashed changes
 .pagination > li > a {
   background-color: white;
   color: #000;
@@ -139,3 +144,17 @@ h3 {
   background-color: #000 !important;
   border: solid 1px #000;
 }
+<<<<<<< Updated upstream
+=======
+
+@media only screen and (max-width: 768px) {
+  .login-form {
+    width: 90vw;
+    padding: 20px 10px 7px 10px;
+  }
+
+  .row {
+    flex-direction: column !important;
+  }
+}
+>>>>>>> Stashed changes
