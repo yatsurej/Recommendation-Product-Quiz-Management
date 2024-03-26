@@ -97,6 +97,7 @@
         }
     }
 ?>
+<<<<<<< Updated upstream
 <div class="container w-50">
     <form>
         <div class="row align-items-center my-3">
@@ -136,6 +137,48 @@
                     <h5>Category Session Count</h5><br>
                     <?php foreach ($categoryCounts as $category => $c_count){ ?>
                             <h2><?php echo $category . " : " . $c_count;?></h2>
+=======
+<div class="admin-page">
+    <div class="container">
+        <form>
+            <div class="row align-items-center my-3">
+                <div class="col">
+                    <label for="timestamp_start">Start Date:</label>
+                    <input type="date" class="form-control" name="timestamp_start" id="timestamp_start" value="<?php echo $timeFilterStart ? $timeFilterStart : date('Y-m-01'); ?>">
+                </div>
+                <div class="col">
+                    <label for="timestamp_end">End Date:</label>
+                    <input type="date" class="form-control" name="timestamp_end" id="timestamp_end" value="<?php echo $timeFilterEnd ? $timeFilterEnd : date('Y-m-t'); ?>">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-dark w-100">FILTER</button>
+                </div>
+            </div>
+        </form>
+        <div class="row my-3">
+            <div class="col mb-1">
+                <div class="card" style="height: 10rem;">
+                    <div class="card-body text-center">
+                        <h5>Total Users</h5>
+                        <h2><?php echo $totalUsers; ?></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-1">
+                <div class="card" style="height: 10rem;">
+                    <div class="card-body text-center">
+                        <h5>Total Sessions</h5>
+                        <h2><?php echo $totalSessions; ?></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-1">
+                <div class="card" style="height: 10rem;">
+                    <div class="card-body text-center">
+                        <h5>Category Session Count</h5>
+                        <?php foreach ($categoryCounts as $category => $c_count) { ?>
+                            <h3><?php echo $category . " : " . $c_count; ?></h3>
+>>>>>>> Stashed changes
                         <?php
                         }
                     ?>
@@ -167,6 +210,7 @@
                 </div>
             </div>
         </div>
+<<<<<<< Updated upstream
     </div>
     <div class="row my-3">
         <div class="col-md-6 mb-1">
@@ -174,6 +218,28 @@
                 <div class="card-body">
                     <h5 class="card-title text-center">Most Recommended Products</h5>
                     <div id="productRecommendedChart"></div>
+=======
+        <div class="row my-3">
+            <div class="col-md-6 mb-1">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Device Count</h5>
+                        <div id="deviceChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-1">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="col">
+                            <div id="completedDropOffChart"></div>
+                        </div>
+                        <div class="col">
+                            <p>Completed: <span class="h5"> <?php echo $completedSessions; ?></span></p>
+                            <p>Drop off: <span class="h5 "> <?php echo $dropOffSessions; ?></span></p>
+                        </div>
+                    </div>
+>>>>>>> Stashed changes
                 </div>
             </div>
         </div>
