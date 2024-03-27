@@ -268,7 +268,7 @@ $hideIfGeneral = !isset($selectedCategory) || $selectedCategory === 'general';
 $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 ?>
 
-<div class="container ">
+<div class="container">
     <form id="filterForm" action="" method="GET">
         <div class="row align-items-center my-3">
             <div class="col">
@@ -355,17 +355,26 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             </div>
         </div>
     </div>
-    <div class="row my-3">
-        <div class="col-md-6 mb-1">
+    <?php if (!$hideIfGeneral) : ?>
+        <div class="row my-3">
             <div class="card" style="height: 20rem;">
                 <div class="card-body">
                     <h5 class="card-title text-center">Most Recommended Products</h5>
-                    <?php if (!$hideIfCategory) : ?><div id="productRecommendedChartGeneral"></div><?php endif; ?>
-                    <?php if (!$hideIfGeneral) : ?><div id="productRecommendedChartCategory"></div><?php endif; ?>
+                    <div id="productRecommendedChartCategory"></div>
                 </div>
             </div>
         </div>
-        <?php if (!$hideIfCategory) : ?>
+    <?php endif; ?>
+    <?php if (!$hideIfCategory) : ?>
+        <div class="row my-3">
+            <div class="col-md-6 mb-1">
+                <div class="card" style="height: 20rem;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Most Recommended Products</h5>
+                        <div id="productRecommendedChartGeneral"></div>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-6 mb-1">
                 <div class="card" style="height: 20rem;">
                     <div class="card-body">
@@ -374,8 +383,8 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                     </div>
                 </div>
             </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php endif; ?>
     <div class="row my-3">
         <div class="card">
             <div id="questionAnswerChart"></div>
@@ -702,9 +711,8 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 categories: products,
                 labels: {
                     show: true,
-                    rotate: -45,
-                    rotateAlways: true,
-                    trim: false,
+                    wrap: true, // Enable word wrap
+                    maxWidth: 100, // Adjust maximum width for wrapping as needed
                 }
             }
         };
