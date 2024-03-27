@@ -3,7 +3,12 @@
 include 'db.php';
 session_start();
 
-$product = isset($_SESSION['prodID']) ? mysqli_real_escape_string($conn, $_SESSION['prodID']) : '';
+if (isset($_SESSION['prodID'])) {
+    foreach ($_SESSION['prodID'] as $prodID) {
+        $product .= mysqli_real_escape_string($conn, $prodID) . ',';
+    }
+    $product = rtrim($product, ',');
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['bonusAnswer'])) {
