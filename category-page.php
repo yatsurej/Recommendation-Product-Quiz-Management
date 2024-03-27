@@ -18,13 +18,13 @@
             $source  = $_SESSION['referrer'];
             $lastID  = $_SESSION['last_session_id'];
     
-            $query  = "SELECT * FROM session WHERE sessionID = '$lastID' AND prodID IS NULL AND guestID IS NULL";
+            $query  = "SELECT * FROM session WHERE sessionID = '$lastID'";
             $result = mysqli_query($conn, $query);
     
             if(mysqli_num_rows($result) > 0){
                 $query = "UPDATE session
-                        SET status = '1', guestID = '$guestID'
-                        WHERE sessionID = '$lastID'";
+                        SET status = '1'
+                        WHERE sessionID = '$lastID' AND guestID = '$guestID'";
 
                 $result = mysqli_query($conn, $query);
 

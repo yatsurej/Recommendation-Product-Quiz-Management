@@ -72,7 +72,7 @@
 
                                     if(mysqli_num_rows($result) > 0){
                                         $query = "UPDATE session
-                                                  SET status = '2', prodID = '$prodID'
+                                                  SET status = '2', prodID = '$prodID', timestamp = current_timestamp()
                                                   WHERE guestID = '$guestID' AND sessionID = '$lastID'";
                                         $result = mysqli_query($conn, $query);
 
