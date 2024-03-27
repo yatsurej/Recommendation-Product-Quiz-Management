@@ -3,6 +3,7 @@ $pageTitle = "Analytics";
 include 'header.php';
 include 'navbar.php';
 include '../db.php';
+
 $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
 
 if (isset($_SESSION['username'])) {
@@ -27,7 +28,7 @@ $selectedCategory = isset($_GET['category']) ? $_GET['category'] : 'general';
 $query = "SELECT COUNT(*) AS siteVisits, 
                      SUM(CASE WHEN s.status = 1 THEN 1 ELSE 0 END) AS dropOffSessions,
                      SUM(CASE WHEN s.status = 2 THEN 1 ELSE 0 END) AS completedSessions,
-                     SUM(CASE WHEN s.status IN (1, 2) THEN 1 ELSE 0 END) AS totalSessions,
+                     COUNT(DISTINCT CASE WHEN s.status IN (1, 2) THEN s.timestamp ELSE NULL END) AS totalSessions,
                      DATE(s.timestamp) AS sessionDate,
                      s.device_type, 
                      c.categoryName,
@@ -52,7 +53,7 @@ if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
     $query .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
 }
 
-$query .= " GROUP BY c.categoryName, s.device_type, s.guestID, s.locationFrom, s.prodID";
+$query .= " GROUP BY DATE(s.timestamp), c.categoryName, s.device_type, s.guestID, s.locationFrom, s.prodID";
 $result = mysqli_query($conn, $query);
 
 $totalSessions          = 0;
@@ -267,29 +268,31 @@ $hideIfGeneral = !isset($selectedCategory) || $selectedCategory === 'general';
 $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 ?>
 
-<div class="container">
+<div class="container ">
     <form id="filterForm" action="" method="GET">
-        <div class="row align-items-center my-3 md-my-5 sm-my-5">
+        <div class="row align-items-center my-3">
             <div class="col">
-                <?php
-                // Fetch category details from the category table
-                $categoryQuery = "SELECT categoryID, categoryName FROM category";
-                $categoryResult = mysqli_query($conn, $categoryQuery);
-                $categories = array();
+                <div>
+                    <?php
+                    // Fetch category details from the category table
+                    $categoryQuery = "SELECT categoryID, categoryName FROM category";
+                    $categoryResult = mysqli_query($conn, $categoryQuery);
+                    $categories = array();
 
-                while ($categoryRow = $categoryResult->fetch_assoc()) {
-                    $categories[$categoryRow['categoryID']] = $categoryRow['categoryName'];
-                }
-                ?>
-                <label for="categoryDropdown">Select Category:</label>
-                <form class="form-inline d-inline">
-                    <select class="custom-select mr-3" name="category" id="category" onchange="window.location.href=this.value;" style="border: none; margin-bottom: 30px; width: 100%; height: 46px;">
-                        <option value="analytics.php">General</option>
-                        <?php foreach ($categories as $categoryID => $categoryName) : ?>
-                            <option value="?category=<?php echo $categoryID; ?>" <?php echo ($categoryFilter == $categoryID) ? 'selected' : ''; ?>><?php echo $categoryName; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </form>
+                    while ($categoryRow = $categoryResult->fetch_assoc()) {
+                        $categories[$categoryRow['categoryID']] = $categoryRow['categoryName'];
+                    }
+                    ?>
+                    <label for="categoryDropdown">Select Category:</label>
+                    <form class="form-inline d-inline">
+                        <select class="custom-select mr-3" name="category" id="category" onchange="window.location.href=this.value;" style="border: none; margin-bottom: 30px; width: 100%; height: 46px;">
+                            <option value="analytics.php">General</option>
+                            <?php foreach ($categories as $categoryID => $categoryName) : ?>
+                                <option value="?category=<?php echo $categoryID; ?>" <?php echo ($categoryFilter == $categoryID) ? 'selected' : ''; ?>><?php echo $categoryName; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
+                </div>
             </div>
             <div class="col">
                 <label for="timestamp_start">Start Date:</label>
@@ -437,13 +440,12 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
         <div class="row my-3">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Source</h5>
                     <div class="text-center">
-                        <table class="table text-center">
-                            <thead>
+                        <table class="table">
+                            <thead class="text-center">
                                 <tr>
-                                    <th>Out Bound Clicks</th>
-                                    <th>Count</th>
+                                    <th>Product Recommended</th>
+                                    <th>Click Count</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -496,9 +498,23 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             chart: {
                 type: 'donut',
                 height: 240,
+
             },
             series: deviceChartData,
             labels: deviceLabels,
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                        },
+                        size: '60%'
+                    },
+                    dataLabels: {
+                        show: true,
+                    },
+                },
+            },
             responsive: [{
                 breakpoint: 480,
                 options: {
@@ -526,6 +542,19 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             },
             series: categoryChartData,
             labels: categoryLabels,
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                        },
+                        size: '60%'
+                    },
+                    dataLabels: {
+                        show: true,
+                    },
+                },
+            },
             responsive: [{
                 breakpoint: 480,
                 options: {
@@ -834,6 +863,19 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             chart: {
                 type: 'donut',
                 height: 240,
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                        },
+                        size: '60%'
+                    },
+                    dataLabels: {
+                        show: true,
+                    },
+                },
             },
             series: countryChartData,
             labels: countryLabels,
