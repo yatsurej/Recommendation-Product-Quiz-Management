@@ -85,7 +85,7 @@ while ($row = mysqli_fetch_assoc($result)) {
     if ($categoryName !== NULL) {
         $categoryCounts[$categoryName] = ($categoryCounts[$categoryName] ?? 0) + $row['totalSessions'];
     }
-    
+
     $deviceCounts[$deviceType]      = ($deviceCounts[$deviceType] ?? 0) + $row['siteVisits'];
     $countryCounts[$country] = ($countryCounts[$country] ?? 0) + $row['siteVisits'];
 }
@@ -115,10 +115,12 @@ $prodCountsQuery .= " GROUP BY p.prodName";
 $prodCountsResult = mysqli_query($conn, $prodCountsQuery);
 
 // Initialize prodCounts array
+$prodTable = [];
 $prodCounts = [];
 
 // Fetch prodCounts results
 while ($prodRow = mysqli_fetch_assoc($prodCountsResult)) {
+    $prodTable[] = $prodRow; //Comment this line for Chart
     $prodCounts[$prodRow['prodName']] = $prodRow['count'];
 }
 // Source query
@@ -299,7 +301,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 ?>
 
 <div class="container">
-    <div class="row rg-20">
+    <div class="row align-content-center">
         <div class="row">
             <div class="col-md-12">
                 <form id="filterForm" action="" method="GET">
@@ -316,8 +318,8 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                                     $categories[$categoryRow['categoryID']] = $categoryRow['categoryName'];
                                 }
                                 ?>
-                                <label for="categoryDropdown">Select Category:</label>
                                 <form class="form-inline d-inline">
+                                    <label for="categoryDropdown">Select Category:</label>
                                     <select class="custom-select data mr-3" name="category" id="category" onchange="window.location.href=this.value;">
                                         <option value="analytics.php">General</option>
                                         <?php foreach ($categories as $categoryID => $categoryName) : ?>
@@ -336,9 +338,9 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                             <input type="date" class="form-control" name="timestamp_end" id="timestamp_end" value="<?php echo $timeFilterEnd ? $timeFilterEnd : date('Y-m-t'); ?>">
                         </div>
                         <div class="col">
-                            <label><br /></label>
-                            <input type="hidden" name="category" id="selected_category" value="<?php echo $selectedCategory; ?>">
-                            <button type="submit" class="btn btn-dark w-100" style="height: 46px">FILTER</button>
+                            <label class="d-none d-md-block"><br /></label>
+                            <input type="hidden" name="category" id="selected_category" value="<?php echo $selectedCategory; ?>" class="d-none d-md-block">
+                            <button type="submit" class="btn btn-dark w-100 filter-btn">FILTER</button>
                         </div>
                     </div>
                 </form>
@@ -349,6 +351,10 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 <div class="col ">
                     <div class="card">
                         <div class="card-body text-center">
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Total number of visits to the website. </span>
+                            </button>
                             <h5>Site Visits</h5>
                             <h2><?php echo $siteVisits; ?></h2>
                         </div>
@@ -358,7 +364,11 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             <div class="col">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5>Users</h5>
+                        <h5>Users<button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Total count of unique individuals who accessed the quiz.</span>
+                            </button>
+                        </h5>
                         <h2><?php echo $users; ?></h2>
                     </div>
                 </div>
@@ -366,7 +376,12 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             <div class="col">
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5>Sessions</h5>
+                        <h5>Sessions
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Total number of user engagements or interactions. </span>
+                            </button>
+                        </h5>
                         <h2><?php echo $totalSessions; ?></h2>
                     </div>
                 </div>
@@ -376,27 +391,119 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Device Count</h5>
+                        <h5 class="card-title text-center">Device Count
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Total count of unique devices used to access the site. </span>
+                            </button>
+                        </h5>
                         <div id="deviceChart"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Completed & Drop Off Sessions</h5>
-                        <div id="completedDropOffChart"></div>
-
+            <?php if (!$hideIfGeneral) : ?>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Country <button type="button" class="info-btn" aria-label="Information">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip">Visitors' country of origin.</span>
+                                </button></h5>
+                            <div id="countryChart"></div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php if (!$hideIfCategory) : ?>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Completed & Drop Off Sessions
+                                <button type="button" class="info-btn" aria-label="Information">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip">
+                                        Completed sessions denote successful attempts, while drop-off sessions represent unfinished attempts.
+                                    </span>
+                                </button>
+                            </h5>
+                            <div id="completedDropOffChart"></div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php if (!$hideIfGeneral) : ?>
+            <div class="row d-none d-md-block">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Most Recommended Products</h5>
+                            <div id="productRecommendedChartCategory"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        <?php endif; ?>
+        <?php if (!$hideIfGeneral) : ?>
+            <div class="row d-block d-md-none">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Most Recommended Products</h5>
+                            <div class="text-center">
+                                <table class="table">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($prodTable as $row) : ?>
+                                            <tr>
+                                                <td><?php echo $row['prodName']; ?></td>
+                                                <td><?php echo $row['count']; ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if (!$hideIfCategory) : ?>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Most Recommended Products
+                            </h5>
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Top 3 most recommended products per category.</span>
+                            </button>
+                            <div id="productRecommendedChartGeneral"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        <?php endif; ?>
         <?php if (!$hideIfGeneral) : ?>
             <div class="row">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Most Recommended Products</h5>
-                        <div id="productRecommendedChartCategory"></div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Questionnaire Data</h5>
+                            <button type="button" class="info-btn" aria-label="Chart Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Total count of each answer option selected. </span>
+                            </button>
+                            <span class="visually-hidden">Chart Information</span> <!-- Visible label for button -->
+                            <div id="questionAnswerChart" class="overflow-auto"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -406,32 +513,36 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Most Recommended Products</h5>
-                            <div id="productRecommendedChartGeneral"></div>
+                            <h5 class="card-title text-center">Country <button type="button" class="info-btn" aria-label="Information">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip">Visitors' country of origin.</span>
+                                </button></h5>
+                            <div id="countryChart"></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title text-center">Session per Category</h5>
+                            <h5 class="card-title text-center">Session per Category<button type="button" class="info-btn" aria-label="Information">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span class="tooltip">Total number of sessions categorized by type.</span>
+                                </button>
+                            </h5>
                             <div id="categoryChart"></div>
                         </div>
                     </div>
                 </div>
-            </div>
+        </div>
         <?php endif; ?>
         <div class="row">
-            <div class="card">
-                <div id="questionAnswerChart"></div>
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="col-md-6">
+            <div class="col col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Source</h5>
+                        <h5 class="card-title text-center">Source <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Origin of user website access. </span>
+                            </button></h5>
                         <div class="text-center">
                             <table class="table text-center">
                                 <thead>
@@ -474,14 +585,6 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">Country</h5>
-                        <div id="countryChart"></div>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -513,7 +616,90 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@2.11.5/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const infoBtns = document.querySelectorAll('.info-btn');
+        const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+
+        infoBtns.forEach(function(infoBtn) {
+            let tooltipShown = false;
+
+            // Toggle tooltip visibility on button click
+            infoBtn.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevents the click event from propagating to document
+                tooltipShown = !tooltipShown;
+                this.classList.toggle('show-tooltip', tooltipShown);
+            });
+
+            if (!isMobile) {
+                // Show tooltip on hover if not on mobile
+                infoBtn.addEventListener('mouseenter', function() {
+                    if (!tooltipShown) {
+                        this.classList.add('show-tooltip');
+                    }
+                });
+
+                // Hide tooltip when mouse leaves button if not on mobile
+                infoBtn.addEventListener('mouseleave', function() {
+                    if (!tooltipShown) {
+                        this.classList.remove('show-tooltip');
+                    }
+                });
+            }
+        });
+
+        // Close tooltip when page is hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                infoBtns.forEach(function(infoBtn) {
+                    infoBtn.classList.remove('show-tooltip');
+                });
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const infoBtns = document.querySelectorAll('.info-btn');
+    const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+ 
+    infoBtns.forEach(function(infoBtn) {
+        let tooltipShown = false;
+ 
+        // Toggle tooltip visibility on button click
+        infoBtn.addEventListener('click', function(event) {
+            event.stopPropagation(); // Prevents the click event from propagating to document
+            tooltipShown = !tooltipShown;
+            this.classList.toggle('show-tooltip', tooltipShown);
+        });
+ 
+        if (!isMobile) {
+            // Show tooltip on hover if not on mobile
+            infoBtn.addEventListener('mouseenter', function() {
+                if (!tooltipShown) {
+                    this.classList.add('show-tooltip');
+                }
+            });
+ 
+            // Hide tooltip when mouse leaves button if not on mobile
+            infoBtn.addEventListener('mouseleave', function() {
+                if (!tooltipShown) {
+                    this.classList.remove('show-tooltip');
+                }
+            });
+        }
+    });
+ 
+    // Close tooltip when clicking anywhere on the document
+    document.addEventListener('click', function() {
+        infoBtns.forEach(function(infoBtn) {
+            infoBtn.classList.remove('show-tooltip');
+            });
+        });
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         // Update the form action URL when category is selected
         document.querySelectorAll('#categoryDropdown a').forEach(function(categoryLink) {
@@ -536,8 +722,16 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             }
         });
 
+
         // Prepare data for pie chart
-        var deviceCounts = <?php echo json_encode($deviceCounts); ?>;
+        var device_types = <?php echo json_encode($deviceCounts); ?>;
+        var deviceCounts = {};
+        for (var device in device_types) {
+            if (device_types.hasOwnProperty(device)) {
+                var toUpperCase = device.charAt(0).toUpperCase() + device.slice(1);
+                deviceCounts[toUpperCase] = device_types[device];
+            }
+        }
         // var totalSessions = Object.values(deviceCounts).reduce((acc, val) => acc + val, 0);
         var deviceChartData = Object.values(deviceCounts).map(count => Number(count));
         var deviceLabels = Object.keys(deviceCounts);
@@ -625,6 +819,9 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             chart: {
                 height: 250,
                 type: 'bar', // Change chart type to bar
+                toolbar: {
+                show: false // Hide the toolbar
+                }
             },
             plotOptions: {
                 bar: {
@@ -666,11 +863,14 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
         var generalProductOptions = {
             chart: {
                 type: 'bar',
-                height: 250
-            },
+                height: 250,
+                toolbar: {
+                    show: false // Hide the toolbar
+                    }
+                },
             plotOptions: {
                 bar: {
-                    horizontal: false
+                    horizontal: true
                 }
             },
             series: [{
@@ -730,56 +930,59 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
         generalProductChart.render();
 
 
-        <?php arsort($prodCounts); ?>   // Sort Products descending order by prodCount
+        <?php arsort($prodCounts); ?> // Sort Products descending order by prodCount
 
         // If a category is selected - Most Recommended Products
         var categoryProductChartData = <?php echo json_encode($prodCounts); ?>;
-        var products = Object.keys(categoryProductChartData); 
+        var products = Object.keys(categoryProductChartData);
         var counts = Object.values(categoryProductChartData).map(count => Number(count));
 
-            // Define the maximum label length
+        // Define the maximum label length
         const MAX_LABEL_LENGTH = 20; // Adjust this value as needed
 
         // Modify products data to wrap long labels into multiple lines
         const modifiedProducts = products.map(product => {
-        if (product.length > MAX_LABEL_LENGTH) {
-            // Logic for splitting product name and creating multi-line labels
-            const words = product.split(' ');
-            const lines = [];
-            let currentLine = '';
-            for (const word of words) {
-            if (currentLine.length + word.length > MAX_LABEL_LENGTH) {
+            if (product.length > MAX_LABEL_LENGTH) {
+                // Logic for splitting product name and creating multi-line labels
+                const words = product.split(' ');
+                const lines = [];
+                let currentLine = '';
+                for (const word of words) {
+                    if (currentLine.length + word.length > MAX_LABEL_LENGTH) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                }
                 lines.push(currentLine.trim());
-                currentLine = '';
+                return lines;
             }
-            currentLine += word + ' ';
-            }
-            lines.push(currentLine.trim());
-            return lines;
-        }
-        return product; // Keep as-is if not too long
+            return product; // Keep as-is if not too long
         });
 
         // Define chart options
         var productRecommendedOptions = {
-        chart: {
-            type: 'bar',
-            height: 240,
-        },
-        series: [{
-            name: 'Sessions',
-            data: counts
-        }],
-        xaxis: {
-            categories: modifiedProducts,
-            labels: {
-            show: true,
-            style: {
-                fontFamily: "Inter, sans-serif",
-                cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+            chart: {
+                type: 'bar',
+                height: 240,
+                toolbar: {
+                show: false // Hide the toolbar
+                }
             },
+            series: [{
+                name: 'Sessions',
+                data: counts
+            }],
+            xaxis: {
+                categories: modifiedProducts,
+                labels: {
+                    show: true,
+                    style: {
+                        fontFamily: "Inter, sans-serif",
+                        cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+                    },
+                }
             }
-        }
         };
         var categoryProductRecommendedChart = new ApexCharts(document.querySelector("#productRecommendedChartCategory"), productRecommendedOptions);
         categoryProductRecommendedChart.render();
@@ -829,13 +1032,45 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                     return answerData; // Keep as-is if not too long
                 });
 
+                const modifiedQuestion = question.length > 25 ?
+                    wrapText(question, 25) : [question];
+
+                function wrapText(text, maxLength) {
+                    const words = text.split(' '); // Split by space
+                    const lines = [];
+                    let currentLine = '';
+                    for (const word of words) {
+                        if (currentLine.length + word.length > maxLength) {
+                            lines.push(currentLine.trim());
+                            currentLine = '';
+                        }
+                        currentLine += word + ' ';
+                    }
+                    lines.push(currentLine.trim()); // Add the last line
+                    console.log(lines);
+                    return lines;
+                }
+
                 // Define options object
                 var options = {
                     title: {
                         text: question,
                         align: 'center',
+
                     },
-                    colors: ["#1A56DB", "#FDBA8C"],
+                    // colors: ["#1A56DB", "#FDBA8C"],
+                    responsive: [{
+                        breakpoint: 768, // Adjust breakpoint for mobile size
+                        options: {
+                            title: {
+                                text: modifiedQuestion,
+                                align: 'center',
+                                style: {
+                                    fontSize: "12px",
+                                }
+                            },
+                        }
+                    }],
 
                     series: [{
                         name: 'Click Count',
@@ -857,7 +1092,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                             horizontal: false,
                             columnWidth: "65%",
                             borderRadiusApplication: "end",
-                            borderRadius: 10,
+                            // borderRadius: 10,
                         },
                     },
                     tooltip: {
@@ -866,6 +1101,11 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                         style: {
                             fontFamily: "Inter, sans-serif",
                         },
+                        title: {
+                            formatter: function(val) {
+                                return question; // Display the full question here
+                            }
+                        }
                     },
                     states: {
                         hover: {
@@ -924,7 +1164,9 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 
                 var chart = new ApexCharts(chartContainer, options);
                 chart.render();
+
             }
+
         <?php endif; ?>
 
         // Countries Chart
@@ -956,7 +1198,6 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 breakpoint: 480,
                 options: {
                     chart: {
-                        width: 200
                     },
                     legend: {
                         position: 'bottom'

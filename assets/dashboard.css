@@ -1,8 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
-/* General Styles */
 body {
-  /* background-color: #f5f5f5 !important; */
   font-family: "Roboto", sans-serif !important;
 }
 
@@ -52,6 +50,12 @@ h2 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.login-container {
+  gap: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
 .login-form {
@@ -138,8 +142,12 @@ h2 {
   height: 100% !important;
 }
 
+.align-content-center {
+  align-content: center;
+}
+
 .row {
-  row-gap: 20px !important;
+  row-gap: 20px;
 }
 
 .apexcharts-canvas {
@@ -154,33 +162,62 @@ h2 {
 .container input {
   width: 100%;
   height: 48px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   border-radius: 25px;
   padding: 10px 20px;
-}
-
-.custom-select.data {
-  width: 100% !important;
-  height: 48px !important;
-  padding: 10px !important;
-  box-sizing: border-box !important;
-  border-radius: 4px !important;
 }
 
 .border-none {
   border: none;
 }
+
+.filter-btn {
+  height: 46px !important;
+  border-radius: 23px !important;
+}
+
 .custom-select.data {
   width: 100% !important;
   height: 48px !important;
   padding: 10px 20px !important;
   box-sizing: border-box !important;
   border-radius: 25px !important;
-  margin-bottom: 10px;
 }
-button.btn.btn-dark.w-100 {
-    margin-bottom: 10px !important;
-    border-radius: 25px;
+
+.info-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.fa-circle-info:before,
+.fa-info-circle:before {
+  color: #0000002b;
+}
+
+.info-btn .tooltip {
+  visibility: hidden;
+  width: 220px;
+  background-color: #008ffb;
+  color: white;
+  text-align: center;
+  padding: 9px;
+  border-radius: 20px 0px 20px 20px;
+  z-index: 1;
+  right: 30px;
+  top: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.info-btn.show-tooltip .tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 /* Responsive Styles */
 @media only screen and (max-width: 768px) {

@@ -29,9 +29,9 @@ include './header.php';
 
         <div class="login-form">
             <form action="functions.php" method="post" autocomplete="off">
-                <div class="container">
+                <div class="container login-container">
 
-                    <input type="text" placeholder="Username" name="username" id="username" required class="border-none"><br>
+                    <input type="text" placeholder="Username" name="username" id="username" required class="border-none">
 
                     <div class="password-container">
                         <input type="password" id="password" placeholder="Password" name="password" required>

@@ -35,7 +35,13 @@
     if (!isset($_SESSION['selectedAnswers'])) {
         $_SESSION['selectedAnswers'] = array();
     }
-
+    
+    // Calculate the total number of questions
+    $totalQuestionsQuery = "SELECT COUNT(*) AS total FROM parent_question WHERE categoryID = '$selectedCategory'";
+    $totalQuestionsResult = mysqli_query($conn, $totalQuestionsQuery);
+    $totalQuestionsRow = mysqli_fetch_assoc($totalQuestionsResult);
+    $totalQuestions = $totalQuestionsRow['total'];
+    
     // Check if a POST request is made
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $selectedAnswer = $_POST['selectedAnswer'];
@@ -61,6 +67,9 @@
             <!-- Display the conditional question -->
             <div class="body-wrapper bg4">
                 <div class="wrapper show-wrapper">
+                    <div class="progress-bar">
+                        <div class="progress" style="width: <?php echo (($_SESSION['currentQuestion'] - 1)/ $totalQuestions) * 100; ?>%"></div>
+                    </div>
                     <form action="quiz.php" method="post" id="quizForm">
                         <div class="spacer"></div>
                         <div class="q-container">
@@ -143,6 +152,9 @@
         <!-- Display the parent question -->
         <div class="body-wrapper bg4">
             <div class="wrapper">
+            <div class="progress-bar">
+                <div class="progress" style="width: <?php echo (($_SESSION['currentQuestion'] - 1) / $totalQuestions) * 100; ?>%"></div>
+            </div>
                 <form action="quiz.php" method="post" id="quizForm">
                     <div class="spacer"></div>
                     <div class="q-container">
