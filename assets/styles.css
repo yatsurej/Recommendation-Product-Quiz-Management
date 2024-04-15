@@ -80,18 +80,29 @@ h4 {
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
 }
+.no-animate {
+  animation: none;
+}
 
 .progress-bar {
-  width: 100%;
-  background-color: #ddd;
-  height: 20px;
-  margin-bottom: 20px;
+  width: 450px;
+  background-color: #fff;
+  height: 5px;
+  border-radius: 10px;
+  border-color: #8e7242;
+  border-style: solid;
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translate(-50%, 10px);
 }
 
 .progress {
-  background-color: #4caf50;
+  background-color: #8e7242;
   height: 100%;
-  transition: width 0.3s ease;
+  transition: width 2s ease; /* This line provides the animation */
+  border-radius: 10px 0 0 10px;
+  width: 0%; /* Ensure the progress bar starts from 0 width */
 }
 
 @keyframes fadeInAnimation {
@@ -470,6 +481,10 @@ button:active {
 }
 
 @media only screen and (max-width: 768px) {
+  .progress-bar {
+    width: 280px;
+  }
+
   .countries-container {
     width: 400px;
   }

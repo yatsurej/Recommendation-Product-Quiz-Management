@@ -55,6 +55,43 @@
                     return false;
                 }
             }
+            public function updateMainQuestion($pqID, $parentQuestion, $pqOrder, $answers, $answerProducts){
+                global $conn;
+
+                $query = "UPDATE parent_question
+                          SET pqContent = '$parentQuestion', pqOrder = '$pqOrder'
+                          WHERE pqID = '$pqID'";
+                $result = mysqli_query($conn, $query);
+
+                if ($result){
+                    $answerIDs = array();
+                    $answerIDQuery = "SELECT answerID FROM question_answer WHERE pqID = '$pqID'";
+                    $answerIDResult = mysqli_query($conn, $answerIDQuery);
+                    while ($row = mysqli_fetch_assoc($answerIDResult)) {
+                        $answerIDs[] = $row['answerID'];
+                    }
+            
+                    foreach ($answers as $index => $answer) {
+                        $answerID = $answerIDs[$index];
+                        $answerContent = mysqli_real_escape_string($conn, $answer);
+            
+                        $updateAnswerQuery = "UPDATE answer 
+                                              SET answerContent = '$answerContent' 
+                                              WHERE answerID = '$answerID'";
+                        mysqli_query($conn, $updateAnswerQuery);
+            
+                        $productIDs = $answerProducts[$index];
+                        mysqli_query($conn, "DELETE FROM product_answer WHERE answerID = '$answerID'"); 
+                        foreach ($answerProducts as $prodID) {
+                            $insertProductQuery = "INSERT INTO product_answer(prodID, answerID) VALUES ('$prodID', '$answerID')";
+                            mysqli_query($conn, $insertProductQuery);
+                        }
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
 
             // Conditional Question CRUD
             public function addConditionalQuestion($mainQuestion, $mainQuestionAnswer, $conditionalQuestion, $cqNumOptions, $cqNumAnswer, $answersData){

@@ -88,7 +88,7 @@
                     <td><?php echo $categoryName;?></td>
                     <td><?php echo $cqContent;?></td>
                     <td>
-                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="d-flex justify-content-center align-items-center">
                             <!-- View Button -->
                             <div class="text-center me-1">
                                 <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#viewQuestionModal<?php echo $pqID; ?>">

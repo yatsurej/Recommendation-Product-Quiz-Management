@@ -24,7 +24,7 @@
     $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
 
     $query = "SELECT bq.*, c.categoryName, 
-                GROUP_CONCAT(a.answerContent) as answerContents, 
+                GROUP_CONCAT(a.answerContent SEPARATOR '|') as answerContents, 
                 GROUP_CONCAT(p.prodName) as prodNames
                 FROM bonus_question bq 
                 LEFT JOIN category c ON bq.categoryID = c.categoryID
@@ -137,29 +137,35 @@
                                                     </div>
                                                 </div>
                                                 <div class="form-group my-2">
-                                                    <label for="answers">Answers:</label>
-                                                    <span class="float-end">Associated Product/s:</span>
-                                                    <ul class="list-group" name="answers">
-                                                        <?php
-                                                        $answersArray = explode(',', $answerContents);
-                                                        $associatedProducts = explode(',', $prodNames);
-    
-                                                        foreach ($answersArray as $index => $answer) {
-                                                            echo '<li class="list-group-item list-group-item-secondary">';
-                                                            echo $answer;
-                                                            if (isset($associatedProducts[$index])) {
-                                                                $productsForAnswer = explode(',', $associatedProducts[$index]);
-                                                                echo '<span class="float-end text-muted small">';
-                                                                echo implode(', ', $productsForAnswer);
-                                                                echo '</span>';
-                                                            } else {
-                                                                echo '<span class="float-end text-muted small">No associated product</span>';
-                                                            }
-    
-                                                            echo '</li>';
-                                                        }
-                                                        ?>
-                                                    </ul>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <label for="answers">Answers:</label>
+                                                            <span class="float-end">Associated Product/s:</span>
+                                                            <ul class="list-group" name="answers">
+                                                                <?php
+                                                                $answersWithProducts = [];
+                                                                $answersArray = explode('|', $answerContents);
+                                                                $associatedProducts = explode(',', $prodNames);
+
+                                                                foreach ($answersArray as $index => $answer) {
+                                                                    $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
+                                                                    $answersWithProducts[$answer][] = $product;
+                                                                }
+
+                                                                foreach ($answersWithProducts as $answer => $products) {
+                                                                    echo '<li class="list-group-item list-group-item-secondary">';
+                                                                    echo $answer;
+
+                                                                    echo '<span class="float-end text-muted small">';
+                                                                    echo implode('<br> ', $products);
+                                                                    echo '</span>';
+
+                                                                    echo '</li>';
+                                                                }
+                                                                ?>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

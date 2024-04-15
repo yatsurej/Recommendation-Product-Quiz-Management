@@ -81,6 +81,8 @@
                         $categoryName   = $row['categoryName'];
                         $prodNames      = $row['prodNames'];
                         $answerContents = $row['answerContents'];
+                        $pqOrder        = $row['pqOrder'];
+                        $categoryID     = $row['categoryID'];
                 ?>
                 <tr>
                     <td><?php echo $categoryName;?></td>
@@ -117,8 +119,16 @@
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="form-group my-2">
-                                                    <label for="category" class="form-label">Category:</label>
-                                                    <input type="text" class="form-control" value="<?php echo $categoryName;?>" id="category" readonly>
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <label for="category" class="form-label">Category:</label>
+                                                            <input type="text" class="form-control" value="<?php echo $categoryName;?>" id="category" readonly>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="category" class="form-label">Question Number:</label>
+                                                            <input type="text" class="form-control" value="<?php echo $pqOrder;?>" id="category" readonly>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="form-group my-2">
                                                     <label for="numberOptions">Question: </label>
@@ -157,6 +167,81 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editQuestionModal<?php echo $pqID; ?>" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="functions.php" method="post">
+                                            <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
+                                            <input type="hidden" name="categoryID" id="editForm_category" value="<?php echo $categoryID; ?>">
+                                            <!-- Card -->
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="form-group my-2">
+                                                        <div class="form-floating">
+                                                            <input type="number" class="form-control" value="<?php echo $pqOrder;?>" name="pqOrder" id="pqOrder">
+                                                            <label for="pqOrder">Question Number:</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group my-2">
+                                                        <label for="parentQuestion">Question: </label>
+                                                        <textarea type="text" style="resize: none" class="form-control" rows="3" id="parentQuestion" name="parentQuestion"><?php echo $pqContent; ?></textarea>                                                
+                                                    </div>
+                                                    <div class="form-group my-2">
+                                                        <div class="row">
+                                                            <div class="col">
+                                                                <label for="answers">Answers:</label>
+                                                                <?php
+                                                                    $answersWithProducts = [];
+                                                                    $answersArray = explode('|', $answerContents);
+                                                                    $associatedProducts = explode(',', $prodNames);
+    
+                                                                    foreach ($answersArray as $index => $answer) {
+                                                                        $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
+                                                                        $answersWithProducts[$answer][] = $product;
+                                                                    }
+    
+                                                                    foreach ($answersWithProducts as $answer => $products) {?>
+                                                                        <input type="text" class="form-control" value="<?php echo $answer;?>" name="answers[]" id="answers">
+                                                                <?php } ?>
+                                                            </div>
+                                                            <div class="col">
+                                                                <label for="answerProduct">Associated Products:</label>
+                                                                <?php foreach ($answersWithProducts as $answer => $products) { ?>
+                                                                    <select class="form-control answerProducts" name="answerProducts[]" multiple>
+                                                                        <?php
+                                                                            $productsQuery = "SELECT * FROM product WHERE categoryID = $categoryID";
+                                                                            $productsResult = mysqli_query($conn, $productsQuery);
+
+                                                                            while ($productRow = mysqli_fetch_assoc($productsResult)) {
+                                                                                $productID   = $productRow['prodID'];
+                                                                                $productName = $productRow['prodName'];
+
+                                                                                $selected = in_array($productName, $products) ? 'selected' : '';
+
+                                                                                echo '<option value="' . htmlspecialchars($productID) . '" ' . $selected . '>' . htmlspecialchars($productName) . '</option>';
+                                                                            }
+                                                                        ?>
+                                                                    </select>
+                                                                    <br>
+                                                                <?php } ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button name="updateMainQuestion" class="btn btn-success" type="submit">Submit</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -276,13 +361,15 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@2.0.1/dist/js/multi-select-tag.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+                                    
 <script>
     function addAnswerInputs(formPrefix) {
         const numAnswers = document.getElementById(formPrefix + '_numOptions').value;
         const answerInputsContainer = document.getElementById(formPrefix + '_answerInputsContainer');
-        
         const categoryID = document.getElementById(formPrefix + '_category').value;
 
         $.ajax({
@@ -303,7 +390,7 @@
                             </div>
                             <div class="col">
                                 <label for="answerProduct" class="text-muted">Product/s</label>
-                                <select id="${uniqueId}" id="answerProduct" name="answer_type[${i}][]" class="form-control ${formPrefix}_productAnswers" multiple>
+                                <select id="${uniqueId}" class="form-control chosen-select" name="answer_type[${i}][]" multiple>
                                     ${data} 
                                 </select>
                             </div>
@@ -311,8 +398,8 @@
                 }
                 answerInputsContainer.innerHTML = inputs;
 
-                $('.' + formPrefix + '_productAnswers').each(function () {
-                    new MultiSelectTag(this.id);
+                $('.chosen-select').each(function () {
+                    $(this).chosen(); 
                 });
 
                 toggleInputs(formPrefix);

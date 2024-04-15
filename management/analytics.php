@@ -124,26 +124,28 @@ while ($prodRow = mysqli_fetch_assoc($prodCountsResult)) {
     $prodCounts[$prodRow['prodName']] = $prodRow['count'];
 }
 // Source query
-$sourceQuery = "SELECT DISTINCT s.source 
-     FROM session s
-     LEFT JOIN product p ON s.prodID = p.prodID
-     LEFT JOIN category c ON p.categoryID = c.categoryID
-     WHERE s.prodID IS NOT NULL ";
+$sourceQuery = "SELECT s.source, COUNT(DISTINCT s.timestamp) AS count
+                FROM session s
+                LEFT JOIN product p ON s.prodID = p.prodID
+                LEFT JOIN category c ON p.categoryID = c.categoryID";
+
+if ($selectedCategory === 'general') {
+    $sourceQuery .= " WHERE 1=1"; // This ensures that the following conditions can be appended with "AND"
+} elseif (!empty($selectedCategory)) {
+    $sourceQuery .= " WHERE p.categoryID = $selectedCategory";
+}
 
 if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
     $sourceQuery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
 }
 
-if ($selectedCategory !== 'general') {
-    $sourceQuery .= " AND p.categoryID = $selectedCategory";
-}
-
+$sourceQuery .= " GROUP BY s.source";
 $sourceQuery .= " ORDER BY s.source";
 $sourceResult = mysqli_query($conn, $sourceQuery);
 
 $sources = [];
 while ($subrow = mysqli_fetch_assoc($sourceResult)) {
-    $sources[] = $subrow['source'];
+    $sources[$subrow['source']] = $subrow['count'];
 }
 
 $outBoundQuery = "  SELECT p.prodURL, p.prodName,
@@ -172,6 +174,7 @@ while ($row = mysqli_fetch_assoc($outBoundResult)) {
         'count' => $row['count']
     );
 }
+
 // Separated Total Users Query because and error occurs when combined in the main query
 $totalUsersQuery = "SELECT COUNT(DISTINCT guestID) AS totalUsers 
     FROM session s
@@ -480,6 +483,9 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                         <div class="card-body">
                             <h5 class="card-title text-center">Most Recommended Products
                             </h5>
+                            <button id="exportProducts" class="export-btn btn" data-toggle="tooltip" title="Export as CSV">
+                                <i class="fas fa-download"></i>
+                            </button>
                             <button type="button" class="info-btn" aria-label="Information">
                                 <i class="fas fa-info-circle"></i>
                                 <span class="tooltip">Top 3 most recommended products per category.</span>
@@ -488,7 +494,6 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                         </div>
                     </div>
                 </div>
-
             </div>
         <?php endif; ?>
         <?php if (!$hideIfGeneral) : ?>
@@ -497,6 +502,9 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title text-center">Questionnaire Data</h5>
+                            <button id="exportQuestionnaire" class="export-btn btn" data-toggle="tooltip" title="Export as CSV">
+                                <i class="fas fa-download"></i>
+                            </button>
                             <button type="button" class="info-btn" aria-label="Chart Information">
                                 <i class="fas fa-info-circle"></i>
                                 <span class="tooltip">Total count of each answer option selected. </span>
@@ -539,81 +547,78 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             <div class="col col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title text-center">Source <button type="button" class="info-btn" aria-label="Information">
+                        <h5 class="card-title text-center">Source 
+                            <button type="button" class="info-btn" aria-label="Information">
                                 <i class="fas fa-info-circle"></i>
-                                <span class="tooltip">Origin of user website access. </span>
-                            </button></h5>
-                        <div class="text-center">
-                            <table class="table text-center">
-                                <thead>
-                                    <tr>
-                                        <th>Source</th>
-                                        <th>Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($sources as $source) { ?>
+                                <span class="tooltip">Origin of user website access.</span>
+                            </button>
+                        </h5>
+                        <button class="export-btn btn" data-toggle="tooltip" title="Export as CSV">
+                            <i id="exportSource" class="fas fa-download"></i>
+                        </button>
+                        <div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                            <td><?php echo $source; ?></td>
-                                            <td>
-                                                <?php
-                                                $countQuery = "SELECT COUNT(*) AS count 
-                                                        FROM session s
-                                                        LEFT JOIN product p ON s.prodID = p.prodID
-                                                        LEFT JOIN category c ON p.categoryID = c.categoryID
-                                                        WHERE s.source = '$source'
-                                                        AND s.prodID IS NOT NULL ";
-
-                                                if (!empty($timeFilterStart) && !empty($timeFilterEnd)) {
-                                                    $countQuery .= " AND s.timestamp BETWEEN '$formattedTimestampStart' AND '$formattedTimestampEnd'";
-                                                }
-
-                                                if ($selectedCategory !== 'general') {
-                                                    $countQuery .= " AND p.categoryID = $selectedCategory";
-                                                }
-
-                                                $countResult = mysqli_query($conn, $countQuery);
-                                                $countRow = mysqli_fetch_assoc($countResult);
-                                                echo $countRow['count'];
-                                                ?>
-                                            </td>
+                                            <th class="text-start">Source</th>
+                                            <th class="text-end">Count</th>
                                         </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($sources as $source => $count) { ?>
+                                            <tr>
+                                                <td class="text-start"><?php echo $source; ?></td>
+                                                <td class="text-end"><?php echo $count; ?></td>
+                                            </tr>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="text-center">
-                            <table class="table">
-                                <thead class="text-center">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-center">Outbound 
+                    <button type="button" class="info-btn" aria-label="Information">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="tooltip">Total count of clicks for each product recommended.</span>
+                    </button>
+                </h5>
+                <div>
+                    <button id="exportOutbound" data-toggle="tooltip" title="Export as CSV" class="export-btn btn">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-start">Product Recommended</th>
+                                    <th class="text-end">Click Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($outBoundData as $row) : ?>
                                     <tr>
-                                        <th>Product Recommended</th>
-                                        <th>Click Count</th>
+                                        <td class="text-start"><a href="<?php echo $row['prodURL']; ?>" target="_blank"><?php echo $row['prodName']; ?></a></td>
+                                        <td class="text-end"><?php echo $row['count']; ?></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($outBoundData as $row) : ?>
-                                        <tr>
-                                            <td> <a href="<?php echo $row['prodURL']; ?>" target="_blank"> <?php echo $row['prodName']; ?></a></td>
-                                            <td><?php echo $row['count']; ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@2.11.5/dist/umd/popper.min.js"></script>
@@ -740,7 +745,16 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             chart: {
                 type: 'donut',
                 height: 240,
-
+                toolbar: {
+                            show: true,
+                            export: {
+                                csv: {
+                                    filename: "device_types",
+                                    headerCategory: 'Device Type',
+                                    headerValue: 'Count',
+                                },
+                           },
+                        },
             },
             series: deviceChartData,
             labels: deviceLabels,
@@ -761,7 +775,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 breakpoint: 480,
                 options: {
                     chart: {
-                        width: 200
+                       
                     },
                     legend: {
                         position: 'bottom'
@@ -777,10 +791,20 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
         var categoryChartData = Object.values(categoryCounts).map(count => Number(count));
         var categoryLabels = Object.keys(categoryCounts);
 
-        var categoryChartOptions = {
+        var sessionsPerCategoryChartOptions = {
             chart: {
                 type: 'donut',
                 height: 240,
+                toolbar: {
+                            show: true,
+                            export: {
+                                csv: {
+                                    filename: "sessions_per_category",
+                                    headerCategory: 'Category',
+                                    headerValue: 'Sessions',
+                                },
+                           },
+                        },
             },
             series: categoryChartData,
             labels: categoryLabels,
@@ -801,7 +825,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 breakpoint: 480,
                 options: {
                     chart: {
-                        width: 200
+                      
                     },
                     legend: {
                         position: 'bottom'
@@ -810,18 +834,18 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             }]
         };
 
-        var categoryChart = new ApexCharts(document.querySelector("#categoryChart"), categoryChartOptions);
-        categoryChart.render();
+        var sessionsPerCategoryChart = new ApexCharts(document.querySelector("#categoryChart"), sessionsPerCategoryChartOptions);
+        sessionsPerCategoryChart.render();
 
-        <?php $combinedData = array($completedSessions, $dropOffSessions); ?>
-        var combinedData = <?php echo json_encode($combinedData); ?>;
+        <?php $completedDropOffData = array($completedSessions, $dropOffSessions); ?>
+        var completedDropOffData = <?php echo json_encode($completedDropOffData); ?>;
         var completedDropOffOptions = {
             chart: {
                 height: 250,
                 type: 'bar', // Change chart type to bar
                 toolbar: {
-                show: false // Hide the toolbar
-                }
+                            show: false,
+                        },
             },
             plotOptions: {
                 bar: {
@@ -829,7 +853,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 }
             },
             series: [{
-                data: combinedData // Use the combined data directly as series data
+                data: completedDropOffData // Use the combined data directly as series data
             }],
             xaxis: {
                 categories: ['Completed', 'Drop Off'], // Specify categories for y-axis
@@ -839,10 +863,9 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
         var completedDropOffChart = new ApexCharts(document.querySelector("#completedDropOffChart"), completedDropOffOptions);
         completedDropOffChart.render();
 
-
+        <?php if (!$hideIfCategory) : ?>
         // top products per category chart - GENERAL
         var generalProductChartData = <?php echo json_encode($generalProductChartData); ?>;
-
         // Prepare data for chart
         let categories = [];
         let seriesTop1 = [];
@@ -860,74 +883,123 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             seriesTop3.push(top3Count);
         }
 
-        var generalProductOptions = {
-            chart: {
-                type: 'bar',
-                height: 250,
-                toolbar: {
-                    show: false // Hide the toolbar
-                    }
-                },
-            plotOptions: {
-                bar: {
-                    horizontal: true
+          var generalProductOptions = {
+    chart: {
+        type: 'bar',
+        height: 250,
+        toolbar: {
+            show: false,
+        }
+    },
+    plotOptions: {
+        bar: {
+            horizontal: true
+        }
+    },
+    series: [{
+        name: 'Top 1',
+        data: seriesTop1
+    }, {
+        name: 'Top 2',
+        data: seriesTop2
+    }, {
+        name: 'Top 3',
+        data: seriesTop3
+    }],
+    xaxis: {
+        categories: categories,
+        title: {
+            text: 'Category'
+        }
+    },
+    yaxis: {
+        title: {
+            text: 'Count'
+        }
+    },
+    legend: {
+        position: 'top'
+    },
+    tooltip: {
+        y: {
+            formatter: function(value, { series, seriesIndex, dataPointIndex }) {
+                let product = null;
+                switch (seriesIndex) {
+                    case 0:
+                        product = generalProductChartData[categories[dataPointIndex]]["Top 1 Products"];
+                        break;
+                    case 1:
+                        product = generalProductChartData[categories[dataPointIndex]]["Top 2 Products"];
+                        break;
+                    case 2:
+                        product = generalProductChartData[categories[dataPointIndex]]["Top 3 Products"];
+                        break;
                 }
-            },
-            series: [{
-                name: 'Top 1',
-                data: seriesTop1
-            }, {
-                name: 'Top 2',
-                data: seriesTop2
-            }, {
-                name: 'Top 3',
-                data: seriesTop3
-            }],
-            xaxis: {
-                categories: categories,
-                title: {
-                    text: 'Category'
-                }
-            },
-            yaxis: {
-                title: {
-                    text: 'Count'
-                }
-            },
-            legend: {
-                position: 'top'
-            },
-            tooltip: {
-                y: {
-                    formatter: function(value, {
-                        series,
-                        seriesIndex,
-                        dataPointIndex
-                    }) {
-                        let product = null;
-                        switch (seriesIndex) {
-                            case 0:
-                                product = generalProductChartData[categories[dataPointIndex]]["Top 1 Products"];
-                                break;
-                            case 1:
-                                product = generalProductChartData[categories[dataPointIndex]]["Top 2 Products"];
-                                break;
-                            case 2:
-                                product = generalProductChartData[categories[dataPointIndex]]["Top 3 Products"];
-                                break;
+                if (product && product.length > 0) {
+                    let productName = product[0].name;
+                    // Logic for wrapping product name
+                    const MAX_WIDTH = 35; // Adjust this value as needed
+                    if (productName.length > MAX_WIDTH) {
+                        const words = productName.split(' ');
+                        const lines = [];
+                        let currentLine = '';
+                        for (const word of words) {
+                            if (currentLine.length + word.length > MAX_WIDTH) {
+                                lines.push(currentLine.trim());
+                                currentLine = '';
+                            }
+                            currentLine += word + ' ';
                         }
-                        if (product && product.length > 0) {
-                            return product[0].name + ': ' + value;
-                        } else {
-                            return 'No product available: ' + value;
-                        }
+                        lines.push(currentLine.trim());
+                        productName = lines.join('<br>'); // Use <br> for line break
                     }
+                    return productName + ': ' + value;
+                } else {
+                    return 'No product available: ' + value;
                 }
             }
-        };
+        }
+    }
+};
+
 
         var generalProductChart = new ApexCharts(document.querySelector("#productRecommendedChartGeneral"), generalProductOptions);
         generalProductChart.render();
+
+        function exportGeneralProductsToCSV(data, filename) {
+            // Create CSV content
+            let csvContent = "data:text/csv;charset=utf-8,";
+
+            // Add headers
+            csvContent += "Product,Count\n";
+
+            // Add data rows
+            for (let category in data) {
+                let topProducts = data[category];
+                for (let key in topProducts) {
+                    let productName = topProducts[key][0].name;
+                    let productCount = parseInt(topProducts[key][0].count);
+                    // Escape double quotes in product name and enclose in double quotes
+                    productName = '"' + productName.replace(/"/g, '""') + '"';
+                    csvContent += `${productName},${productCount}\n`;
+                }
+            }
+
+            // Create a link element and trigger download
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            // Ensure UTF-8 encoding for proper character display
+            encodedUri = encodedUri.replace(/%E2%80%8B/g, ""); // Remove any UTF-8 BOM characters
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link); // Required for Firefox
+            link.click();
+        }
+
+            document.getElementById('exportProducts').addEventListener('click', function() {
+                exportGeneralProductsToCSV(generalProductChartData, "top_products_general.csv");
+        });
+        <?php endif; ?>
 
 
         <?php arsort($prodCounts); ?> // Sort Products descending order by prodCount
@@ -966,8 +1038,16 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 type: 'bar',
                 height: 240,
                 toolbar: {
-                show: false // Hide the toolbar
-                }
+                    // show: false // Hide the toolbar
+                    export: {
+                        csv: {
+                            filename: 'recommended_products',
+                            columnDelimiter: ',',
+                            headerCategory: 'Product',
+                            headerValue: 'Count'
+                        }
+                    }
+                 }
             },
             series: [{
                 name: 'Sessions',
@@ -999,7 +1079,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 
             function drawQuestionAnswerChart(question, questionData) {
                 var chartContainerId = 'chartContainer_' + question; // Unique ID for each chart container
-
+                console.log(questionAnswerData);
                 // Create a new div element for each chart
                 var chartContainer = document.createElement('div');
                 chartContainer.id = chartContainerId;
@@ -1047,7 +1127,6 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                         currentLine += word + ' ';
                     }
                     lines.push(currentLine.trim()); // Add the last line
-                    console.log(lines);
                     return lines;
                 }
 
@@ -1085,6 +1164,12 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                         fontFamily: "Inter, sans-serif",
                         toolbar: {
                             show: false,
+                            export: {
+                                csv: {
+                                    filename: "questionnaire_data",
+                                    headerCategory: 'Answers',
+                                },
+                           },
                         },
                     },
                     plotOptions: {
@@ -1166,6 +1251,71 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 chart.render();
 
             }
+            function exportQuestionnaire(questionAnswerData, filename) {
+                const csvRows = [];
+
+                // Header row
+                csvRows.push('Question,Answer,Click Count,Total Users');
+
+                // Data rows
+                for (const question in questionAnswerData) {
+                    if (questionAnswerData.hasOwnProperty(question)) {
+                        const questionData = questionAnswerData[question];
+                        questionData.forEach(entry => {
+                            const rowData = [
+                                escapeCSVValue(question),
+                                escapeCSVValue(entry.answer),
+                                entry.clickCount,
+                                entry.totalUsers
+                            ];
+                            csvRows.push(rowData.join(','));
+                        });
+                    }
+                }
+
+                // Create a CSV string
+                const csvContent = csvRows.join('\n');
+
+                // Create a data URI for the CSV content
+                const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+
+                // Create a link element and trigger the download
+                const link = document.createElement('a');
+                link.setAttribute('href', encodedUri);
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            function escapeCSVValue(value) {
+                // Enclose the value in double quotes and escape any existing double quotes
+                const escapedValue = String(value).replace(/"/g, '""');
+
+                // Replace additional special characters as needed
+                const replacements = {
+                    '\u2013': '--', // En dash
+                    '\u2014': '---' // Em dash
+                    // Add more replacements for other special characters as needed
+                };
+
+                // Apply additional replacements
+                return `"${applyReplacements(escapedValue, replacements)}"`;
+            }
+
+            function applyReplacements(value, replacements) {
+                // Replace specified characters in the value
+                for (const [search, replace] of Object.entries(replacements)) {
+                    value = value.replace(new RegExp(search, 'g'), replace);
+                }
+                return value;
+            }
+
+            // Call export function when export button is clicked
+            document.getElementById('exportQuestionnaire').addEventListener('click', function() {
+                exportQuestionnaire(questionAnswerData, 'questionnaire_data.csv');
+            });
+
 
         <?php endif; ?>
 
@@ -1178,6 +1328,16 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
             chart: {
                 type: 'donut',
                 height: 240,
+                toolbar: {
+                            show: true,
+                            export: {
+                                csv: {
+                                    filename: "countries",
+                                    headerCategory: 'Country',
+                                    headerValue: 'Sessions',
+                                },
+                           },
+                        },
             },
             plotOptions: {
                 pie: {
@@ -1198,6 +1358,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                 breakpoint: 480,
                 options: {
                     chart: {
+                        
                     },
                     legend: {
                         position: 'bottom'
@@ -1208,5 +1369,71 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
 
         var countryChart = new ApexCharts(document.querySelector("#countryChart"), countryChartOptions);
         countryChart.render();
+
+
     });
+
+    var sources = <?php echo json_encode($sources) ?>;
+    var outBoundData = <?php echo json_encode($outBoundData) ?>;
+
+    function exportToCSV(data, filename) {
+        let csvContent = "data:text/csv;charset=utf-8,";
+
+        // Extract headers dynamically from the first object in the data array
+        let headers = Object.keys(data[0]);
+        csvContent += headers.join(',') + '\n';
+
+        // Add data rows
+        data.forEach(function(item) {
+            let row = [];
+            headers.forEach(function(header) {
+                // Escape double quotes in each item and enclose in double quotes
+                let value = item[header] || ''; // If item[header] is undefined, set it to an empty string
+                value = '"' + value.toString().replace(/"/g, '""') + '"';
+                row.push(value);
+            });
+            csvContent += row.join(',') + '\n';
+        });
+
+        // Create a link element and trigger download
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        encodedUri = encodedUri.replace(/%E2%80%8B/g, ""); // Remove any UTF-8 BOM characters
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", filename);
+        document.body.appendChild(link); // Required for Firefox
+        link.click();
+    }
+
+    document.getElementById('exportOutbound').addEventListener('click', function() {
+        exportToCSV(outBoundData, "outBoundData.csv");
+    });
+
+    function exportSourcesToCSV(data, filename) {
+    let csvContent = "data:text/csv;charset=utf-8,";
+
+    // Add headers for sources
+    csvContent += "Source,Count\n";
+
+    // Add data rows
+    Object.entries(data).forEach(([source, count]) => {
+        csvContent += `${source},${count}\n`;
+    });
+
+    // Create a link element and trigger download
+    var encodedUri = encodeURI(csvContent);
+    var link = document.createElement("a");
+    encodedUri = encodedUri.replace(/%E2%80%8B/g, ""); // Remove any UTF-8 BOM characters
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link); // Required for Firefox
+    link.click();
+}
+
+document.getElementById('exportSource').addEventListener('click', function() {
+    exportSourcesToCSV(sources, "sources.csv");
+});
+
+
+
 </script>

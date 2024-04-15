@@ -208,7 +208,7 @@ h2 {
   text-align: center;
   padding: 9px;
   border-radius: 20px 0px 20px 20px;
-  z-index: 1;
+  z-index: 50;
   right: 30px;
   top: 20px;
   opacity: 0;
@@ -219,6 +219,21 @@ h2 {
   visibility: visible;
   opacity: 1;
 }
+
+.export-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+}
+.fas.fa-download {
+  color: #0000002b; /* Default color */
+}
+
+.fas.fa-download:hover {
+  color: #636161; /* Color on hover */
+}
+
 /* Responsive Styles */
 @media only screen and (max-width: 768px) {
   .row {

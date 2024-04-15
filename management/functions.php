@@ -44,19 +44,13 @@
             echo "Failed to add question.";
         }
     } elseif (isset($_POST['updateMainQuestion'])){
-        $parentQuestion = $_POST['pqID'];
-        $numOptions     = $_POST['numOptions'];
-        $numAnswer      = $_POST['numAnswer'];
-        $category       = $_POST['category'];
+        $pqID           = $_POST['pqID'];
+        $parentQuestion = $_POST['parentQuestion'];
+        $pqOrder        = $_POST['pqOrder'];
+        $answers        = $_POST['answers']; // Updated answer content
+        $answerProducts = $_POST['answerProducts']; // Updated associated products
 
-        $answersData = array();
-        for ($i = 0; $i < $numOptions; $i++) {
-            $answerContent  = $_POST['answer'][$i];
-            $productIDs     = $_POST['answer_type'][$i];
-            $answersData[$answerContent] = $productIDs;
-        }
-
-        $result = $classQuiz->updateMainQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData);
+        $result = $classQuiz->updateMainQuestion($pqID, $parentQuestion, $pqOrder, $answers, $answerProducts);
 
         if($result){
             header("Location: question.php");
