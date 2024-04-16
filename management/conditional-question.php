@@ -44,7 +44,7 @@
     $result = mysqli_query($conn, $query);
 ?>
 
-<div class="container w-75">
+<div class="container">
     <?php include 'question_nav.php';?>
     <form class="form-inline d-inline">
         <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
@@ -63,7 +63,7 @@
     </form>
     <button class="btn btn-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#addConditionalQuestionModal">Add Conditional Question</button>
 </div>
-<div class="container w-75">
+<div class="container">
     <div class="table-responsive">
         <table class="table table-hover">
             <thead class="text-center">
@@ -117,7 +117,7 @@
 </div>
 
 <!-- Pagination -->
-<div class="container w-75">
+<div class="container">
     <ul class="pagination justify-content-center">
         <?php
         $totalRecordsQuery = "SELECT COUNT(*) AS totalRecords FROM conditional_question";

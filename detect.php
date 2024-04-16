@@ -10,7 +10,7 @@ class MobileDetect
     /** 
      * Mobile detection type. 
      * 
-     * @deprecated since version 2.6.9 
+     * @deprecated since    version 2.6.9 
      */ 
     const DETECTION_TYPE_MOBILE     = 'mobile'; 
  
