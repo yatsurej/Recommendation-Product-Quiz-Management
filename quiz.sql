@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 26, 2024 at 04:52 AM
+-- Generation Time: Apr 16, 2024 at 08:39 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -91,7 +91,9 @@ INSERT INTO `answer` (`answerID`, `answerContent`) VALUES
 (158, 'Cool menthol to beat dandrufff, itchiness, and an oily scalp.'),
 (159, 'Smooth & Silky prevents dandruff while keeping hair soft.'),
 (160, 'Argan oil hydrates and conditions the hair to make it soft and manageable.'),
-(161, 'Pro-V Formula penetrates the hair shaft to repair damage from within.');
+(161, 'Pro-V Formula penetrates the hair shaft to repair damage from within.'),
+(166, 'test1_answer'),
+(167, 'test2_answer');
 
 -- --------------------------------------------------------
 
@@ -114,6 +116,26 @@ CREATE TABLE `bonus_question` (
 INSERT INTO `bonus_question` (`bqID`, `bqContent`, `bqNumOptions`, `bqMaxAnswer`, `categoryID`) VALUES
 (5, 'Which skincare ingredient of this product empowers your skin to be an everyday champion?', 3, 1, 4),
 (6, 'Which haircare ingredient of this product empowers your hair to be an everyday champion?', 4, 1, 6);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `button_hover`
+--
+
+CREATE TABLE `button_hover` (
+  `bhID` int(11) NOT NULL,
+  `bh_background` varchar(50) NOT NULL DEFAULT 'linear-gradient(#f9f6f1, #f9f6f1)',
+  `bh_transition` varchar(50) NOT NULL DEFAULT 'all 0.5s ease',
+  `bh_transform` varchar(50) NOT NULL DEFAULT 'translateY(-3px) !important'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `button_hover`
+--
+
+INSERT INTO `button_hover` (`bhID`, `bh_background`, `bh_transition`, `bh_transform`) VALUES
+(1, 'linear-gradient(#f9f6f1, #f9f6f1)', 'all 0.5s ease', 'translateY(-3px) !important');
 
 -- --------------------------------------------------------
 
@@ -161,6 +183,178 @@ INSERT INTO `conditional_question` (`cqID`, `cqContent`, `cqNumOptions`, `cqMaxA
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `copy_button`
+--
+
+CREATE TABLE `copy_button` (
+  `copyButtonID` int(11) NOT NULL,
+  `cb_font_size` varchar(50) NOT NULL DEFAULT '17px',
+  `cb_color` varchar(50) NOT NULL DEFAULT '#8e7242'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `copy_button`
+--
+
+INSERT INTO `copy_button` (`copyButtonID`, `cb_font_size`, `cb_color`) VALUES
+(1, '17px', '#8e7242');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `general_button`
+--
+
+CREATE TABLE `general_button` (
+  `generalButtonID` int(11) NOT NULL,
+  `gb_padding` varchar(50) NOT NULL DEFAULT '10px 20px',
+  `gb_font_size` varchar(50) NOT NULL DEFAULT 'clamp(14px, 2vw, 16px)',
+  `gb_background` varchar(100) NOT NULL DEFAULT 'linear-gradient(     to right,     #2a68dc 0%,     #4da3ff 37%,     #3677e4 100%   )',
+  `gb_border_radius` varchar(50) NOT NULL DEFAULT '30px',
+  `gb_border` varchar(50) NOT NULL DEFAULT '2px solid #8e7242',
+  `gb_color` varchar(50) NOT NULL DEFAULT '#fff',
+  `gb_letter_spacing` varchar(50) NOT NULL DEFAULT '1px',
+  `gb_margin` varchar(50) NOT NULL DEFAULT '0px 0px 20px 0px'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `general_button`
+--
+
+INSERT INTO `general_button` (`generalButtonID`, `gb_padding`, `gb_font_size`, `gb_background`, `gb_border_radius`, `gb_border`, `gb_color`, `gb_letter_spacing`, `gb_margin`) VALUES
+(1, '10px 20px', 'clamp(14px, 2vw, 16px)', 'linear-gradient(\n    to right,\n    #2a68dc 0%,\n    #4da3ff 37%,\n    #3677e4 100%\n  )', '30px', '2px solid #8e7242', '#fff', '1px', '0px 0px 20px 0px');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `h1`
+--
+
+CREATE TABLE `h1` (
+  `h1ID` int(11) NOT NULL,
+  `h1_font_size` varchar(50) NOT NULL DEFAULT 'clamp(24px, 2vw, 36px)',
+  `h1_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `h1_letter_spacing` varchar(50) NOT NULL DEFAULT '1px',
+  `h1_line_height` varchar(50) NOT NULL DEFAULT '1.2em',
+  `h1_text_align` varchar(50) NOT NULL DEFAULT 'center',
+  `h1_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `h1_margin` varchar(50) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `h1`
+--
+
+INSERT INTO `h1` (`h1ID`, `h1_font_size`, `h1_font_weight`, `h1_letter_spacing`, `h1_line_height`, `h1_text_align`, `h1_color`, `h1_margin`) VALUES
+(1, 'clamp(24px, 2vw, 36px)', 'bold', '1px', '1.2em', 'center', '#8e7242', '0');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `h2`
+--
+
+CREATE TABLE `h2` (
+  `h2ID` int(11) NOT NULL,
+  `h2_font_size` varchar(50) NOT NULL DEFAULT 'clamp(20px, 2vw, 28px)',
+  `h2_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `h2_text_transform` varchar(50) NOT NULL DEFAULT 'uppercase',
+  `h2_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `h2_text_align` varchar(50) NOT NULL DEFAULT 'center'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `h2`
+--
+
+INSERT INTO `h2` (`h2ID`, `h2_font_size`, `h2_font_weight`, `h2_text_transform`, `h2_color`, `h2_text_align`) VALUES
+(1, 'clamp(20px, 2vw, 28px)', 'bold', 'uppercase', '#8e7242', 'center');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `home`
+--
+
+CREATE TABLE `home` (
+  `homeID` int(11) NOT NULL,
+  `home_background` varchar(50) NOT NULL DEFAULT 'url("./images/bg.jpg")',
+  `home_logo` varchar(50) NOT NULL DEFAULT '../assets/images/PG.png',
+  `home_title` varchar(50) NOT NULL DEFAULT 'Home',
+  `home_subtitle` varchar(50) NOT NULL DEFAULT 'Subtitle',
+  `home_description` varchar(50) NOT NULL DEFAULT 'Description'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `home`
+--
+
+INSERT INTO `home` (`homeID`, `home_background`, `home_logo`, `home_title`, `home_subtitle`, `home_description`) VALUES
+(1, 'url(\"./images/bg.jpg\")', '../assets/images/PG.png', 'Home', 'Subtitle', 'Description');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `next_button`
+--
+
+CREATE TABLE `next_button` (
+  `nextButtonID` int(11) NOT NULL,
+  `nb_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `nb_background` varchar(100) NOT NULL DEFAULT 'linear-gradient(     to right,     #f5edd8 0%,     #f5e4b6 5%,     #f5edd8 50%,     #d6bf8b 100%   )',
+  `nb_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `nb_animation` varchar(50) NOT NULL DEFAULT 'fadeInAnimation  ease 1s'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `next_button`
+--
+
+INSERT INTO `next_button` (`nextButtonID`, `nb_font_weight`, `nb_background`, `nb_color`, `nb_animation`) VALUES
+(1, 'bold', 'linear-gradient(\n    to right,\n    #f5edd8 0%,\n    #f5e4b6 5%,\n    #f5edd8 50%,\n    #d6bf8b 100%\n  )', '#8e7242', 'fadeInAnimation  ease 1s');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `options_container`
+--
+
+CREATE TABLE `options_container` (
+  `oconID` int(11) NOT NULL,
+  `ocon_animation` varchar(50) NOT NULL DEFAULT 'fadeInAnimation  ease 1s'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `options_container`
+--
+
+INSERT INTO `options_container` (`oconID`, `ocon_animation`) VALUES
+(1, 'fadeInAnimation  ease 1s');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `p`
+--
+
+CREATE TABLE `p` (
+  `pID` int(11) NOT NULL,
+  `p_font_size` varchar(50) NOT NULL DEFAULT '14px',
+  `p_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `p_text_align` varchar(50) NOT NULL DEFAULT 'center',
+  `p_color` varchar(50) NOT NULL DEFAULT '#8e7242'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `p`
+--
+
+INSERT INTO `p` (`pID`, `p_font_size`, `p_font_weight`, `p_text_align`, `p_color`) VALUES
+(1, '14px', 'bold', 'center', '#8e7242');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `parent_question`
 --
 
@@ -190,7 +384,8 @@ INSERT INTO `parent_question` (`pqID`, `pqContent`, `pqNumOptions`, `pqMaxAnswer
 (58, 'Which hair pattern perfectly describes your hair?', 4, 1, 2, 6),
 (59, 'How would you describe your skin before and after your daily activities', 3, 1, 3, 6),
 (60, 'Which daily hair challenge are you hoping to overcome?', 4, 1, 4, 6),
-(62, 'Which hair care product sounds like the perfect ticket to achieving gold-medal hair?', 3, 1, 5, 6);
+(62, 'Which hair care product sounds like the perfect ticket to achieving gold-medal hair?', 3, 1, 5, 6),
+(74, 'test_update_update', 2, 1, 6, 4);
 
 -- --------------------------------------------------------
 
@@ -311,6 +506,77 @@ INSERT INTO `product_answer` (`paID`, `prodID`, `answerID`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `product_container`
+--
+
+CREATE TABLE `product_container` (
+  `pconID` int(11) NOT NULL,
+  `pcon_background` varchar(50) NOT NULL DEFAULT '#fff',
+  `pcon_border_radius` varchar(50) NOT NULL DEFAULT '#fff',
+  `pcon_border` varchar(50) NOT NULL DEFAULT '2px solid #8e7242 !important',
+  `pcon_margin` varchar(50) NOT NULL DEFAULT '20px 0px 20px 0px',
+  `pcon_img_width` varchar(50) NOT NULL DEFAULT '165px',
+  `pcon_img_border_radius` varchar(50) NOT NULL DEFAULT '10px',
+  `pcon_desc_font_size` varchar(50) NOT NULL DEFAULT '12px',
+  `pcon_desc_color` varchar(50) NOT NULL DEFAULT '#000',
+  `pcon_desc_font_weight` varchar(50) NOT NULL DEFAULT 'bold'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_container`
+--
+
+INSERT INTO `product_container` (`pconID`, `pcon_background`, `pcon_border_radius`, `pcon_border`, `pcon_margin`, `pcon_img_width`, `pcon_img_border_radius`, `pcon_desc_font_size`, `pcon_desc_color`, `pcon_desc_font_weight`) VALUES
+(1, '#fff', '#fff', '2px solid #8e7242 !important', '20px 0px 20px 0px', '165px', '10px', '12px', '#000', 'bold');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `progress`
+--
+
+CREATE TABLE `progress` (
+  `progressID` int(11) NOT NULL,
+  `progress_background_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `progress_border_radius` varchar(50) NOT NULL DEFAULT '10px 0 0 10px'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `progress`
+--
+
+INSERT INTO `progress` (`progressID`, `progress_background_color`, `progress_border_radius`) VALUES
+(1, '#8e7242', '10px 0 0 10px');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `progress_bar`
+--
+
+CREATE TABLE `progress_bar` (
+  `progressBarID` int(11) NOT NULL,
+  `pb_width` varchar(50) NOT NULL DEFAULT '450px',
+  `pb_height` varchar(50) NOT NULL DEFAULT '5px',
+  `pb_background_color` varchar(50) NOT NULL DEFAULT '#fff',
+  `pb_border_radius` varchar(50) NOT NULL DEFAULT '10px',
+  `pb_border_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `pb_border_style` varchar(50) NOT NULL DEFAULT 'solid',
+  `pb_position` varchar(50) NOT NULL DEFAULT 'absolute',
+  `pb_top` varchar(50) NOT NULL DEFAULT '14px',
+  `pb_left` varchar(50) NOT NULL DEFAULT '50%'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `progress_bar`
+--
+
+INSERT INTO `progress_bar` (`progressBarID`, `pb_width`, `pb_height`, `pb_background_color`, `pb_border_radius`, `pb_border_color`, `pb_border_style`, `pb_position`, `pb_top`, `pb_left`) VALUES
+(1, '450px', '5px', '#fff', '10px', '#8e7242', 'solid', 'absolute', '14px', '50%');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `question_answer`
 --
 
@@ -381,7 +647,112 @@ INSERT INTO `question_answer` (`qaID`, `pqID`, `cqID`, `bqID`, `answerID`) VALUE
 (140, NULL, NULL, 6, 158),
 (141, NULL, NULL, 6, 159),
 (142, NULL, NULL, 6, 160),
-(143, NULL, NULL, 6, 161);
+(143, NULL, NULL, 6, 161),
+(148, 74, NULL, NULL, 166),
+(149, 74, NULL, NULL, 167);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `question_container`
+--
+
+CREATE TABLE `question_container` (
+  `qconID` int(11) NOT NULL,
+  `qcon_background_color` varchar(50) NOT NULL DEFAULT '#fff',
+  `qcon_border` varchar(50) NOT NULL DEFAULT '2px solid #dabb7b',
+  `qcon_padding` varchar(50) NOT NULL DEFAULT '30px 20px 20px 20px',
+  `qcon_border_radius` varchar(50) NOT NULL DEFAULT '10px',
+  `qcon_letter_spacing` varchar(50) NOT NULL DEFAULT '1em',
+  `qcon_font_size` varchar(50) NOT NULL DEFAULT 'clamp(20px, 2vw, 26px)',
+  `qcon_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `qcon_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `qcon_line_height` varchar(50) NOT NULL DEFAULT '1.2em'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `question_container`
+--
+
+INSERT INTO `question_container` (`qconID`, `qcon_background_color`, `qcon_border`, `qcon_padding`, `qcon_border_radius`, `qcon_letter_spacing`, `qcon_font_size`, `qcon_color`, `qcon_font_weight`, `qcon_line_height`) VALUES
+(1, '#fff', '2px solid #dabb7b', '30px 20px 20px 20px', '10px', '1em', 'clamp(20px, 2vw, 26px)', '#8e7242', 'bold', '1.2em');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quiz_design`
+--
+
+CREATE TABLE `quiz_design` (
+  `qdID` int(11) NOT NULL,
+  `wrapperID` int(11) NOT NULL,
+  `h1ID` int(11) NOT NULL,
+  `bhID` int(11) NOT NULL,
+  `copyButtonID` int(11) NOT NULL,
+  `generalButtonID` int(11) NOT NULL,
+  `h2ID` int(11) NOT NULL,
+  `homeID` int(11) NOT NULL,
+  `nextButtonID` int(11) NOT NULL,
+  `oconID` int(11) NOT NULL,
+  `pID` int(11) NOT NULL,
+  `pconID` int(11) NOT NULL,
+  `progressID` int(11) NOT NULL,
+  `progressBarID` int(11) NOT NULL,
+  `qconID` int(11) NOT NULL,
+  `rSubheadingID` int(11) NOT NULL,
+  `rTitleID` int(11) NOT NULL,
+  `spacerID` int(11) NOT NULL,
+  `vh1ID` int(11) NOT NULL,
+  `vh4ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `quiz_design`
+--
+
+INSERT INTO `quiz_design` (`qdID`, `wrapperID`, `h1ID`, `bhID`, `copyButtonID`, `generalButtonID`, `h2ID`, `homeID`, `nextButtonID`, `oconID`, `pID`, `pconID`, `progressID`, `progressBarID`, `qconID`, `rSubheadingID`, `rTitleID`, `spacerID`, `vh1ID`, `vh4ID`) VALUES
+(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `result_subheading`
+--
+
+CREATE TABLE `result_subheading` (
+  `rSubheadingID` int(11) NOT NULL,
+  `rSH_font_weight` varchar(50) NOT NULL DEFAULT 'normal',
+  `rSH_font_size` varchar(50) NOT NULL DEFAULT '14px',
+  `rSH_color` varchar(50) NOT NULL DEFAULT '#8e7242'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `result_subheading`
+--
+
+INSERT INTO `result_subheading` (`rSubheadingID`, `rSH_font_weight`, `rSH_font_size`, `rSH_color`) VALUES
+(1, 'normal', '14px', '#8e7242');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `result_title`
+--
+
+CREATE TABLE `result_title` (
+  `rTitleID` int(11) NOT NULL,
+  `rTitle_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `rTitle_font_size` varchar(50) NOT NULL DEFAULT '1.5rem',
+  `rTitle_color` varchar(50) NOT NULL DEFAULT '#8e7242',
+  `rTitle_margin` varchar(50) NOT NULL DEFAULT '0px 0px 10px 0px'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `result_title`
+--
+
+INSERT INTO `result_title` (`rTitleID`, `rTitle_font_weight`, `rTitle_font_size`, `rTitle_color`, `rTitle_margin`) VALUES
+(1, 'bold', '1.5rem', '#8e7242', '0px 0px 10px 0px');
 
 -- --------------------------------------------------------
 
@@ -394,11 +765,11 @@ CREATE TABLE `session` (
   `guestID` int(11) DEFAULT NULL,
   `device_type` text NOT NULL,
   `prodID` int(11) DEFAULT NULL,
-  `source` text NOT NULL,
+  `source` text NOT NULL DEFAULT 'direct',
   `outbound` int(11) DEFAULT 0,
   `status` int(11) NOT NULL COMMENT '0 - site visit; 1 - drop-off; 2 - completed',
   `locationFrom` text NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -406,68 +777,34 @@ CREATE TABLE `session` (
 --
 
 INSERT INTO `session` (`sessionID`, `guestID`, `device_type`, `prodID`, `source`, `outbound`, `status`, `locationFrom`, `timestamp`) VALUES
-(1, 123, 'mobile', 23, 'lazada', 0, 2, 'Philippines', '2024-03-25 05:23:38'),
-(2, 321, 'desktop', 47, 'facebook', 0, 2, 'Singapore', '2024-03-25 05:23:40'),
-(3, 124, 'mobile', 45, 'facebook', 0, 2, 'Philippines', '2024-03-25 05:23:42'),
-(4, 123, 'mobile', 32, 'instagram', 0, 2, 'Philippines', '2024-03-25 05:23:44'),
-(5, 125, 'mobile', 31, 'twitter', 0, 2, 'Philippines', '2024-03-25 05:23:45'),
-(6, 126, 'mobile', 45, 'google', 0, 2, 'Philippines', '2024-03-25 05:23:47'),
-(7, 129, 'mobile', 44, 'facebook', 0, 1, 'Philippines', '2024-03-25 05:23:49'),
-(8, 128, 'desktop', 47, 'lazada', 0, 2, 'Thailand', '2024-03-25 05:23:50'),
-(9, 127, 'mobile', 32, 'lazada', 0, 2, 'Philippines', '2024-03-25 05:23:55'),
-(10, 543, 'mobile', 21, 'lazada', 0, 2, 'Philippines', '2024-03-25 05:23:56'),
-(11, 578, 'mobile', 44, 'lazada', 0, 2, 'Philippines', '2024-03-25 05:23:58'),
-(12, 326, 'mobile', 47, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:00'),
-(13, 124, 'mobile', 45, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:02'),
-(14, 987, 'desktop', 39, 'lazada', 0, 1, 'Australia', '2024-03-25 05:24:03'),
-(15, 2, 'mobile', 23, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:05'),
-(16, 2, 'mobile', 23, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:07'),
-(17, 2, 'mobile', 32, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:09'),
-(18, 2, 'mobile', 32, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:10'),
-(19, 2147483647, 'mobile', 44, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:12'),
-(20, 2147483647, 'mobile', 47, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:24:15'),
-(21, 2, 'mobile', 24, 'lazada', 0, 1, 'Thailand', '2024-03-25 05:24:17'),
-(22, 2147483647, 'mobile', 31, 'lazada', 0, 1, 'Thailand', '2024-03-25 05:24:19'),
-(23, 2147483647, 'desktop', 47, 'lazada', 0, 1, 'Australia', '2024-03-25 05:24:20'),
-(24, 2147483647, 'desktop', 31, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:19:44'),
-(25, 2147483647, 'mobile', 39, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:19:47'),
-(26, 2147483647, 'desktop', 47, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:19:49'),
-(27, 2147483647, 'mobile', 46, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:19:52'),
-(28, 982022, 'desktop', 47, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:19:55'),
-(29, 537313, 'mobile', 44, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:19:57'),
-(30, 537313, 'mobile', 39, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:20:00'),
-(31, 302960889, 'desktop', 47, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:20:03'),
-(32, 972176038, 'mobile', 29, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:20:05'),
-(33, 302960889, 'desktop', 24, 'lazada', 0, 2, 'Philippines', '2024-03-26 02:20:08'),
-(34, 213525802, 'desktop', 32, 'lazada', 0, 1, 'Philippines', '2024-03-26 02:20:11'),
-(35, 213525802, 'mobile', 32, 'lazada', 0, 1, 'Singapore', '2024-03-25 05:43:03'),
-(36, 213525802, 'desktop', 32, 'lazada', 0, 1, 'Russia', '2024-03-25 05:43:03'),
-(42, 213525802, 'desktop', NULL, 'lazada', 0, 1, 'Philippines', '2024-03-25 05:43:03'),
-(43, 213525802, 'desktop', NULL, 'lazada', 0, 1, 'United Kingdom', '2024-03-25 05:43:03'),
-(44, 213525802, 'desktop', NULL, 'lazada', 0, 1, 'United Kingdom', '2024-03-25 05:43:03'),
-(49, 652456799, 'desktop', NULL, 'lazada', 0, 1, 'France', '2024-03-25 06:02:24'),
-(115, 473639853, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 02:31:07'),
-(118, 889569030, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 02:51:06'),
-(119, 889569030, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 02:51:07'),
-(120, 889569030, 'desktop', 32, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 02:51:09'),
-(121, 889569030, 'desktop', NULL, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 02:53:03'),
-(122, 889569030, 'desktop', NULL, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 02:56:05'),
-(123, 111586194, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:07:59'),
-(124, 111586194, 'desktop', 23, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 03:08:53'),
-(125, 111586194, 'desktop', 23, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 03:11:20'),
-(126, 111586194, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:11:07'),
-(129, 111586194, 'desktop', 32, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:13:51'),
-(130, 111586194, 'desktop', 32, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:14:19'),
-(131, 111586194, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:14:38'),
-(132, 111586194, 'desktop', 25, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 03:17:44'),
-(133, 111586194, 'desktop', 25, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 03:18:08'),
-(134, 111586194, 'desktop', 29, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:24:46'),
-(135, 111586194, 'desktop', 29, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:26:11'),
-(136, 111586194, 'desktop', 21, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:27:40'),
-(137, 111586194, 'desktop', NULL, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 03:29:00'),
-(138, 90012637, 'desktop', NULL, 'https://l.messenger.com/', 0, 1, 'Philippines', '2024-03-26 03:44:46'),
-(139, NULL, 'desktop', NULL, 'https://l.messenger.com/', 0, 0, 'Philippines', '2024-03-26 03:45:47'),
-(140, 868892847, 'desktop', 23, 'https://l.messenger.com/', 0, 2, 'Philippines', '2024-03-26 03:48:15');
+(31, 516482678, 'desktop', 39, 'direct', 1, 2, 'Philippines', '2024-03-27 04:23:10'),
+(32, 516482678, 'desktop', 41, 'direct', 0, 2, 'Philippines', '2024-03-27 04:23:10'),
+(43, 551363025, 'desktop', 39, 'direct', 0, 2, 'Philippines', '2024-03-27 06:06:49'),
+(44, 551363025, 'desktop', 41, 'direct', 0, 2, 'Philippines', '2024-03-27 06:06:49'),
+(45, 551363025, 'desktop', 39, 'direct', 0, 2, 'Philippines', '2024-03-27 06:19:02'),
+(46, 551363025, 'desktop', 41, 'direct', 0, 2, 'Philippines', '2024-03-27 06:19:02'),
+(47, 551363025, 'desktop', 44, 'direct', 0, 2, 'Philippines', '2024-03-27 06:20:01'),
+(48, 551363025, 'desktop', 42, 'direct', 0, 2, 'Philippines', '2024-03-27 06:20:01'),
+(49, NULL, 'desktop', NULL, 'direct', 0, 0, 'Philippines', '2024-04-01 02:25:10'),
+(50, 50195379, 'desktop', 23, 'direct', 0, 1, 'Philippines', '2024-04-04 06:38:23'),
+(51, 50195379, 'mobile', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:43:06'),
+(52, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:46:10'),
+(53, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:46:28'),
+(54, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:49:35'),
+(55, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:49:44'),
+(56, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:50:17'),
+(57, 50195379, 'desktop', 23, 'direct', 0, 2, 'Philippines', '2024-04-04 06:50:30'),
+(58, 50195379, 'desktop', 23, 'direct', 0, 2, 'Philippines', '2024-04-04 06:51:02'),
+(59, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:51:13'),
+(60, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 06:51:41'),
+(61, 50195379, 'desktop', 23, 'direct', 0, 2, 'Philippines', '2024-04-04 07:00:48'),
+(62, 50195379, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-04 07:01:02'),
+(63, 963010140, 'desktop', 23, 'direct', 0, 2, 'Philippines', '2024-04-05 06:55:28'),
+(64, 963010140, 'desktop', 47, 'direct', 0, 2, 'Philippines', '2024-04-05 06:55:42'),
+(65, NULL, 'desktop', NULL, 'direct', 0, 0, 'Philippines', '2024-04-09 04:29:46'),
+(66, NULL, 'desktop', NULL, 'direct', 0, 0, 'Philippines', '2024-04-15 02:15:44'),
+(67, 533888780, 'desktop', NULL, 'direct', 0, 1, 'Philippines', '2024-04-16 03:20:49'),
+(68, 916294034, 'desktop', NULL, 'direct', 0, 1, 'Philippines', '2024-04-16 05:42:09');
 
 -- --------------------------------------------------------
 
@@ -486,278 +823,108 @@ CREATE TABLE `session_answers` (
 --
 
 INSERT INTO `session_answers` (`saID`, `sessionID`, `answerID`) VALUES
-(129, 1, 59),
-(130, 1, 63),
-(131, 1, 67),
-(132, 1, 71),
-(133, 1, 118),
-(134, 2, 85),
-(135, 2, 88),
-(136, 2, 90),
-(137, 2, 146),
-(138, 3, 97),
-(139, 3, 101),
-(140, 3, 107),
-(141, 3, 110),
-(142, 3, 114),
-(143, 4, 61),
-(144, 4, 65),
-(145, 4, 68),
-(146, 4, 73),
-(147, 4, 119),
-(148, 5, 61),
-(149, 5, 64),
-(150, 5, 69),
-(151, 5, 73),
-(152, 5, 118),
-(153, 6, 100),
-(154, 6, 104),
-(155, 6, 106),
-(156, 6, 110),
-(157, 6, 114),
-(158, 7, 99),
-(159, 7, 103),
-(160, 7, 106),
-(161, 7, 109),
-(162, 7, 114),
-(163, 8, 87),
-(164, 8, 89),
-(165, 8, 90),
-(166, 8, 147),
-(167, 9, 61),
-(168, 9, 65),
-(169, 9, 69),
-(170, 9, 73),
-(171, 9, 119),
-(172, 10, 62),
-(173, 10, 64),
-(174, 10, 68),
-(175, 10, 71),
-(176, 10, 119),
-(177, 11, 99),
-(178, 11, 103),
-(179, 11, 106),
-(180, 11, 109),
-(181, 11, 114),
-(182, 12, 87),
-(183, 12, 89),
-(184, 12, 90),
-(185, 12, 147),
-(186, 13, 100),
-(187, 13, 104),
-(188, 13, 107),
-(189, 13, 110),
-(190, 13, 114),
-(191, 14, 98),
-(192, 14, 102),
-(193, 14, 106),
-(194, 14, 108),
-(195, 14, 113),
-(196, 15, 59),
-(197, 15, 63),
-(198, 15, 67),
-(199, 15, 71),
-(200, 15, 118),
-(201, 16, 59),
-(202, 16, 63),
-(203, 16, 67),
-(204, 16, 71),
-(205, 16, 118),
-(206, 17, 59),
-(207, 17, 65),
-(208, 17, 69),
-(209, 17, 73),
-(210, 17, 119),
-(211, 18, 62),
-(212, 18, 64),
-(213, 18, 68),
-(214, 18, 73),
-(215, 18, 119),
-(216, 19, 98),
-(217, 19, 101),
-(218, 19, 107),
-(219, 19, 109),
-(220, 19, 115),
-(221, 20, 86),
-(222, 20, 89),
-(223, 20, 90),
-(224, 20, 146),
-(225, 21, 62),
-(226, 21, 63),
-(227, 21, 69),
-(228, 21, 72),
-(229, 21, 118),
-(230, 22, 59),
-(231, 22, 64),
-(232, 22, 67),
-(233, 22, 73),
-(234, 22, 118),
-(235, 23, 86),
-(236, 23, 89),
-(237, 23, 90),
-(238, 23, 146),
-(239, 24, 62),
-(240, 24, 65),
-(241, 24, 68),
-(242, 24, 73),
-(243, 24, 118),
-(244, 25, 98),
-(245, 25, 101),
-(246, 25, 106),
-(247, 25, 108),
-(248, 25, 114),
-(249, 26, 86),
-(250, 26, 89),
-(251, 26, 90),
-(252, 26, 146),
-(253, 27, 99),
-(254, 27, 102),
-(255, 27, 105),
-(256, 27, 111),
-(257, 27, 114),
-(258, 28, 87),
-(259, 28, 89),
-(260, 28, 90),
-(261, 28, 146),
-(262, 29, 99),
-(263, 29, 103),
-(264, 29, 107),
-(265, 29, 109),
-(266, 29, 115),
-(267, 30, 99),
-(268, 30, 102),
-(269, 30, 107),
-(270, 30, 108),
-(271, 30, 113),
-(272, 31, 85),
-(273, 31, 89),
-(274, 31, 90),
-(275, 31, 147),
-(276, 32, 62),
-(277, 32, 64),
-(278, 32, 69),
-(279, 32, 72),
-(280, 32, 120),
-(281, 33, 61),
-(282, 33, 64),
-(283, 33, 69),
-(284, 33, 72),
-(285, 33, 118),
-(286, 34, 61),
-(287, 34, 64),
-(288, 34, 67),
-(289, 34, 73),
-(290, 34, 119),
-(291, 35, 59),
-(292, 35, 64),
-(293, 35, 69),
-(294, 35, 73),
-(295, 35, 119),
-(296, 36, 60),
-(297, 36, 66),
-(298, 36, 70),
-(299, 36, 73),
-(300, 36, 119),
-(302, 115, 59),
-(303, 115, 63),
-(304, 115, 67),
-(305, 115, 71),
-(306, 115, 118),
-(307, 118, 59),
-(308, 118, 63),
-(309, 118, 67),
-(310, 118, 71),
-(311, 118, 118),
-(312, 119, 59),
-(313, 119, 63),
-(314, 119, 67),
-(315, 119, 71),
-(316, 119, 118),
-(317, 120, 62),
-(318, 120, 63),
-(319, 120, 68),
-(320, 120, 73),
-(321, 120, 119),
-(322, 123, 59),
-(323, 123, 63),
-(324, 123, 67),
-(325, 123, 71),
-(326, 123, 118),
-(327, 125, 59),
-(328, 125, 63),
-(329, 125, 67),
-(330, 125, 71),
-(331, 125, 118),
-(332, 125, 59),
-(333, 125, 63),
-(334, 125, 67),
-(335, 125, 71),
-(336, 125, 118),
-(337, 125, 59),
-(338, 125, 63),
-(339, 125, 68),
-(340, 125, 71),
-(341, 125, 118),
-(342, 126, 59),
-(343, 126, 63),
-(344, 126, 67),
-(345, 126, 71),
-(346, 126, 118),
-(352, 129, 62),
-(353, 129, 65),
-(354, 129, 69),
-(355, 129, 73),
-(356, 129, 119),
-(357, 130, 62),
-(358, 130, 65),
-(359, 130, 69),
-(360, 130, 73),
-(361, 130, 119),
-(362, 131, 59),
-(363, 131, 63),
-(364, 131, 67),
-(365, 131, 71),
-(366, 131, 118),
-(367, 132, 59),
-(368, 132, 63),
-(369, 132, 67),
-(370, 132, 71),
-(371, 132, 118),
-(372, 132, 61),
-(373, 132, 65),
-(374, 132, 68),
-(375, 132, 72),
-(376, 132, 119),
-(377, 133, 61),
-(378, 133, 64),
-(379, 133, 68),
-(380, 133, 72),
-(381, 133, 119),
-(382, 134, 60),
-(383, 134, 63),
-(384, 134, 68),
-(385, 134, 72),
-(386, 134, 120),
-(387, 135, 60),
-(388, 135, 64),
-(389, 135, 69),
-(390, 135, 72),
-(391, 135, 119),
-(392, 135, 61),
-(393, 135, 65),
-(394, 135, 69),
-(395, 135, 72),
-(396, 135, 120),
-(397, 136, 59),
-(398, 136, 63),
-(399, 136, 68),
-(400, 136, 71),
-(401, 136, 119),
-(402, 140, 59),
-(403, 140, 63),
-(404, 140, 67),
-(405, 140, 71),
-(406, 140, 118);
+(711, 32, 97),
+(712, 32, 101),
+(713, 32, 105),
+(714, 32, 108),
+(715, 32, 113),
+(731, 44, 97),
+(732, 44, 101),
+(733, 44, 105),
+(734, 44, 108),
+(735, 44, 113),
+(736, 46, 97),
+(737, 46, 101),
+(738, 46, 105),
+(739, 46, 108),
+(740, 46, 113),
+(741, 48, 99),
+(742, 48, 104),
+(743, 48, 106),
+(744, 48, 109),
+(745, 48, 114),
+(746, 50, 59),
+(747, 50, 63),
+(748, 50, 67),
+(749, 50, 71),
+(750, 50, 118),
+(751, 51, 85),
+(752, 51, 88),
+(753, 51, 90),
+(754, 51, 90),
+(755, 52, 85),
+(756, 52, 88),
+(757, 52, 90),
+(758, 52, 90),
+(759, 52, 90),
+(760, 53, 85),
+(761, 53, 88),
+(762, 53, 90),
+(763, 54, 86),
+(764, 54, 88),
+(765, 54, 90),
+(766, 55, 85),
+(767, 55, 88),
+(768, 55, 90),
+(769, 55, 146),
+(770, 56, 85),
+(771, 56, 88),
+(772, 56, 90),
+(773, 56, 146),
+(774, 57, 59),
+(775, 57, 63),
+(776, 57, 67),
+(777, 57, 71),
+(778, 57, 118),
+(779, 58, 59),
+(780, 58, 63),
+(781, 58, 67),
+(782, 58, 71),
+(783, 58, 118),
+(784, 59, 85),
+(785, 59, 88),
+(786, 59, 90),
+(787, 59, 146),
+(788, 60, 85),
+(789, 60, 88),
+(790, 60, 90),
+(791, 60, 146),
+(792, 61, 59),
+(793, 61, 63),
+(794, 61, 67),
+(795, 61, 71),
+(796, 61, 118),
+(797, 62, 85),
+(798, 62, 88),
+(799, 62, 90),
+(800, 62, 146),
+(801, 63, 59),
+(802, 63, 63),
+(803, 63, 67),
+(804, 63, 71),
+(805, 63, 118),
+(806, 64, 85),
+(807, 64, 88),
+(808, 64, 90),
+(809, 64, 146);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `spacer`
+--
+
+CREATE TABLE `spacer` (
+  `spacerID` int(11) NOT NULL,
+  `spacer_height` varchar(50) NOT NULL DEFAULT '50px'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `spacer`
+--
+
+INSERT INTO `spacer` (`spacerID`, `spacer_height`) VALUES
+(1, '50px');
 
 -- --------------------------------------------------------
 
@@ -823,6 +990,68 @@ INSERT INTO `voucher` (`voucherID`, `voucherCode`, `categoryID`) VALUES
 (5, 'FABRIC123', 5),
 (6, 'HAIR123', 6);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `voucher_h1`
+--
+
+CREATE TABLE `voucher_h1` (
+  `vh1ID` int(11) NOT NULL,
+  `vh1_font_size` varchar(50) NOT NULL DEFAULT 'clamp(24px, 2vw, 36px)',
+  `vh1_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `vh1_letter_spacing` varchar(50) NOT NULL DEFAULT '1px',
+  `vh1_line_height` varchar(50) NOT NULL DEFAULT '1.2em',
+  `vh1_color` varchar(50) NOT NULL DEFAULT '#8e7242'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `voucher_h1`
+--
+
+INSERT INTO `voucher_h1` (`vh1ID`, `vh1_font_size`, `vh1_font_weight`, `vh1_letter_spacing`, `vh1_line_height`, `vh1_color`) VALUES
+(1, 'clamp(24px, 2vw, 36px)', 'bold', '1px', '1.2em', '#8e7242');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `voucher_h4`
+--
+
+CREATE TABLE `voucher_h4` (
+  `vh4ID` int(11) NOT NULL,
+  `vh4_font_weight` varchar(50) NOT NULL DEFAULT 'bold',
+  `vh4_line_height` varchar(50) NOT NULL DEFAULT '1.2em',
+  `vh4_font_size` varchar(50) NOT NULL DEFAULT 'clamp(24px, 2vw, 36px)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `voucher_h4`
+--
+
+INSERT INTO `voucher_h4` (`vh4ID`, `vh4_font_weight`, `vh4_line_height`, `vh4_font_size`) VALUES
+(1, 'bold', '1.2em', 'clamp(24px, 2vw, 36px)');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `wrapper`
+--
+
+CREATE TABLE `wrapper` (
+  `wrapperID` int(11) NOT NULL,
+  `wrap_animation` varchar(50) NOT NULL DEFAULT 'fadeInAnimation ease 0.5s',
+  `wrap_padding` varchar(50) NOT NULL DEFAULT '40px',
+  `wrap_flex_direction` varchar(50) NOT NULL DEFAULT 'column'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `wrapper`
+--
+
+INSERT INTO `wrapper` (`wrapperID`, `wrap_animation`, `wrap_padding`, `wrap_flex_direction`) VALUES
+(1, 'fadeInAnimation ease 0.5s', '40px', 'column');
+
 --
 -- Indexes for dumped tables
 --
@@ -841,6 +1070,12 @@ ALTER TABLE `bonus_question`
   ADD KEY `bq_fk1` (`categoryID`);
 
 --
+-- Indexes for table `button_hover`
+--
+ALTER TABLE `button_hover`
+  ADD PRIMARY KEY (`bhID`);
+
+--
 -- Indexes for table `category`
 --
 ALTER TABLE `category`
@@ -851,6 +1086,54 @@ ALTER TABLE `category`
 --
 ALTER TABLE `conditional_question`
   ADD PRIMARY KEY (`cqID`);
+
+--
+-- Indexes for table `copy_button`
+--
+ALTER TABLE `copy_button`
+  ADD PRIMARY KEY (`copyButtonID`);
+
+--
+-- Indexes for table `general_button`
+--
+ALTER TABLE `general_button`
+  ADD PRIMARY KEY (`generalButtonID`);
+
+--
+-- Indexes for table `h1`
+--
+ALTER TABLE `h1`
+  ADD PRIMARY KEY (`h1ID`);
+
+--
+-- Indexes for table `h2`
+--
+ALTER TABLE `h2`
+  ADD PRIMARY KEY (`h2ID`);
+
+--
+-- Indexes for table `home`
+--
+ALTER TABLE `home`
+  ADD PRIMARY KEY (`homeID`);
+
+--
+-- Indexes for table `next_button`
+--
+ALTER TABLE `next_button`
+  ADD PRIMARY KEY (`nextButtonID`);
+
+--
+-- Indexes for table `options_container`
+--
+ALTER TABLE `options_container`
+  ADD PRIMARY KEY (`oconID`);
+
+--
+-- Indexes for table `p`
+--
+ALTER TABLE `p`
+  ADD PRIMARY KEY (`pID`);
 
 --
 -- Indexes for table `parent_question`
@@ -875,6 +1158,24 @@ ALTER TABLE `product_answer`
   ADD KEY `pa_fk2` (`answerID`);
 
 --
+-- Indexes for table `product_container`
+--
+ALTER TABLE `product_container`
+  ADD PRIMARY KEY (`pconID`);
+
+--
+-- Indexes for table `progress`
+--
+ALTER TABLE `progress`
+  ADD PRIMARY KEY (`progressID`);
+
+--
+-- Indexes for table `progress_bar`
+--
+ALTER TABLE `progress_bar`
+  ADD PRIMARY KEY (`progressBarID`);
+
+--
 -- Indexes for table `question_answer`
 --
 ALTER TABLE `question_answer`
@@ -883,6 +1184,49 @@ ALTER TABLE `question_answer`
   ADD KEY `qa_fk3` (`answerID`),
   ADD KEY `qa_fk4` (`bqID`),
   ADD KEY `qa_fk2` (`cqID`);
+
+--
+-- Indexes for table `question_container`
+--
+ALTER TABLE `question_container`
+  ADD PRIMARY KEY (`qconID`);
+
+--
+-- Indexes for table `quiz_design`
+--
+ALTER TABLE `quiz_design`
+  ADD PRIMARY KEY (`qdID`),
+  ADD KEY `qd_fk1` (`wrapperID`),
+  ADD KEY `qd_fk2` (`h1ID`),
+  ADD KEY `qd_fk3` (`bhID`),
+  ADD KEY `qd_fk4` (`copyButtonID`),
+  ADD KEY `qd_fk5` (`generalButtonID`),
+  ADD KEY `qd_fk6` (`h2ID`),
+  ADD KEY `qd_fk7` (`homeID`),
+  ADD KEY `qd_fk8` (`nextButtonID`),
+  ADD KEY `qd_fk9` (`oconID`),
+  ADD KEY `qd_fk10` (`pconID`),
+  ADD KEY `qd_fk11` (`pID`),
+  ADD KEY `qd_fk12` (`progressBarID`),
+  ADD KEY `qd_fk13` (`progressID`),
+  ADD KEY `qd_fk14` (`qconID`),
+  ADD KEY `qd_fk15` (`rSubheadingID`),
+  ADD KEY `qd_fk16` (`rTitleID`),
+  ADD KEY `qd_fk17` (`spacerID`),
+  ADD KEY `qd_fk18` (`vh1ID`),
+  ADD KEY `qd_fk19` (`vh4ID`);
+
+--
+-- Indexes for table `result_subheading`
+--
+ALTER TABLE `result_subheading`
+  ADD PRIMARY KEY (`rSubheadingID`);
+
+--
+-- Indexes for table `result_title`
+--
+ALTER TABLE `result_title`
+  ADD PRIMARY KEY (`rTitleID`);
 
 --
 -- Indexes for table `session`
@@ -898,6 +1242,12 @@ ALTER TABLE `session_answers`
   ADD PRIMARY KEY (`saID`),
   ADD KEY `sa_fk1` (`sessionID`),
   ADD KEY `sa_fk2` (`answerID`);
+
+--
+-- Indexes for table `spacer`
+--
+ALTER TABLE `spacer`
+  ADD PRIMARY KEY (`spacerID`);
 
 --
 -- Indexes for table `trigger_condition`
@@ -922,6 +1272,24 @@ ALTER TABLE `voucher`
   ADD KEY `voucher_fk1` (`categoryID`);
 
 --
+-- Indexes for table `voucher_h1`
+--
+ALTER TABLE `voucher_h1`
+  ADD PRIMARY KEY (`vh1ID`);
+
+--
+-- Indexes for table `voucher_h4`
+--
+ALTER TABLE `voucher_h4`
+  ADD PRIMARY KEY (`vh4ID`);
+
+--
+-- Indexes for table `wrapper`
+--
+ALTER TABLE `wrapper`
+  ADD PRIMARY KEY (`wrapperID`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -929,13 +1297,19 @@ ALTER TABLE `voucher`
 -- AUTO_INCREMENT for table `answer`
 --
 ALTER TABLE `answer`
-  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
+  MODIFY `answerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
 
 --
 -- AUTO_INCREMENT for table `bonus_question`
 --
 ALTER TABLE `bonus_question`
   MODIFY `bqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `button_hover`
+--
+ALTER TABLE `button_hover`
+  MODIFY `bhID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -950,10 +1324,58 @@ ALTER TABLE `conditional_question`
   MODIFY `cqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
+-- AUTO_INCREMENT for table `copy_button`
+--
+ALTER TABLE `copy_button`
+  MODIFY `copyButtonID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `general_button`
+--
+ALTER TABLE `general_button`
+  MODIFY `generalButtonID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `h1`
+--
+ALTER TABLE `h1`
+  MODIFY `h1ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `h2`
+--
+ALTER TABLE `h2`
+  MODIFY `h2ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `home`
+--
+ALTER TABLE `home`
+  MODIFY `homeID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `next_button`
+--
+ALTER TABLE `next_button`
+  MODIFY `nextButtonID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `options_container`
+--
+ALTER TABLE `options_container`
+  MODIFY `oconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `p`
+--
+ALTER TABLE `p`
+  MODIFY `pID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `parent_question`
 --
 ALTER TABLE `parent_question`
-  MODIFY `pqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `pqID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `product`
@@ -965,25 +1387,73 @@ ALTER TABLE `product`
 -- AUTO_INCREMENT for table `product_answer`
 --
 ALTER TABLE `product_answer`
-  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
+  MODIFY `paID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=190;
+
+--
+-- AUTO_INCREMENT for table `product_container`
+--
+ALTER TABLE `product_container`
+  MODIFY `pconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `progress`
+--
+ALTER TABLE `progress`
+  MODIFY `progressID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `progress_bar`
+--
+ALTER TABLE `progress_bar`
+  MODIFY `progressBarID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `question_answer`
 --
 ALTER TABLE `question_answer`
-  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+  MODIFY `qaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
+
+--
+-- AUTO_INCREMENT for table `question_container`
+--
+ALTER TABLE `question_container`
+  MODIFY `qconID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `quiz_design`
+--
+ALTER TABLE `quiz_design`
+  MODIFY `qdID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `result_subheading`
+--
+ALTER TABLE `result_subheading`
+  MODIFY `rSubheadingID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `result_title`
+--
+ALTER TABLE `result_title`
+  MODIFY `rTitleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `session`
 --
 ALTER TABLE `session`
-  MODIFY `sessionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=141;
+  MODIFY `sessionID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `session_answers`
 --
 ALTER TABLE `session_answers`
-  MODIFY `saID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=407;
+  MODIFY `saID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=810;
+
+--
+-- AUTO_INCREMENT for table `spacer`
+--
+ALTER TABLE `spacer`
+  MODIFY `spacerID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `trigger_condition`
@@ -1002,6 +1472,24 @@ ALTER TABLE `user`
 --
 ALTER TABLE `voucher`
   MODIFY `voucherID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `voucher_h1`
+--
+ALTER TABLE `voucher_h1`
+  MODIFY `vh1ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `voucher_h4`
+--
+ALTER TABLE `voucher_h4`
+  MODIFY `vh4ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `wrapper`
+--
+ALTER TABLE `wrapper`
+  MODIFY `wrapperID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -1040,6 +1528,30 @@ ALTER TABLE `question_answer`
   ADD CONSTRAINT `qa_fk2` FOREIGN KEY (`cqID`) REFERENCES `conditional_question` (`cqID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `qa_fk3` FOREIGN KEY (`answerID`) REFERENCES `answer` (`answerID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `qa_fk4` FOREIGN KEY (`bqID`) REFERENCES `bonus_question` (`bqID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `quiz_design`
+--
+ALTER TABLE `quiz_design`
+  ADD CONSTRAINT `qd_fk1` FOREIGN KEY (`wrapperID`) REFERENCES `wrapper` (`wrapperID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk10` FOREIGN KEY (`pconID`) REFERENCES `product_container` (`pconID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk11` FOREIGN KEY (`pID`) REFERENCES `p` (`pID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk12` FOREIGN KEY (`progressBarID`) REFERENCES `progress_bar` (`progressBarID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk13` FOREIGN KEY (`progressID`) REFERENCES `progress` (`progressID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk14` FOREIGN KEY (`qconID`) REFERENCES `question_container` (`qconID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk15` FOREIGN KEY (`rSubheadingID`) REFERENCES `result_subheading` (`rSubheadingID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk16` FOREIGN KEY (`rTitleID`) REFERENCES `result_title` (`rTitleID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk17` FOREIGN KEY (`spacerID`) REFERENCES `spacer` (`spacerID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk18` FOREIGN KEY (`vh1ID`) REFERENCES `voucher_h1` (`vh1ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk19` FOREIGN KEY (`vh4ID`) REFERENCES `voucher_h4` (`vh4ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk2` FOREIGN KEY (`h1ID`) REFERENCES `h1` (`h1ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk3` FOREIGN KEY (`bhID`) REFERENCES `button_hover` (`bhID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk4` FOREIGN KEY (`copyButtonID`) REFERENCES `copy_button` (`copyButtonID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk5` FOREIGN KEY (`generalButtonID`) REFERENCES `general_button` (`generalButtonID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk6` FOREIGN KEY (`h2ID`) REFERENCES `h2` (`h2ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk7` FOREIGN KEY (`homeID`) REFERENCES `home` (`homeID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk8` FOREIGN KEY (`nextButtonID`) REFERENCES `next_button` (`nextButtonID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `qd_fk9` FOREIGN KEY (`oconID`) REFERENCES `options_container` (`oconID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `session`

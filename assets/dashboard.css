@@ -108,6 +108,35 @@ h2 {
   color: #9ba3be;
 }
 
+.index-icon {
+  width: 70px;
+  font-size: 70px;
+  margin-bottom: 20px;
+}
+
+.index-card {
+  height: 200px !important;
+}
+
+.index-card:hover {
+  border-color: #008ffb;
+  color: black;
+  text-decoration: none;
+}
+
+.logout-card {
+  background-color: #eb5757 !important;
+}
+
+.logout-card:hover {
+  background-color: #da0a0a !important;
+  text-decoration: none;
+}
+
+.color-white {
+  color: white !important;
+}
+
 /* Pagination Styles */
 .pagination > li > a {
   background-color: white;
@@ -234,9 +263,48 @@ h2 {
   color: #636161; /* Color on hover */
 }
 
-/* Responsive Styles */
+.index-cards {
+  background-color: rgba(97, 108, 163, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-link {
+  background-color: #495057 !important;
+  border-color: #343a40 !important;
+}
+
+.table thead th:nth-child(1) {
+  width: 150px;
+}
+
+.table thead th {
+  text-align: left;
+}
+
+.table tbody {
+  text-align: left;
+}
+
 @media only screen and (max-width: 768px) {
   .row {
     flex-direction: column !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-height {
+    height: 80%;
   }
 }
