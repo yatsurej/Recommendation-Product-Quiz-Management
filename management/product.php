@@ -36,37 +36,38 @@ $query .= " GROUP BY p.prodID DESC
 $result = mysqli_query($conn, $query);
 ?>
 
-<div class="container w-75 my-3">
+<div class="container">
     <h1 class="text-center fw-bold mt-4">Product Management</h1>
-    <hr style="height:1px;border-width:0;color:gray;background-color:gray">
     <?php include 'product_nav.php'; ?>
-    <form class="form-inline d-inline">
-        <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
-            <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
-            <?php
-            $categoriesQuery = "SELECT * FROM category";
-            $categoriesResult = mysqli_query($conn, $categoriesQuery);
+    <div>
+        <form class="form-inline d-inline">
+            <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
+                <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
+                <?php
+                $categoriesQuery = "SELECT * FROM category";
+                $categoriesResult = mysqli_query($conn, $categoriesQuery);
 
-            while ($categoryRow = mysqli_fetch_assoc($categoriesResult)) {
-                $categoryId = $categoryRow['categoryID'];
-                $categoryName = $categoryRow['categoryName'];
-                echo '<option value="' . $categoryId . '" ' . ($categoryFilter == $categoryId ? 'selected' : '') . '>' . $categoryName . '</option>';
-            }
-            ?>
-        </select>
-    </form>
-    <button class="btn btn-dark float-end mb-2 me-5" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+                while ($categoryRow = mysqli_fetch_assoc($categoriesResult)) {
+                    $categoryId = $categoryRow['categoryID'];
+                    $categoryName = $categoryRow['categoryName'];
+                    echo '<option value="' . $categoryId . '" ' . ($categoryFilter == $categoryId ? 'selected' : '') . '>' . $categoryName . '</option>';
+                }
+                ?>
+            </select>
+        </form>
+        <button class="btn btn-dark float-end" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
+    </div>
 </div>
 <div class="container w-100">
     <div class="table-responsive">
         <table class="table table-hover">
-            <thead class="text-center">
+            <!-- <thead class="text-center">
                 <tr>
                     <th scope="col">Category</th>
                     <th scope="col">Product Name</th>
                     <th scope="col">Action</th>
                 </tr>
-            </thead>
+            </thead> -->
             <tbody>
                 <?php
                 while ($row = mysqli_fetch_assoc($result)) {
@@ -79,14 +80,14 @@ $result = mysqli_query($conn, $query);
                     $prodURL         = $row['prodURL'];
 
                 ?>
-                    <tr class="card">
+                    <tr class="card w-100 d-flex flex-row justify-content-between border-none mb-2 p-4">
                         <td><?php echo $categoryName ?></td>
-                        <td><?php echo $prodName ?></td>
+                        <td class="w-75 "><?php echo $prodName ?></td>
                         <td>
                             <div class="d-flex justify-content-center align-items-center">
                                 <!-- View Button -->
                                 <div class="text-center me-1">
-                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#viewProductModal<?php echo $prodID; ?>">
+                                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#viewProductModal<?php echo $prodID; ?>">
                                         <div class="d-flex align-items-center">
                                             <i class="fa-solid fa-eye"></i>
                                         </div>
@@ -94,7 +95,7 @@ $result = mysqli_query($conn, $query);
                                 </div>
                                 <!-- Edit Button -->
                                 <div class="text-center">
-                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $prodID; ?>">
+                                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#editProductModal<?php echo $prodID; ?>">
                                         <div class="d-flex align-items-center">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </div>
@@ -102,27 +103,18 @@ $result = mysqli_query($conn, $query);
                                 </div>
                             </div>
 
-                            <!-- View Product -->
+                            <!-- Modal -->
                             <div class="modal fade" id="viewProductModal<?php echo $prodID; ?>" tabindex="-1" aria-labelledby="viewProductModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h3 class="text-center">View Product</h3>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
+                                <div class="modal-dialog modal-dialog-centered modal-md">
+                                    <div class="modal-content rounded-15 p-2">
                                         <div class="modal-body">
-                                            <input type="hidden" name="prodID" value="<?php echo $prodID; ?>">
-                                            <!-- Card -->
-                                            <div class="card">
-                                                <div class="card-header">
-                                                    <h4 class="card-title text-center"><?php echo $prodName; ?></h4>
-                                                </div>
-                                                <div class="card-body text-center">
-                                                    <img src="<?php echo $prodImage; ?>" href="<?php echo $prodURL ?>" style="width: 70%" alt="Product Image"><br>
-                                                    <a href="<?php echo $prodURL ?>" target="_blank" class="btn btn-primary my-2 rounded-pill">VIEW PRODUCT</a>
-                                                    <textarea type="text" style="resize: none" class="form-control mt-3" rows="7" id="prodDescription" name="prodDescription" readonly><?php echo $prodDescription; ?></textarea>
-                                                </div>
-                                            </div>
+                                            <img src="<?php echo $prodImage; ?>" alt="Product Image" class="img-fluid rounded-15 mb-3">
+                                            <h5 id="viewProductModalLabel"><?php echo $prodName; ?></h5>
+                                            <p><?php echo $prodDescription; ?></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <a href="<?php echo $prodURL; ?>" target="_blank" class="btn btn-primary">View Product</a>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         </div>
                                     </div>
                                 </div>

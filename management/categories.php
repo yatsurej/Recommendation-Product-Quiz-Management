@@ -1,67 +1,65 @@
 <?php
-    $pageTitle = "Product Page";
-    include 'header.php';
-    include 'navbar.php';
-    if (isset($_SESSION['username'])) {
-        $username   = $_SESSION['username'];
-        $userQuery  = "SELECT * FROM user WHERE username = '$username'";
-        $userResult = mysqli_query($conn, $userQuery);
-    
-        while ($userRow = mysqli_fetch_assoc($userResult)) {
-            $userID    = $userRow['userID'];
-    
-            $_SESSION['userID'] = $userID;
-        }
-    } else {
-        header('Location: index.php');
-        exit();
+$pageTitle = "Product Page";
+include 'header.php';
+include 'navbar.php';
+if (isset($_SESSION['username'])) {
+    $username   = $_SESSION['username'];
+    $userQuery  = "SELECT * FROM user WHERE username = '$username'";
+    $userResult = mysqli_query($conn, $userQuery);
+
+    while ($userRow = mysqli_fetch_assoc($userResult)) {
+        $userID    = $userRow['userID'];
+
+        $_SESSION['userID'] = $userID;
     }
+} else {
+    header('Location: index.php');
+    exit();
+}
 ?>
 
-<div class="container w-75 my-3">
+<div class="container">
     <h1 class="text-center fw-bold mt-4">Product Management</h1>
-    <hr style="height:1px;border-width:0;color:gray;background-color:gray">
-    <?php include 'product_nav.php';?>
-    <button class="btn btn-dark float-end mb-2  me-5" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+    <?php include 'product_nav.php'; ?>
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+    </div>
+
 
 </div>
 <div class="container w-100">
-    <div class="table table-borderless ">
+    <div class="table-responsive">
         <table class="table text-center table-hover">
-            <thead>
+            <!-- <thead>
                 <tr>
                     <th scope="col">Category</th>
                     <th scope="col">Category Title</th>
                     <th scope="col">Category Description</th>
                     <th scope="col">Action</th>
                 </tr>
-            </thead>
+            </thead> -->
             <tbody>
                 <?php
-                    $query = "SELECT *
+                $query = "SELECT *
                               FROM category c";
-                    $result = mysqli_query($conn, $query);
-                    
-                    while($row = mysqli_fetch_assoc($result)){
-                        $categoryID             = $row['categoryID'];
-                        $categoryName           = $row['categoryName'];
-                        $categoryDescription    = $row['categoryDescription'];
-                        $categoryTitle          = $row['categoryTitle'];
-                    ?>
-                    <tr>
-                        <td><?php echo $categoryName?></td>
-                        <td><?php echo $categoryTitle?></td>
-                        <td><?php echo $categoryDescription?></td>
+                $result = mysqli_query($conn, $query);
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $categoryID             = $row['categoryID'];
+                    $categoryName           = $row['categoryName'];
+                    $categoryDescription    = $row['categoryDescription'];
+                    $categoryTitle          = $row['categoryTitle'];
+                ?>
+                    <tr class="card w-100 d-flex flex-row justify-content-between border-none mb-2 p-4">
+                        <td class="w-25"><?php echo $categoryName ?></td>
+                        <td class="w-25"><?php echo $categoryTitle ?></td>
+                        <td class="w-75"><?php echo $categoryDescription ?></td>
                         <td>
                             <div class="d-flex justify-content-center align-items-center">
                                 <!-- Edit Button -->
                                 <div class="text-center">
-                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editCategoryModal<?php echo $categoryID; ?>">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </div>
-                                </button>
-                            </div>
+
+                                </div>
                             </div>
 
                             <!-- Update Category -->
@@ -79,15 +77,15 @@
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <div class="form-floating my-3">
-                                                            <input type="text" class="form-control" name="categoryName" id="categoryName" value="<?php echo $categoryName;?>">
+                                                            <input type="text" class="form-control" name="categoryName" id="categoryName" value="<?php echo $categoryName; ?>">
                                                             <label for="categoryName">Category Name</label>
                                                         </div>
                                                         <div class="form-floating my-3">
-                                                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryTitle"><?php echo $categoryTitle;?></textarea>
+                                                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryTitle"><?php echo $categoryTitle; ?></textarea>
                                                             <label for="categoryTitle">Category Title</label>
                                                         </div>
                                                         <div class="form-floating my-3">
-                                                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryDescription"><?php echo $categoryDescription;?></textarea>
+                                                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryDescription"><?php echo $categoryDescription; ?></textarea>
                                                             <label for="categoryDescription">Category Description</label>
                                                         </div>
                                                         <div class="text-end">
@@ -102,8 +100,8 @@
                             </div>
                         </td>
                     </tr>
-                    <?php
-                    }
+                <?php
+                }
                 ?>
             </tbody>
         </table>
@@ -122,18 +120,18 @@
             <div class="modal-body">
                 <!-- Form -->
                 <form action="functions.php" method="post" id="categoryForm">
-                <div class="form-floating my-3">
-                    <input type="text" class="form-control" id="categoryName" name="categoryName" placeholder="Enter category's name" required>
-                    <label for="categoryName">Category Name</label>
-                </div>
-                <div class="form-floating my-3">
-                    <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryTitle" placeholder="Enter category title here" ></textarea>
-                    <label for="categoryTitle">Category Title</label>
-                </div>
-                <div class="form-floating my-3">
-                    <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryDescription" placeholder="Enter category description here" ></textarea>
-                    <label for="categoryDescription">Category Description</label>
-                </div>
+                    <div class="form-floating my-3">
+                        <input type="text" class="form-control" id="categoryName" name="categoryName" placeholder="Enter category's name" required>
+                        <label for="categoryName">Category Name</label>
+                    </div>
+                    <div class="form-floating my-3">
+                        <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryTitle" placeholder="Enter category title here"></textarea>
+                        <label for="categoryTitle">Category Title</label>
+                    </div>
+                    <div class="form-floating my-3">
+                        <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryDescription" placeholder="Enter category description here"></textarea>
+                        <label for="categoryDescription">Category Description</label>
+                    </div>
             </div>
             <div class="modal-footer">
                 <button name="addCategory" class="btn btn-secondary" type="submit" id="submitAdd">Submit</button>
