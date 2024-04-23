@@ -14,7 +14,7 @@ if (!isset($_SESSION['last_active_page'])) {
     }
 </style>
 
-<h1 class="text-center fw-bold mt-4">Quiz Management</h1>
+<h1 class="text-center fw-bold mt-4">Question Management</h1>
 <div class="container w-75 my-3">
     <ul class="nav nav-underline d-flex justify-content-center">
         <li class="nav-item">
