@@ -46,7 +46,7 @@
                 <select class="custom-select mr-3 data" name="category" id="category" onchange="this.form.submit()">
                     <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
                     <?php
-                    $categoriesQuery = "SELECT * FROM category";
+                    $categoriesQuery = "SELECT * FROM category WHERE isActive = 1";
                     $categoriesResult = mysqli_query($conn, $categoriesQuery);
 
                     while ($categoryRow = mysqli_fetch_assoc($categoriesResult)) {
@@ -225,7 +225,7 @@
                             <select class="form-control w-100" name="prodCategory" id="prodCategory" required>
                                 <option value="">Select Category</option>
                                 <?php
-                                $categoryQuery = "SELECT * FROM category";
+                                $categoryQuery = "SELECT * FROM category WHERE isActive = 1";
                                 $categoryResult = mysqli_query($conn, $categoryQuery);
 
                                 while ($row = mysqli_fetch_assoc($categoryResult)) {

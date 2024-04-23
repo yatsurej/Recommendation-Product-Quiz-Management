@@ -313,7 +313,7 @@ $hideIfCategory = isset($selectedCategory) && $selectedCategory !== 'general';
                             <div>
                                 <?php
                                 // Fetch category details from the category table
-                                $categoryQuery = "SELECT categoryID, categoryName FROM category";
+                                $categoryQuery = "SELECT categoryID, categoryName FROM category WHERE isActive = 1";
                                 $categoryResult = mysqli_query($conn, $categoryQuery);
                                 $categories = array();
 

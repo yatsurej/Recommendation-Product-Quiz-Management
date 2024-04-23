@@ -51,7 +51,7 @@
                 <select class="custom-select mr-3 data" name="category" id="category" onchange="this.form.submit()">
                     <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
                     <?php
-                    $categoriesQuery = "SELECT * FROM category";
+                    $categoriesQuery = "SELECT * FROM category WHERE isActive = 1";
                     $categoriesResult = mysqli_query($conn, $categoriesQuery);
 
                     while ($categoryRow = mysqli_fetch_assoc($categoriesResult)) {
@@ -119,31 +119,17 @@
                         <div class="modal fade" id="viewQuestionModal<?php echo $bqID; ?>" tabindex="-1" aria-labelledby="viewQuestionModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content rounded-15 p-2">
-                                    <!-- <div class="modal-header">
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div> -->
                                     <div class="modal-body p-4">
                                         <input type="hidden" name="bqID" value="<?php echo $bqID; ?>">
-                                        <!-- Card -->
-                                        <div class="form-group my-2">
-                                            <label for="category" class="form-label">Category:</label>
-                                            <input type="text" class="form-control" value="<?php echo $categoryName; ?>" id="category" readonly>
-                                        </div>
-                                        <div class="form-group my-2">
-                                            <label for="numberOptions">Question: </label>
-                                            <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription" readonly><?php echo $bqContent; ?></textarea>
-                                        </div>
-                                        <div class="form-group my-2">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <label for="numberOptions">Number of Options:</label>
-                                                    <input type="text" name="numberOptions" class="form-control" value="<?php echo $bqNumOptions; ?>" readonly>
-                                                </div>
-                                                <div class="col">
-                                                    <label for="MaxAnswer">Max Number of Answers:</label>
-                                                    <input type="text" class="form-control" value="<?php echo $bqMaxAnswer; ?>" readonly>
-                                                </div>
+                                        <div class="d-flex justify-content-between mb-4">
+                                            <div>
+                                                <p class="mb-0">Category</p>
+                                                <h4><strong><?php echo $categoryName ?></strong></h4>
                                             </div>
+                                        </div>
+                                        <div class="mb-4 text-center">
+                                            <p class="mb-0">Question: </p>
+                                            <h4 class="fw-bold"> <?php echo $bqContent; ?></h4>
                                         </div>
                                         <div class="form-group my-2">
                                             <div class="row">

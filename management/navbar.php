@@ -44,7 +44,7 @@ $allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.p
                                 <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php' || basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>
                             </li>
                             <li class="nav-item">
-                                <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'question.php' || basename($_SERVER['PHP_SELF']) == 'conditional-question.php') ? 'active' : 'inactive'; ?>" href="question.php">Questions</a>
+                                <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'question.php' || basename($_SERVER['PHP_SELF']) == 'conditional-question.php' || basename($_SERVER['PHP_SELF']) == 'voucher-question.php') ? 'active' : 'inactive'; ?>" href="question.php">Questions</a>
                             </li>
                             <li class="nav-item">
                                 <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'voucher.php' || basename($_SERVER['PHP_SELF']) == 'conditional-voucher.php') ? 'active' : 'inactive'; ?>" href="voucher.php">Vouchers</a>
