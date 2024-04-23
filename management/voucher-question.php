@@ -140,7 +140,7 @@
                                                         <?php
                                                         $answersWithProducts = [];
                                                         $answersArray = explode('|', $answerContents);
-                                                        $associatedProducts = explode(',', $prodNames);
+                                                        $associatedProducts = explode('|', $prodNames);
 
                                                         foreach ($answersArray as $index => $answer) {
                                                             $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
