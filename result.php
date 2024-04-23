@@ -17,7 +17,7 @@
     $productTally = $_SESSION['productTally'];
     $answers = $_SESSION['selectedAnswers'];
 
-    $bonusQuestionQuery = "SELECT bqID, bqContent FROM bonus_question WHERE categoryID = '$selectedCategory'";
+    $bonusQuestionQuery = "SELECT bqID, bqContent FROM bonus_question WHERE categoryID = '$selectedCategory' AND isActive = 1";
     $bonusQuestionResult = mysqli_query($conn, $bonusQuestionQuery);
     $bonusQuestion = mysqli_fetch_assoc($bonusQuestionResult);
 

@@ -30,7 +30,7 @@ $allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.p
 
     <div class="container-fluid d-flex justify-content-between align-items-center">
         <a href="index.php">
-            <img src="../assets/images/PG.png" alt="P&G Logo" style="height: 30px; margin: 10px;">
+            <img src="../assets/images/ADA.png" alt="P&G Logo" style="height: 30px; margin: 10px;">
         </a>
         <?php if (isset($_SESSION['user_authenticated'])) : ?>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,6 +51,9 @@ $allowedPages = array('product.php', 'question.php', 'analytics.php', 'voucher.p
                             </li>
                             <li class="nav-item">
                                 <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'analytics.php') ? 'active' : 'inactive'; ?>" href="analytics.php">Analytics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="navb nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'customize.php') ? 'active' : 'inactive'; ?>" href="customize.php">Customization</a>
                             </li>
                         <?php endif; ?>
                     <?php endif; ?>

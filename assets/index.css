@@ -1,30 +1,117 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
-
-body {
-  background-color: #f7f1e0;
-  font-family: "Inter", sans-serif;
+.table thead th:nth-child(1) {
+  width: 150px;
 }
 
-h1 {
-  color: #8e7242;
+.table thead th {
+  text-align: left;
 }
 
-.circle {
-  width: 100px; /* Adjust the size of the circle as needed */
-  height: 100px; /* Adjust the size of the circle as needed */
-  border-radius: 50%;
-  background-color: white;
-  border: 2px solid #dabb7b;
-  border-width: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #dabb7b;
-  font-size: 36px; /* Adjust the font size of "?" as needed */
-  font-weight: bold;
-  margin-top: 5vh;
+.table tbody {
+  text-align: left;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+td {
+  border: none;
+  background: none !important;
+}
+
+.table td,
+.table th {
+  border: none !important;
+}
+
+/* .table-hover > tbody > tr:hover > * {
+    --bs-table-color-state: none;
+    --bs-table-bg-state: none;
+  } */
+
+.table {
+  --bs-table-color-type: initial;
+  --bs-table-bg-type: initial;
+  --bs-table-color-state: initial;
+  --bs-table-bg-state: initial;
+  --bs-table-color: var(--bs-emphasis-color);
+  --bs-table-bg: var(--bs-body-bg);
+  --bs-table-border-color: var(--bs-border-color);
+  --bs-table-accent-bg: transparent;
+  --bs-table-striped-color: var(--bs-emphasis-color);
+  --bs-table-striped-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+  --bs-table-active-color: none !important;
+  --bs-table-active-bg: none !important;
+  --bs-table-hover-color: none !important;
+  --bs-table-hover-bg: none !important;
+  width: 100%;
+  margin-bottom: 1rem;
+  vertical-align: top;
+  border-color: var(--bs-table-border-color);
+}
+
+button.btn.btn-light {
+  padding: 3px;
+}
+.btn-light {
+  color: #dfdfdf !important;
+  background-color: #f8f9fa00 !important;
+  border-color: #f8f9fa00 !important;
+}
+
+.btn-light:hover {
+  color: #212529 !important;
+  background-color: #fff0;
+  border-color: #fff0;
+}
+
+.rounded-15 {
+  border-radius: 15px !important;
+}
+
+.custom-button {
+  width: 150px;
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 25px;
+  padding: 10px 20px;
+}
+
+.custom-button-fit {
+  height: 48px;
+  box-sizing: border-box;
+  border-radius: 25px;
+  padding: 10px 20px;
+}
+
+.btn-close {
+  display: none;
+}
+
+/* Custom styles to override default file input appearance */
+.input-group-text {
+  background-color: transparent;
+  border-color: #ced4da; /* Optional: Define border color for consistency */
+  color: #495057; /* Optional: Define text color for consistency */
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+  .row {
+    flex-direction: column !important;
+  }
+
+  .table thead th {
+    text-align: center;
+  }
+
+  .table tbody {
+    text-align: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .desktop-height {
+    height: 80%;
+  }
 }

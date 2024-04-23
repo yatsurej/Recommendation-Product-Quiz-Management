@@ -37,7 +37,7 @@ if (!isset($_SESSION['selectedAnswers'])) {
 }
 
 // Calculate the total number of questions
-$totalQuestionsQuery = "SELECT COUNT(*) AS total FROM parent_question WHERE categoryID = '$selectedCategory'";
+$totalQuestionsQuery = "SELECT COUNT(*) AS total FROM parent_question WHERE categoryID = '$selectedCategory' AND isActive = 1";
 $totalQuestionsResult = mysqli_query($conn, $totalQuestionsQuery);
 $totalQuestionsRow = mysqli_fetch_assoc($totalQuestionsResult);
 $totalQuestions = $totalQuestionsRow['total'];
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Retrieve the parent question
 $query = "SELECT pqID, pqContent, pqMaxAnswer
             FROM parent_question 
-            WHERE pqOrder = {$_SESSION['currentQuestion']} AND categoryID = '$selectedCategory'";
+            WHERE pqOrder = {$_SESSION['currentQuestion']} AND categoryID = '$selectedCategory' AND isActive = 1";
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {

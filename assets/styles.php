@@ -473,7 +473,7 @@ button:active {
 
 .suggested-image {
   width: <?php echo $pcon_img_width;?>;
-  border-radius: <?php echo $pcon_img_width;?>;
+  border-radius: <?php echo $pcon_img_border_radius;?>;
 }
 
 .view-product-button {

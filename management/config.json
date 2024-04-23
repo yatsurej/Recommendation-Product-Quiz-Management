@@ -1,0 +1,72 @@
+[
+    {
+      "element": "h1",
+      "id": "h1-group",
+      "label": "h1 Settings",
+      "settings": [
+        {
+          "name": "h1_font-size",
+          "label": "Font Size:",
+          "id": "h1_font-size",
+          "type": "radio",
+          "options": [
+            { "value": "clamp(18px, 2vw, 36px)", "label": "Small" },
+            { "value": "clamp(24px, 2vw, 36px)", "label": "Medium" },
+            { "value": "clamp(34px, 2vw, 56px)", "label": "Large" }
+          ]
+        },
+        {
+          "name": "h1_font-weight",
+          "label": "Font Weight:",
+          "id": "h1_font-weight",
+          "type": "radio",
+          "options": [
+            { "value": "bold", "label": "Bold" },
+            { "value": "normal", "label": "Normal" }
+          ]
+        },
+        {
+          "name": "h1_letter-spacing",
+          "label": "Letter Spacing:",
+          "id": "h1_letter-spacing",
+          "type": "text"
+        },
+        {
+          "name": "h1_line-height",
+          "label": "Line Height:",
+          "id": "h1_line-height",
+          "type": "text"
+        },
+        {
+          "name": "h1_color",
+          "label": "Color: ",
+          "id": "h1_color",
+          "type": "color"
+        }
+      ]
+    },
+    {
+      "element": "button",
+      "id": "button-group",
+      "label": "Button Settings",
+      "settings": [
+        {
+          "name": "button_width",
+          "label": "Button Width",
+          "id": "button_width",
+          "type": "radio",
+          "options": [
+            { "label": "50%", "value": "50%" },
+            { "label": "100%", "value": "100%" }
+          ]
+        },
+        {
+          "name": "button_color",
+          "label": "Button Color",
+          "id": "button_color",
+          "type": "color"
+        }
+      ]
+    }
+  ]
+  

@@ -11,6 +11,7 @@
     
         while ($userRow = mysqli_fetch_assoc($userResult)) {
             $userID    = $userRow['userID'];
+
             $_SESSION['userID'] = $userID;
         }
     } else {
@@ -23,26 +24,31 @@
     $offset = ($page - 1) * $recordsPerPage;
     $categoryFilter = isset($_GET['category']) ? $_GET['category'] : 0;
 
-    $query = "SELECT pq.*, c.categoryName, 
-                GROUP_CONCAT(a.answerContent SEPARATOR '|') as answerContents, 
-                GROUP_CONCAT(p.prodName) as prodNames
-                FROM parent_question pq 
-                LEFT JOIN category c ON pq.categoryID = c.categoryID
-                LEFT JOIN question_answer qa ON pq.pqID = qa.pqID 
-                LEFT JOIN answer a ON a.answerID = qa.answerID
-                LEFT JOIN product_answer pa ON pa.answerID = a.answerID
-                LEFT JOIN product p ON pa.prodID = p.prodID";
+    $query = "SELECT cq.*, c.categoryName,
+              GROUP_CONCAT(a.answerID) as answerIDs,
+              GROUP_CONCAT(a.answerContent SEPARATOR '|') as answerContents, 
+              GROUP_CONCAT(p.prodName SEPARATOR '|') as prodNames
+          FROM conditional_question cq 
+          LEFT JOIN trigger_condition tc ON tc.cqID = cq.cqID
+          LEFT JOIN question_answer qa ON qa.cqID = cq.cqID
+          LEFT JOIN answer a ON a.answerID = qa.answerID
+          LEFT JOIN parent_question pq ON pq.pqID = qa.pqID
+          LEFT JOIN category c ON c.categoryID = pq.categoryID
+          LEFT JOIN product_answer pa ON pa.answerID = a.answerID
+          LEFT JOIN product p ON p.prodID = pa.prodID";
+
     if ($categoryFilter > 0) {
         $query .= " WHERE c.categoryID = $categoryFilter";
     }
 
-    $query .= " GROUP BY pq.pqID DESC
+    $query .= " GROUP BY cq.cqID DESC
         LIMIT $offset, $recordsPerPage";
 
     $result = mysqli_query($conn, $query);
 ?>
 
 <div class="container w-75">
+    <?php include 'question_nav.php';?>
     <form class="form-inline d-inline">
         <select class="custom-select mr-3" name="category" id="category" onchange="this.form.submit()">
             <option value="0" <?php echo ($categoryFilter == 0) ? 'selected' : ''; ?>>All Categories</option>
@@ -58,7 +64,7 @@
             ?>
         </select>
     </form>
-    <button class="btn btn-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#addQuestionModal">Add Main Question</button>
+    <button class="btn btn-dark float-end mb-2" data-bs-toggle="modal" data-bs-target="#addConditionalQuestionModal">Add Conditional Question</button>
 </div>
 <div class="container w-75">
     <div class="table-responsive">
@@ -73,24 +79,24 @@
             <tbody>
                 <?php
                     while ($row = mysqli_fetch_assoc($result)){
-                        $pqID           = $row['pqID'];
-                        $pqContent      = $row['pqContent'];
-                        $pqNumOptions   = $row['pqNumOptions'];
-                        $pqMaxAnswer    = $row['pqMaxAnswer'];
+                        $cqID           = $row['cqID'];
+                        $cqContent      = $row['cqContent'];
+                        $cqNumOptions   = $row['cqNumOptions'];
+                        $cqMaxAnswer    = $row['cqMaxAnswer'];
                         $categoryName   = $row['categoryName'];
                         $prodNames      = $row['prodNames'];
                         $answerContents = $row['answerContents'];
-                        $pqOrder        = $row['pqOrder'];
-                        $categoryID     = $row['categoryID'];
+
+                        var_dump($categoryName);
                 ?>
                 <tr>
                     <td><?php echo $categoryName;?></td>
-                    <td><?php echo $pqContent;?></td>
+                    <td><?php echo $cqContent;?></td>
                     <td>
                         <div class="d-flex justify-content-center align-items-center">
                             <!-- View Button -->
                             <div class="text-center me-1">
-                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#viewQuestionModal<?php echo $pqID; ?>">
+                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#viewQuestionModal<?php echo $cqID; ?>">
                                     <div class="d-flex align-items-center">
                                         <i class="fa-solid fa-eye"></i>
                                     </div>
@@ -98,40 +104,44 @@
                             </div>
                             <!-- Edit Button -->
                             <div class="text-center">
-                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editQuestionModal<?php echo $pqID; ?>">
+                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editQuestionModal<?php echo $cqID; ?>">
                                     <div class="d-flex align-items-center">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </div>
                                 </button>
                             </div>
                         </div>
-                        <!-- View Question Details -->
-                        <div class="modal fade" id="viewQuestionModal<?php echo $pqID; ?>" tabindex="-1" aria-labelledby="viewQuestionModalLabel" aria-hidden="true">
+                         <!-- View Question Details -->
+                         <div class="modal fade" id="viewQuestionModal<?php echo $cqID; ?>" tabindex="-1" aria-labelledby="viewQuestionModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
+                                        <input type="hidden" name="bqID" value="<?php echo $cqID; ?>">
                                         <!-- Card -->
                                         <div class="card">
                                             <div class="card-body">
                                                 <div class="form-group my-2">
-                                                    <div class="row">
-                                                        <div class="col">
-                                                            <label for="category" class="form-label">Category:</label>
-                                                            <input type="text" class="form-control" value="<?php echo $categoryName;?>" id="category" readonly>
-                                                        </div>
-                                                        <div class="col">
-                                                            <label for="category" class="form-label">Question Number:</label>
-                                                            <input type="text" class="form-control" value="<?php echo $pqOrder;?>" id="category" readonly>
-                                                        </div>
-                                                    </div>
+                                                    <label for="category" class="form-label">Category:</label>
+                                                    <input type="text" class="form-control" value="<?php echo $categoryName;?>" id="category" readonly>
                                                 </div>
                                                 <div class="form-group my-2">
                                                     <label for="numberOptions">Question: </label>
-                                                    <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription" readonly><?php echo $pqContent; ?></textarea>                                                
+                                                    <textarea type="text" style="resize: none" class="form-control" rows="3" id="prodDescription" name="prodDescription" readonly><?php echo $cqContent; ?></textarea>                                                
+                                                </div>
+                                                <div class="form-group my-2">
+                                                    <div class="row">
+                                                        <div class="col">
+                                                            <label for="numberOptions">Number of Options:</label>
+                                                            <input type="text" name="numberOptions" class="form-control" value="<?php echo $cqNumOptions;?>" readonly>
+                                                        </div>
+                                                        <div class="col">
+                                                            <label for="MaxAnswer">Maximum Number of Answers:</label>
+                                                            <input type="text" class="form-control" value="<?php echo $cqMaxAnswer;?>" readonly>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="form-group my-2">
                                                     <div class="row">
@@ -142,7 +152,7 @@
                                                                 <?php
                                                                 $answersWithProducts = [];
                                                                 $answersArray = explode('|', $answerContents);
-                                                                $associatedProducts = explode(',', $prodNames);
+                                                                $associatedProducts = explode('|', $prodNames);
 
                                                                 foreach ($answersArray as $index => $answer) {
                                                                     $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
@@ -170,81 +180,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Edit Modal -->
-                        <div class="modal fade" id="editQuestionModal<?php echo $pqID; ?>" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action="functions.php" method="post">
-                                            <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
-                                            <input type="hidden" name="categoryID" id="editForm_category" value="<?php echo $categoryID; ?>">
-                                            <!-- Card -->
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="form-group my-2">
-                                                        <div class="form-floating">
-                                                            <input type="number" class="form-control" value="<?php echo $pqOrder;?>" name="pqOrder" id="pqOrder">
-                                                            <label for="pqOrder">Question Number:</label>
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group my-2">
-                                                        <label for="parentQuestion">Question: </label>
-                                                        <textarea type="text" style="resize: none" class="form-control" rows="3" id="parentQuestion" name="parentQuestion"><?php echo $pqContent; ?></textarea>                                                
-                                                    </div>
-                                                    <div class="form-group my-2">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <label for="answers">Answers:</label>
-                                                                <?php
-                                                                    $answersWithProducts = [];
-                                                                    $answersArray = explode('|', $answerContents);
-                                                                    $associatedProducts = explode(',', $prodNames);
-    
-                                                                    foreach ($answersArray as $index => $answer) {
-                                                                        $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
-                                                                        $answersWithProducts[$answer][] = $product;
-                                                                    }
-    
-                                                                    foreach ($answersWithProducts as $answer => $products) {?>
-                                                                        <input type="text" class="form-control" value="<?php echo $answer;?>" id="answer">
-                                                                <?php } ?>
-                                                            </div>
-                                                            <div class="col">
-                                                                <label for="answerProduct">Associated Products:</label>
-                                                                <?php foreach ($answersWithProducts as $answer => $products) { ?>
-                                                                    <select class="form-control answerProducts" name="answerProducts[]"id="answerProducts_<?php echo $pqID . '_' . $answer; ?>" multiple>
-                                                                        <?php
-                                                                            $productsQuery = "SELECT * FROM product WHERE categoryID = $categoryID";
-                                                                            $productsResult = mysqli_query($conn, $productsQuery);
-
-                                                                            while ($productRow = mysqli_fetch_assoc($productsResult)) {
-                                                                                $productID   = $productRow['prodID'];
-                                                                                $productName = $productRow['prodName'];
-
-                                                                                $selected = in_array($productName, $products) ? 'selected' : '';
-
-                                                                                echo '<option value="' . htmlspecialchars($productID) . '" ' . $selected . '>' . htmlspecialchars($productName) . '</option>';
-                                                                            }
-                                                                        ?>
-                                                                    </select>
-                                                                    <br>
-                                                                <?php } ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button name="updateMainQuestion" class="btn btn-success" type="submit" id="submitAdd">Submit</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     <?php
                         }
                     ?>
@@ -259,7 +194,7 @@
 <div class="container w-75">
     <ul class="pagination justify-content-center">
         <?php
-        $totalRecordsQuery = "SELECT COUNT(*) AS totalRecords FROM parent_question";
+        $totalRecordsQuery = "SELECT COUNT(*) AS totalRecords FROM conditional_question";
         if ($categoryFilter > 0) {
             $totalRecordsQuery .= " WHERE categoryID = $categoryFilter";
         }
@@ -280,6 +215,179 @@
     </ul>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add Question Modal -->
+<div class="modal fade" id="addConditionalQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-center">Add Conditional Question Form</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form -->
+                <form action="functions.php" method="post" id="questionForm">
+                <div class="main-form">
+                    <div class="form-group my-2">
+                        <div class="form-floating">
+                            <select name="mainQuestion" id="mainForm_mainQuestion" class="form-control w-100" onchange="toggleInputs('mainForm')">
+                                <option value="">Select main question</option>
+                                <?php
+                                    $pqQuery = "SELECT * FROM parent_question";
+                                    $pqResult = mysqli_query($conn, $pqQuery);
+                                    
+                                    while($row = mysqli_fetch_assoc($pqResult)){
+                                        $pqID       = $row['pqID'];
+                                        $pqContent  = $row['pqContent'];
+                                        
+                                        echo "<option value=\"$pqID\">$pqContent</option>";
+                                    }
+                                    ?>
+                            </select>
+                            <label for="mainForm_mainQuestion">Choose Main Question</label>
+                        </div>
+                    </div>
+                    <div class="form-group my-2">
+                        <div class="form-floating">
+                            <select name="mainQuestionAnswer" id="mainForm_mainQuestionAnswer" class="form-control w-100" required disabled>
+                                <option value="">Select answer</option>
+                            </select>
+                            <label for="mainForm_mainQuestionAnswer">Choose Answer</label>
+                        </div>
+                    </div>
+                    <div class="form-group my-2">
+                        <div class="form-floating">
+                            <textarea type="text" style="resize: none; height: 100px;" class="form-control" id="mainForm_conditionalQuestion" name="conditionalQuestion" placeholder="Enter question here" required disabled></textarea> 
+                            <label for="mainForm_conditionalQuestion">Question:</label>
+                        </div>
+                    </div>
+                    <div class="form-group my-2">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-floating">
+                                    <select name="cqNumOptions" id="mainForm_numOptions" class="form-control w-100" onchange="updateAnswerInputs('mainForm')" required disabled>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <label for="mainForm_numOptions">Number of Options</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-floating">
+                                    <select name="cqNumAnswer" id="mainForm_numAnswer" class="form-control w-100" required disabled>
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <label for="mainForm_numAnswer">Maximum Number of Answers</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="mainForm_answerInputsContainer">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button name="addConditionalQuestion" class="btn btn-success" type="submit" id="submitAdd" disabled>Submit</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@2.0.1/dist/js/multi-select-tag.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script>
+    function toggleInputs(formPrefix) {
+        var mainQuestionSelect   = document.getElementById(formPrefix + '_mainQuestion');
+        var mainQuestionAnswer   = document.getElementById(formPrefix + '_mainQuestionAnswer');
+        var questionInput        = document.getElementById(formPrefix + '_conditionalQuestion'); 
+        var answersSelect        = document.getElementById(formPrefix + '_numOptions');
+        var numAnswerSelect      = document.getElementById(formPrefix + '_numAnswer');
+        var submitButton         = document.getElementById('submitAdd');
+
+        if (mainQuestionSelect.value == 0) {
+            mainQuestionAnswer.disabled     = true;
+            questionInput.disabled          = true;
+            answersSelect.disabled          = true;
+            numAnswerSelect.disabled        = true;
+            submitButton.disabled           = true;
+        } else {
+            mainQuestionAnswer.disabled     = false;
+            questionInput.disabled          = false;
+            answersSelect.disabled          = false;
+            numAnswerSelect.disabled        = false;
+            submitButton.disabled           = false;
+        }
+    }
+    function updateAnswerInputs(formPrefix) {
+        const numOptions = document.getElementById(formPrefix + '_numOptions').value;
+        const answerInputsContainer = document.getElementById(formPrefix + '_answerInputsContainer');
+        
+        const pqID = document.getElementById(formPrefix + '_mainQuestion').value;
+
+        $.ajax({
+            url: 'fetch_products.php',
+            type: 'GET',
+            data: { pqID: pqID }, 
+            success: function (data) {
+                let inputs = '';
+                for (let i = 0; i < numOptions; i++) {
+                    const uniqueId = formPrefix + '_productAnswers' + i;
+                    inputs += `
+                        <div class="row mb-3">
+                            <div class="col">
+                                <div class="form-floating">
+                                    <input type="text" name="answer[]" id="${formPrefix}_answerOption${i + 1}" placeholder="Enter answer option ${i + 1} here." required class="form-control">
+                                    <label for="${formPrefix}_answerOption${i + 1}">Answer Option ${i + 1}</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <label for="answerProduct" class="text-muted">Product/s</label>
+                                <select id="${uniqueId}" name="answer_type[${i}][]" class="form-control ${formPrefix}_productAnswers" multiple>
+                                    ${data} 
+                                </select>
+                            </div>
+                        </div>`;
+                }
+                answerInputsContainer.innerHTML = inputs;
+
+                $('.' + formPrefix + '_productAnswers').each(function () {
+                    new MultiSelectTag(this.id);
+                });
+
+                toggleInputs(formPrefix);
+            },
+            error: function () {
+                console.error('Error fetching answer types');
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var mainQuestionSelect = document.getElementById('mainForm_mainQuestion');
+        var mainQuestionAnswer = document.getElementById('mainForm_mainQuestionAnswer');
+
+        if (mainQuestionSelect && mainQuestionAnswer) {
+            mainQuestionSelect.addEventListener('change', function() {
+                var selectedPQID = mainQuestionSelect.value;
+
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        mainQuestionAnswer.innerHTML = xhr.responseText;
+                    }
+                };
+
+                xhr.open('GET', 'get_answers.php?pqID=' + selectedPQID, true);
+                xhr.send();
+            });
+        }
+    });
+</script>

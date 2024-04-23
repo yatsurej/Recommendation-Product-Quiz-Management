@@ -18,7 +18,7 @@ include './header.php';
 <div class="login-page">
 
     <div class="logocontainer">
-        <img src="../assets/images/PG.png" alt="ADALogo" class="ADALogo">
+        <img src="../assets/images/ADA.png" alt="ADALogo" class="ADALogo">
     </div>
 
     <div class="login">

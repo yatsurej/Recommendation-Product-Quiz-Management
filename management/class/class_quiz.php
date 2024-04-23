@@ -55,7 +55,7 @@
                     return false;
                 }
             }
-            public function updateMainQuestion($pqID, $parentQuestion, $pqOrder, $answers, $answerProducts){
+            public function updateMainQuestion($pqID, $parentQuestion, $pqOrder, $answers, $pqStatus){
                 global $conn;
 
                 $query = "UPDATE parent_question
@@ -79,16 +79,53 @@
                                               SET answerContent = '$answerContent' 
                                               WHERE answerID = '$answerID'";
                         mysqli_query($conn, $updateAnswerQuery);
-            
-                        $productIDs = $answerProducts[$index];
-                        mysqli_query($conn, "DELETE FROM product_answer WHERE answerID = '$answerID'"); 
-                        foreach ($answerProducts as $prodID) {
-                            $insertProductQuery = "INSERT INTO product_answer(prodID, answerID) VALUES ('$prodID', '$answerID')";
-                            mysqli_query($conn, $insertProductQuery);
-                        }
                     }
                     return true;
                 } else {
+                    return false;
+                }
+            }
+            public function updateMainAnswerProducts($answerID, $answerProducts){
+                global $conn;
+
+                mysqli_query($conn, "DELETE FROM product_answer WHERE answerID = '$answerID'"); 
+                foreach ($answerProducts as $prodID) {
+                    $insertProductQuery = "INSERT INTO product_answer(prodID, answerID) VALUES ('$prodID', '$answerID')";
+                    mysqli_query($conn, $insertProductQuery);
+                }
+
+                return true;
+            }
+            public function updateMainStatus($pqID, $pqStatus){
+                global $conn;
+
+                $query = "UPDATE parent_question
+                          SET isActive = '$pqStatus'
+                          WHERE pqID = '$pqID'";
+                $result = mysqli_query($conn, $query);
+
+                $pqOrderQuery = "SELECT pqOrder FROM parent_question WHERE pqID = '$pqID'";
+                $pqOrderResult = mysqli_query($conn, $pqOrderQuery);
+                $row = mysqli_fetch_assoc($pqOrderResult);
+                $pqOrder = $row['pqOrder'];
+
+                if ($pqStatus == 0) {
+                    $adjustQuery = "UPDATE parent_question
+                                    SET pqOrder = pqOrder - 1
+                                    WHERE pqOrder >= $pqOrder
+                                    AND categoryID = (SELECT categoryID FROM parent_question WHERE pqID = '$pqID')";
+                    mysqli_query($conn, $adjustQuery);
+                } elseif ($pqStatus == 1) {
+                    $adjustQuery = "UPDATE parent_question
+                                    SET pqOrder = pqOrder + 1
+                                    WHERE pqOrder >= $pqOrder
+                                    AND categoryID = (SELECT categoryID FROM parent_question WHERE pqID = '$pqID')";
+                    mysqli_query($conn, $adjustQuery);
+                } 
+
+                if ($result){
+                    return true;
+                } else{
                     return false;
                 }
             }
@@ -166,6 +203,32 @@
                     return false;
                 }
             }
+            public function updateBonusStatus($bqID, $bqStatus){
+                global $conn;
+
+                $query = "UPDATE bonus_question
+                          SET isActive = '$bqStatus'
+                          WHERE bqID = '$bqID'";
+                $result = mysqli_query($conn, $query);
+
+                if ($result){
+                    return true;
+                } else{
+                    return false;
+                }
+            }
+
+            public function updateVoucherAnswerProducts($answerID, $answerProducts){
+                global $conn;
+
+                mysqli_query($conn, "DELETE FROM product_answer WHERE answerID = '$answerID'"); 
+                foreach ($answerProducts as $prodID) {
+                    $insertProductQuery = "INSERT INTO product_answer(prodID, answerID) VALUES ('$prodID', '$answerID')";
+                    mysqli_query($conn, $insertProductQuery);
+                }
+
+                return true;
+            }
 
             // Category CRUD
             public function addCategory($categoryName, $categoryTitle, $categoryDescription){
@@ -188,11 +251,11 @@
                     }
                 }
             }
-            public function updateCategory($categoryID, $categoryName, $categoryTitle, $categoryDescription){
+            public function updateCategory($categoryID, $categoryName, $categoryTitle, $categoryDescription, $categoryStatus){
                 global $conn;
                 $categoryTitle = mysqli_real_escape_string($conn, $categoryTitle);
                 $query = "UPDATE category
-                          SET categoryName = '$categoryName', categoryTitle = '$categoryTitle', categoryDescription = '$categoryDescription'
+                          SET categoryName = '$categoryName', categoryTitle = '$categoryTitle', categoryDescription = '$categoryDescription', isActive = '$categoryStatus' 
                           WHERE categoryID = '$categoryID'";
                 $result = mysqli_query($conn, $query);
 

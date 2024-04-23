@@ -144,7 +144,7 @@
         <div class="options-container">
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="form" method="post">
                 <?php
-                $categoryQuery = "SELECT * FROM category";
+                $categoryQuery = "SELECT * FROM category WHERE isActive = 1";
                 $categoryResult = mysqli_query($conn, $categoryQuery);
 
                 while ($categoryRow = mysqli_fetch_assoc($categoryResult)) {
