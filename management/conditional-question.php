@@ -118,56 +118,51 @@
                             <div class="modal-dialog modal-dialog-centered modal-lg">
                                 <div class="modal-content rounded-15 p-2">
                                     <div class="modal-body p-4">
-                                        <!-- Card -->
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between mb-4">
-                                                    <div>
-                                                        <p class="mb-0">Category</p>
-                                                        <h4><strong><?php echo $categoryName ?></strong></h4>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-4 text-center">
-                                                    <p class="mb-0">Question: </p>
-                                                    <h4 class="fw-bold"> <?php echo $cqContent; ?></h4>
-                                                </div>
-                                                <!-- <p>Answer/s and Associated Product/s:</p> -->
-                                                <ul class="list-group" name="answers">
-                                                    <?php
-                                                    $answersWithProducts = [];
-                                                    $answersArray = explode('|', $answerContents);
-                                                    $associatedProducts = explode('|', $prodNames);
-
-                                                    foreach ($answersArray as $index => $answer) {
-                                                        $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
-                                                        $answersWithProducts[$answer][] = $product;
-                                                    }
-                                                    foreach ($answersWithProducts as $answer => $products) {
-                                                        echo '<li class="list-group-item list-group-item-secondary mb-2 card bg-transparent ">';
-                                                        echo '<p class="mb-0">Option:</p> <p class="fw-bold mb-2">', htmlspecialchars($answer), '</p >';
-
-                                                        echo '<span class="text-muted small">';
-                                                        echo '<p class="mb-0">Associated Products:</p>';
-
-                                                        // Start a new unordered list for associated products
-                                                        echo '<ul>';
-
-                                                        // Iterate over each product and create list items
-                                                        foreach ($products as $product) {
-                                                            echo '<li>', htmlspecialchars($product), '</li>';
-                                                        }
-
-                                                        // End the unordered list
-                                                        echo '</ul>';
-
-                                                        echo '</span>';
-                                                        echo '</li>';
-                                                    }
-
-                                                    ?>
-                                                </ul>
+                                        <div class="d-flex justify-content-between mb-4">
+                                            <div>
+                                                <p class="mb-0">Category</p>
+                                                <h4><strong><?php echo $categoryName ?></strong></h4>
                                             </div>
                                         </div>
+                                        <div class="mb-4 text-center">
+                                            <p class="mb-0">Question: </p>
+                                            <h4 class="fw-bold"> <?php echo $cqContent; ?></h4>
+                                        </div>
+                                        <!-- <p>Answer/s and Associated Product/s:</p> -->
+                                        <ul class="list-group" name="answers">
+                                            <?php
+                                            $answersWithProducts = [];
+                                            $answersArray = explode('|', $answerContents);
+                                            $associatedProducts = explode('|', $prodNames);
+
+                                            foreach ($answersArray as $index => $answer) {
+                                                $product = isset($associatedProducts[$index]) ? $associatedProducts[$index] : 'No associated product';
+                                                $answersWithProducts[$answer][] = $product;
+                                            }
+                                            foreach ($answersWithProducts as $answer => $products) {
+                                                echo '<li class="list-group-item list-group-item-secondary mb-2 card bg-transparent ">';
+                                                echo '<p class="mb-0">Option:</p> <p class="fw-bold mb-2">', htmlspecialchars($answer), '</p >';
+
+                                                echo '<span class="text-muted small">';
+                                                echo '<p class="mb-0">Associated Products:</p>';
+
+                                                // Start a new unordered list for associated products
+                                                echo '<ul>';
+
+                                                // Iterate over each product and create list items
+                                                foreach ($products as $product) {
+                                                    echo '<li>', htmlspecialchars($product), '</li>';
+                                                }
+
+                                                // End the unordered list
+                                                echo '</ul>';
+
+                                                echo '</span>';
+                                                echo '</li>';
+                                            }
+
+                                            ?>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>

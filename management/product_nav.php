@@ -5,7 +5,7 @@
     }
 
     if (!isset($_SESSION['last_active_page'])) {
-        $_SESSION['last_active_page'] = 'product.php'; 
+        $_SESSION['last_active_page'] = 'categories.php'; 
     }
 ?>
 <style>
@@ -17,10 +17,10 @@
 <div class="container w-75 my-3">
     <ul class="nav nav-underline d-flex justify-content-center">
         <li class="nav-item">
-            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>
+            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="categories.php">Product Categories</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'categories.php') ? 'active' : 'inactive'; ?>" href="categories.php">Product Categories</a>
+            <a class="nav-link <?php echo (basename($_SERVER['PHP_SELF']) == 'product.php') ? 'active' : 'inactive'; ?>" href="product.php">Products</a>
         </li>
     </ul>
 </div>

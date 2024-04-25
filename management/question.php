@@ -91,10 +91,11 @@
                         <form action="functions.php" method="post">
                             <input type="hidden" name="pqID" value="<?php echo $pqID; ?>">
                             <input type="hidden" name="updatePqStatus" value="true"> 
-                            <select class="form-select"  name="pqStatus" onchange="this.form.submit()">
-                                <option value="1" <?php echo ($pqStatus == 1) ? "selected" : ""; ?>>Active</option>
-                                <option value="0" <?php echo ($pqStatus == 0) ? "selected" : ""; ?>>Inactive</option>
-                            </select>
+                            <input type="hidden" name="pqStatus" value="<?php echo ($pqStatus == 1) ? 1 : 0; ?>"> <!-- Set initial value based on $pqStatus -->
+                            <label class="switch">
+                                <input type="checkbox" name="toggle" <?php echo ($pqStatus == 1) ? "checked" : ""; ?> onchange="updateStatus(this)">
+                                <span class="slider"></span>
+                            </label>
                         </form>
                     </td>
                     <td>
@@ -202,10 +203,9 @@
                                                         $answersWithProducts = [];
                                                         $answersArray = explode('|', $answerContents);
                                                         $answerIDsArray = explode(',', $answerIDs); // Add this line to get the answer IDs
-                                                        $associatedProducts = explode(',', $prodNames);
+                                                        $associatedProducts = explode('|', $prodNames);
 
                                                         $uniqueAnswers = [];
-
                                                         foreach ($answersArray as $index => $answer) {
                                                             $answerID = isset($answerIDsArray[$index]) ? $answerIDsArray[$index] : 'No associated answer ID'; // Get the answer ID
 
@@ -253,21 +253,20 @@
                                                         <label for="products">Associated Products</label>
                                                         <select name="products[]" class="chosen-product" multiple>
                                                             <?php
-                                                            // Fetch associated products for this specific answer
                                                             $productsQuery = "SELECT * FROM product WHERE categoryID = $categoryID";
                                                             $productsResult = mysqli_query($conn, $productsQuery);
 
                                                             while ($productRow = mysqli_fetch_assoc($productsResult)) {
                                                                 $productID   = $productRow['prodID'];
                                                                 $productName = $productRow['prodName'];
-                                                                $selected = in_array($productName, explode('|', $associatedProducts[$index])) ? 'selected' : ''; // Check if this product is associated with the current answer
+                                                                $selected = in_array($productName, explode('|', $associatedProducts[$index])) ? 'selected' : ''; 
 
                                                                 echo '<option value="' . htmlspecialchars($productID) . '" ' . $selected . '>' . htmlspecialchars($productName) . '</option>';
                                                             }
                                                             ?>
                                                         </select>
                                                     </div>
-                                                    <button name="updateMainAnswerProducts" class="btn btn-success" type="submit">Submit</button>
+                                                    <button name="updateMainAnswerProducts" class="btn btn-dark custom-button text-white w-100" type="submit">Submit</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -357,7 +356,7 @@
                                         <label for="mainForm_numOptions">Number of Options</label>
                                     </div>
                                 </div>
-                                <div class="col">
+                                <!-- <div class="col">
                                     <div class="form-floating">
                                         <select name="numAnswer" id="mainForm_numAnswer" class="form-control w-100" required disabled>
                                             <option value="0">0</option>
@@ -369,7 +368,7 @@
                                         </select>
                                         <label for="mainForm_numAnswer">Maximum Number of Answers</label>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <!-- Answer inputs -->
@@ -436,28 +435,38 @@
         var categorySelect       = document.getElementById(formPrefix + '_category');
         var questionInput        = document.getElementById(formPrefix + '_parentQuestion'); 
         var answersSelect        = document.getElementById(formPrefix + '_numOptions');
-        var numAnswerSelect      = document.getElementById(formPrefix + '_numAnswer');
+        // var numAnswerSelect      = document.getElementById(formPrefix + '_numAnswer');
         var submitButton         = document.getElementById('submitAdd');
 
         if (categorySelect.value == 0) {
             questionInput.disabled          = true;
             answersSelect.disabled          = true;
-            numAnswerSelect.disabled        = true;
+            // numAnswerSelect.disabled        = true;
             submitButton.disabled           = true;
         } else {
             questionInput.disabled          = false;
             answersSelect.disabled          = false;
-            numAnswerSelect.disabled        = false;
+            // numAnswerSelect.disabled        = false;
             submitButton.disabled           = false;
         }
     }
+    
     function dismissAndOpenModal(answerID) {
         $('#editQuestionModal<?php echo $pqID; ?>').modal('hide');
 
         $('#editAnswerModal' + answerID).modal('show');
     }
+
     $(".chosen-product").chosen({ width: '100%' });
 
+    function updateStatus(checkbox) {
+        if (checkbox.checked) {
+            checkbox.form.querySelector('[name="pqStatus"]').value = 1; // Set pqStatus to 1 if checkbox is checked
+        } else {
+            checkbox.form.querySelector('[name="pqStatus"]').value = 0; // Set pqStatus to 0 if checkbox is unchecked
+        }
+        checkbox.form.submit(); // Submit the form
+    }
 </script>
 
 <?php

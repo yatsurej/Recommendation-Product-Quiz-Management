@@ -41,8 +41,8 @@
                     $categoryName          = $row['categoryName'];
                 ?>
                     <tr class="card w-100 d-flex flex-row justify-content-between mb-3 p-4">
-                        <td style="width: 110px"><?php echo $voucherCode ?></td>
-                        <td class="w-75"><?php echo $categoryName ?></td>
+                        <td style="width: 110px"><?php echo $categoryName ?></td>
+                        <td class="w-75"><?php echo $voucherCode ?></td>
                         <td>
                             <div class="d-flex justify-content-center align-items-center">
                                 <!-- Edit Button -->

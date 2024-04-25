@@ -17,7 +17,7 @@
             }
             
             // Main Question CRUD
-            public function addMainQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData){
+            public function addMainQuestion($parentQuestion, $numOptions,$categoryID, $answersData){
                 global $conn;
                 
                 $maxOrderQuery = "SELECT MAX(pqOrder) AS maxOrder FROM parent_question WHERE categoryID = '$categoryID'";
@@ -25,8 +25,8 @@
                 $maxOrderRow = mysqli_fetch_assoc($maxOrderResult);
                 $nextOrder = $maxOrderRow['maxOrder'] + 1;
 
-                $query = "INSERT INTO parent_question(pqContent, pqNumOptions, pqMaxAnswer, categoryID, pqOrder)
-                        VALUES ('$parentQuestion', '$numOptions', '$numAnswer', '$categoryID', '$nextOrder')";
+                $query = "INSERT INTO parent_question(pqContent, pqNumOptions,  categoryID, pqOrder)
+                        VALUES ('$parentQuestion', '$numOptions', '$categoryID', '$nextOrder')";
                 $result = mysqli_query($conn, $query);
             
                 if ($result) {
@@ -262,6 +262,20 @@
                 if ($result){
                     return true;
                 } else {
+                    return false;
+                }
+            }
+            public function updateCategoryStatus($categoryID, $categoryStatus){
+                global $conn;
+
+                $query = "UPDATE category
+                          SET isActive = '$categoryStatus'
+                          WHERE categoryID = '$categoryID'";
+                $result = mysqli_query($conn, $query);
+
+                if ($result){
+                    return true;
+                } else{
                     return false;
                 }
             }

@@ -20,82 +20,87 @@ $pageTitle = "Quiz Management";
 include 'header.php';
 // include 'navbar.php';
 ?>
-
-<div class="container desktop-height d-flex justify-content-center align-items-center vh-100">
-    <div class="row w-100 index-spacer">
-        <!-- <div class="col-md-12 text-center">
-            <h1>Welcome <?php $username ?> admin!</h1>
-        </div> -->
-        <div class="col-md-4">
-            <a href="product.php" class="card text-center index-card py-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-tag index-icon" style="color: #f17482;"></i>
-                    <h5>Products</h5>
-                    <button type="button" class="info-btn" aria-label="Information">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip">Add, edit, or remove questions.</span>
-                    </button>
-                </div>
-            </a>
+<div class="index-page">
+    <div class="background-container"></div>
+    <div class="content-container">
+        <div class="logocontainer">
+            <img src="../assets/images/ADA.png" alt="ADALogo" class="ADALogo">
         </div>
-        <div class="col-md-4">
-            <a href="question.php" class="card text-center index-card py-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-circle-question index-icon" style="color:#f3b76d;"></i>
-                    <h5>Questions</h5>
-                    <button type="button" class="info-btn" aria-label="Information">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip">Add, edit, or remove questions.</span>
-                    </button>
+        <div class="container desktop-height d-flex justify-content-center align-items-center vh-100 flex-column">
+            <div class="row w-100 index-spacer">
+                <div class="col-md-4">
+                    <a href="categories.php" class="card text-center index-card py-3">
+                        <div class="card-body">
+                            <i class="fa-solid fa-tag index-icon" style="color: #636363;"></i>
+                            <h5>Products</h5>
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Manage products.</span>
+                            </button>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="voucher.php" class="card text-center index-card  py-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-ticket index-icon" style="color: #94f191"></i>
-                    <h5>Vouchers</h5>
-                    <button type="button" class="info-btn" aria-label="Information">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip">Add, edit, or remove vouchers.</span>
-                    </button>
+                <div class="col-md-4">
+                    <a href="question.php" class="card text-center index-card py-3">
+                        <div class="card-body">
+                            <i class="fa-solid fa-circle-question index-icon" style="color:#636363"></i>
+                            <h5>Questions</h5>
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Manage questions.</span>
+                            </button>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="analytics.php" class="card text-center index-card  py-3">
-                <div class="card-body">
-                    <i class="fa-solid fa-chart-column index-icon" style="color: #8bbed1"></i>
-                    <h5>Analytics</h5>
-                    <button type="button" class="info-btn" aria-label="Information">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip">View the data.</span>
-                    </button>
+                <div class="col-md-4">
+                    <a href="voucher.php" class="card text-center index-card  py-3">
+                        <div class="card-body">
+                            <i class="fa-solid fa-ticket index-icon" style="color: #636363"></i>
+                            <h5>Vouchers</h5>
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Manage vouchers.</span>
+                            </button>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="customize.php" class="card text-center index-card  py-3">
-                <div class="card-body">
-                    <i class="fas fa-cogs index-icon" style="color: #dfded4;"></i>
-                    <h5>Customization</h5>
-                    <button type="button" class="info-btn" aria-label="Information">
-                        <i class="fas fa-info-circle"></i>
-                        <span class="tooltip">Customize the user interface of the quiz.</span>
-                    </button>
+                <div class="col-md-4">
+                    <a href="analytics.php" class="card text-center index-card  py-3">
+                        <div class="card-body">
+                            <i class="fa-solid fa-chart-column index-icon" style="color: #636363"></i>
+                            <h5>Analytics</h5>
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">View reports.</span>
+                            </button>
+                        </div>
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4">
-            <a href="logout.php" class="card text-center logout-card  py-3">
-                <div class="card-body color-white">
-                    <i class="fa-solid fa-arrow-right-from-bracket index-icon"></i>
-                    <h5>Logout </h5>
+                <div class="col-md-4">
+                    <a href="customize.php" class="card text-center index-card  py-3">
+                        <div class="card-body">
+                            <i class="fas fa-cogs index-icon" style="color: #636363;"></i>
+                            <h5>Customization</h5>
+                            <button type="button" class="info-btn" aria-label="Information">
+                                <i class="fas fa-info-circle"></i>
+                                <span class="tooltip">Customize the user interface of the quiz.</span>
+                            </button>
+                        </div>
+                    </a>
                 </div>
-            </a>
+                <div class="col-md-4">
+                    <a href="logout.php" class="card text-center logout-card  py-3">
+                        <div class="card-body color-white">
+                            <i class="fa-solid fa-arrow-right-from-bracket index-icon"></i>
+                            <h5>Logout </h5>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

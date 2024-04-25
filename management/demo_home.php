@@ -7,7 +7,7 @@
     <div class="wrapper">
         <div class="spacer"></div>
         <div class="header-container">
-            <h1>Solutions you're<br>looking for</h1>
+            <h1 id="home-title">Solutions you're<br>looking for</h1>
         </div>
         <div class="spacer"></div>
         <div class="options-container">

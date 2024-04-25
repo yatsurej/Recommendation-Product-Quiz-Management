@@ -12,7 +12,7 @@
         <div class="suggested-products masked-overflow">
             <div class="product-container">
                 <div class="product-body">
-                    <img src="uploads/product.jpg" class="suggested-image" class="img-fluid">
+                    <img src="uploads/product.png" class="suggested-image" class="img-fluid">
                     <p>Product Name</p>
                     <button name="outbound" class="view-product-button">VIEW PRODUCT</button>
                 </div>

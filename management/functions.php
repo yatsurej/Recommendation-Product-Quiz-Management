@@ -26,7 +26,7 @@
      elseif (isset($_POST['addMainQuestion'])) {
         $parentQuestion = $_POST['parentQuestion'];
         $numOptions     = $_POST['numOptions'];
-        $numAnswer      = $_POST['numAnswer'];
+        // $numAnswer      = $_POST['numAnswer'];
         $categoryID     = $_POST['category'];
     
         $answersData = array();
@@ -36,7 +36,7 @@
             $answersData[$answerContent] = $productIDs;
         }
 
-        $result = $classQuiz->addMainQuestion($parentQuestion, $numOptions, $numAnswer, $categoryID, $answersData);
+        $result = $classQuiz->addMainQuestion($parentQuestion, $numOptions, $categoryID, $answersData);
     
         if ($result){
             header("Location: question.php");
@@ -162,14 +162,25 @@
         $categoryName        = $_POST['categoryName'];
         $categoryTitle       = $_POST['categoryTitle'];
         $categoryDescription = $_POST['categoryDescription'];
-        $categoryStatus      = $_POST['categoryStatus'];
 
-        $result = $classQuiz->updateCategory($categoryID, $categoryName, $categoryTitle, $categoryDescription, $categoryStatus);
+        $result = $classQuiz->updateCategory($categoryID, $categoryName, $categoryTitle, $categoryDescription);
 
         if($result){
             header("Location: categories.php");
         } else{
             $result->error;
+        }
+    } elseif (isset($_POST['updateCategoryStatus'])) {
+        $categoryID       = $_POST['categoryID'];
+        $categoryStatus   = $_POST['categoryStatus']; 
+    
+        $result = $classQuiz->updateCategoryStatus($categoryID, $categoryStatus);
+    
+        if ($result) {
+            header("Location: categories.php");
+            exit;
+        } else {
+            echo "Failed to update status.";
         }
     } // Voucher CRUD
      elseif (isset($_POST['addVoucher'])){

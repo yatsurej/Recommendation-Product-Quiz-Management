@@ -16,33 +16,36 @@
         header('Location: index.php');
         exit();
     }
+
+    $categoryStatusFilter = isset($_GET['categoryStatus']) ? $_GET['categoryStatus'] : 'active';
+    $categoryStatusCondition = ($categoryStatusFilter == 'active') ? 'AND isActive = 1' : (($categoryStatusFilter == 'inactive') ? 'AND isActive = 0' : '');
+    
+    $query = "SELECT * FROM category WHERE 1 $categoryStatusCondition";
+    $result = mysqli_query($conn, $query);
+
 ?>
 
 <div class="container">
     <h1 class="text-center fw-bold mt-4">Product Management</h1>
     <?php include 'product_nav.php'; ?>
-    <div class="d-flex justify-content-end">
-        <button class="btn btn-dark h-100 custom-button" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+    <div class="col-md-12 p-0">
+        <div class="d-flex justify-content-between align-items-center">
+            <form class="form-inline d-inline" id="filterForm" action="" method="GET">
+                <select class="custom-select mr-3 data" name="categoryStatus" id="categoryStatus"  onchange="this.form.submit()">
+                    <option value="" <?php echo ($categoryStatusFilter == '') ? 'selected' : ''; ?>>All</option>
+                    <option value="active" <?php echo ($categoryStatusFilter == 'active') ? 'selected' : ''; ?>>Active</option>
+                    <option value="inactive" <?php echo ($categoryStatusFilter == 'inactive') ? 'selected' : ''; ?>>Inactive</option>
+                </select>
+            </form>
+            <button class="btn btn-dark h-100 custom-button" data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+        </div>
     </div>
 </div>
 <div class="container w-100" style="min-height: 62vh;">
     <div class="table-responsive">
         <table class="table table-hover">
-            <!-- <thead>
-                <tr>
-                    <th scope="col">Category</th>
-                    <th scope="col">Category Title</th>
-                    <th scope="col">Category Description</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead> -->
             <tbody>
-                <?php
-                    $query = "SELECT *
-                              FROM category c";
-                    $result = mysqli_query($conn, $query);
-                    
+                <?php                    
                     while($row = mysqli_fetch_assoc($result)){
                         $categoryID             = $row['categoryID'];
                         $categoryName           = $row['categoryName'];
@@ -56,7 +59,17 @@
                         <td style="width: 110px;"><?php echo $categoryName?></td>
                         <td class="w-25"><?php echo $categoryTitle?></td>
                         <td class="w-50"><?php echo $categoryDescription?></td>
-                        <td style="width: 110px;"><?php echo $statusText?></td>
+                        <td style="width: 110px;">
+                            <form action="functions.php" method="post">
+                                <input type="hidden" name="categoryID" value="<?php echo $categoryID; ?>">
+                                <input type="hidden" name="updateCategoryStatus" value="true"> 
+                                <input type="hidden" name="categoryStatus" value="<?php echo ($categoryStatus == 1) ? 1 : 0; ?>"> <!-- Set initial value based on $categoryStatus -->
+                                <label class="switch">
+                                    <input type="checkbox" name="toggle" <?php echo ($categoryStatus == 1) ? "checked" : ""; ?> onchange="updateStatus(this)">
+                                    <span class="slider"></span>
+                                </label>
+                            </form>
+                        </td>
                         <td>
                         <div class="d-flex justify-content-center align-items-center">
                                 <!-- Edit Button -->
@@ -89,13 +102,6 @@
                                                     <div class="form-floating my-3">
                                                         <textarea type="text" style="resize: none; height: 100px;" class="form-control" name="categoryDescription"><?php echo $categoryDescription;?></textarea>
                                                         <label for="categoryDescription">Category Description</label>
-                                                    </div>
-                                                    <div class="form-floating my-3">
-                                                        <select class="form-select" id="categoryStatus" name="categoryStatus">
-                                                            <option value="1" <?php echo ($categoryStatus == 1) ? "selected" : ""; ?>>Active</option>
-                                                            <option value="0" <?php echo ($categoryStatus == 0) ? "selected" : ""; ?>>Inactive</option>
-                                                        </select>
-                                                        <label for="categoryStatus">Status</label>
                                                     </div>
                                                     <div class="text-end">
                                                         <button class="btn btn-dark custom-button text-white w-100" name="updateCategory" type="submit">Save changes</button>
@@ -145,7 +151,16 @@
         </div>
     </div>
 </div>
-
+<script>
+    function updateStatus(checkbox) {
+        if (checkbox.checked) {
+            checkbox.form.querySelector('[name="categoryStatus"]').value = 1; // Set categoryStatus to 1 if checkbox is checked
+        } else {
+            checkbox.form.querySelector('[name="categoryStatus"]').value = 0; // Set categoryStatus to 0 if checkbox is unchecked
+        }
+        checkbox.form.submit(); // Submit the form
+    }
+</script>
 <?php
 include 'footer.php';
 ?>

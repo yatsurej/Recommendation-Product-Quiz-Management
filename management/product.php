@@ -66,13 +66,6 @@
 <div class="container">
     <div class="table-responsive">
         <table class="table table-hover">
-            <!-- <thead class="text-center">
-                <tr>
-                    <th scope="col">Product Name</th>
-                    <th scope="col">Category</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead> -->
             <tbody>
                 <?php
                     while($row = mysqli_fetch_assoc($result)){
@@ -243,9 +236,6 @@
                         <button name="addProduct" class="btn btn-dark custom-button text-white w-100" type="submit" id="submitAdd">Submit</button>
                     </div>
             </div>
-            <!-- <div class="modal-footer">
-                <button name="addProduct" class="btn btn-secondary custom-button" type="submit" id="submitAdd">Submit</button>
-            </div> -->
             </form>
         </div>
     </div>

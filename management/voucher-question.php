@@ -90,10 +90,11 @@
                         <form action="functions.php" method="post">
                             <input type="hidden" name="bqID" value="<?php echo $bqID; ?>">
                             <input type="hidden" name="updateBqStatus" value="true"> 
-                            <select class="form-select"  name="bqStatus" onchange="this.form.submit()">
-                                <option value="1" <?php echo ($bqStatus == 1) ? "selected" : ""; ?>>Active</option>
-                                <option value="0" <?php echo ($bqStatus == 0) ? "selected" : ""; ?>>Inactive</option>
-                            </select>
+                            <input type="hidden" name="bqStatus" value="<?php echo ($bqStatus == 1) ? 1 : 0; ?>">
+                            <label class="switch">
+                                <input type="checkbox" name="toggle" <?php echo ($bqStatus == 1) ? "checked" : ""; ?> onchange="updateStatus(this)">
+                                <span class="slider"></span>
+                            </label>
                         </form>
                     </td>
                     <td>
@@ -181,62 +182,51 @@
                         
                         <!-- Edit Modal -->
                         <div class="modal fade" id="editQuestionModal<?php echo $bqID; ?>" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="editQuestionModalLabel">Edit Question</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content rounded-15 p-2">
+                                    <div class="modal-body p-4">
                                         <form action="functions.php" method="post">
                                             <input type="hidden" name="bqID" value="<?php echo $bqID; ?>">
                                             <input type="hidden" name="categoryID" value="<?php echo $categoryID; ?>">
-                                            <!-- Card -->
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <div class="form-group my-2">
-                                                        <label for="parentQuestion">Question: </label>
-                                                        <textarea type="text" style="resize: none" class="form-control" rows="3" id="parentQuestion" name="parentQuestion"><?php echo $bqContent; ?></textarea>
-                                                    </div>
-                                                    <div class="form-group my-2">
-                                                        <div class="row">
-                                                            <div class="col">
-                                                                <label for="answers">Answers:</label>
-                                                                <?php
-                                                                $answersWithProducts = [];
-                                                                $answersArray = explode('|', $answerContents);
-                                                                $answerIDsArray = explode(',', $answerIDs); 
-                                                                $associatedProducts = explode('|', $prodNames);
+                                            <div class="form-group my-4">
+                                                <label for="parentQuestion">Question: </label>
+                                                <textarea type="text" style="resize: none" class="form-control" rows="3" id="parentQuestion" name="parentQuestion"><?php echo $bqContent; ?></textarea>
+                                            </div>
+                                            <div class="form-group my-2">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <label for="answers">Answers:</label>
+                                                        <?php
+                                                        $answersWithProducts = [];
+                                                        $answersArray = explode('|', $answerContents);
+                                                        $answerIDsArray = explode(',', $answerIDs); 
+                                                        $associatedProducts = explode('|', $prodNames);
 
-                                                                $uniqueAnswers = [];
+                                                        $uniqueAnswers = [];
 
-                                                                foreach ($answersArray as $index => $answer) {
-                                                                    $answerID = isset($answerIDsArray[$index]) ? $answerIDsArray[$index] : 'No associated answer ID'; // Get the answer ID
+                                                        foreach ($answersArray as $index => $answer) {
+                                                            $answerID = isset($answerIDsArray[$index]) ? $answerIDsArray[$index] : 'No associated answer ID'; // Get the answer ID
 
-                                                                    if (!in_array($answer, $uniqueAnswers)) {
-                                                                        $uniqueAnswers[] = $answer;
-                                                                ?>
-                                                                        <div class="row">
-                                                                            <div class="col-8">
-                                                                                <input type="hidden" name="answerID" value="<?php echo $answerID; ?>">
-                                                                                <input type="text" class="form-control" value="<?php echo $answer; ?>" name="answers[]" id="answers" >
-                                                                            </div>
-                                                                            <div class="col-4">
-                                                                                <button type="button" class="btn btn-dark" data-bs-toggle="modal" onclick="dismissAndOpenModal('<?php echo $answerID; ?>')" data-bs-dismiss="modal">Edit Associated Products</button>
-                                                                            </div>
-                                                                        </div>
-                                                                    <?php
-                                                                    }
-                                                                }
-                                                                ?>
-                                                            </div>
-                                                        </div>
+                                                            if (!in_array($answer, $uniqueAnswers)) {
+                                                                $uniqueAnswers[] = $answer;
+                                                        ?>
+                                                                <div class="row d-flex align-items-center justify-content-between mb-3">
+                                                                    <div class="col-10 p-0">
+                                                                        <input type="hidden" name="answerID" value="<?php echo $answerID; ?>">
+                                                                        <input type="text" class="form-control" value="<?php echo $answer; ?>" name="answers[]" id="answers">
+                                                                    </div>
+                                                                    <div class="col-2 p-0 text-center">
+                                                                        <button type="button" class="btn btn-dark rounded-circle p-2" style="line-height: 0;" data-bs-toggle="modal" onclick="dismissAndOpenModal('<?php echo $answerID; ?>')" data-bs-dismiss="modal"><i class="fa-solid fa-gear"></i></button>
+                                                                    </div>
+                                                                </div>
+                                                            <?php
+                                                            }
+                                                        }
+                                                        ?>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button name="updateMainQuestion" class="btn btn-success" type="submit">Submit</button>
-                                            </div>
+                                        <button name="updateVoucherQuestion" class="btn btn-dark custom-button text-white w-100" type="submit">Submit</button>
                                         </form>
                                     </div>
                                 </div>
@@ -247,20 +237,17 @@
                                 $answerID = isset($answerIDsArray[$index]) ? $answerIDsArray[$index] : 'No associated answer ID'; // Get the answer ID
                                 ?>
                                 <div class="modal fade" id="editAnswerModal<?php echo $answerID; ?>" tabindex="-1" aria-labelledby="editAnswerModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="editAnswerModalLabel">Edit Answer</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content rounded-15 p-2">
+                                            <div class="modal-body p-4">
                                                 <form action="functions.php" method="post">
+                                                    <h5 class="modal-title" id="editAnswerModalLabel">Edit Answer</h5>
                                                     <input type="hidden" name="answerID" value="<?php echo $answerID; ?>">
                                                     <div class="form-group my-2">
                                                         <label for="answer">Answer:</label>
                                                         <input type="text" class="form-control" value="<?php echo $answer; ?>" name="answer" readonly>
                                                     </div>
-                                                    <div class="form-group my-2">
+                                                    <div class="form-group my-2 mb-4">
                                                         <label for="products">Associated Products</label>
                                                         <select name="products[]" class="chosen-products" multiple>
                                                             <?php
@@ -278,11 +265,9 @@
                                                             ?>
                                                         </select>
                                                     </div>
+                                                <button name="updateVoucherAnswerProducts" class="btn btn-dark custom-button text-white w-100" type="submit">Submit</button>
+                                                </form>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button name="updateVoucherAnswerProducts" class="btn btn-success" type="submit">Submit</button>
-                                            </div>
-                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -470,6 +455,14 @@
         $('#editAnswerModal' + answerID).modal('show');
     }
     $(".chosen-products").chosen({ width: '100%' });
+    function updateStatus(checkbox) {
+        if (checkbox.checked) {
+            checkbox.form.querySelector('[name="bqStatus"]').value = 1; // Set bqStatus to 1 if checkbox is checked
+        } else {
+            checkbox.form.querySelector('[name="bqStatus"]').value = 0; // Set bqStatus to 0 if checkbox is unchecked
+        }
+        checkbox.form.submit(); // Submit the form
+    }
 </script>
 
 <?php

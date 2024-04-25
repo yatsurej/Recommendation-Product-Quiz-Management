@@ -6,12 +6,12 @@
     --wrapper_animation: fadeInAnimation ease 0.5s;
     --wrapper_padding: 40px;
     --wrapper_flex-direction: column;
-    --h1_font-size: clamp(18px, 2vw, 36px);
+    --h1_font-size: clamp(34px, 2vw, 56px);
     --h1_font-weight: bold;
     --h1_letter-spacing: 1;
     --h1_line-height: 1;
     --h1_text-align: center;
-    --h1_color: #000000;
+    --h1_color: #8e7242;
     --h1_margin-top: 0;
     --h1_margin-right: 0;
     --h1_margin-bottom: 0;
@@ -35,16 +35,12 @@
     --spacer_height: 50px;
     --button_padding: 10px 20px;
     --button_font-size: clamp(14px, 2vw, 16px);
-    --button_background-image: linear-gradient(
-    to right,
-    #2a68dc 0%,
-    #4da3ff 37%,
-    #3677e4 100%
-  );
+    --button_background-image:  ;
+    --button_background-color: #428df0;
     --button_border-radius: 30px;
     --button_border: 2px solid #8e7242;
     --button_width: 100%;
-    --button_color: #000000;
+    --button_color: #ffffff;
     --button_letter-spacing: 1px;
     --button_margin: 0 0 20px 0;
     --button_hover_color: #8e7242;
@@ -91,6 +87,10 @@
     --result_title_h3_font-size: 1.5em;
     --result_title_h3_color: #8e7242;
     --result_title_h3_margin: 0 0 10px 0;
+    --bg_home: url("./images/bg.jpg");
+    --bg_category: url("./images/bg-2.jpg");
+    --bg_quiz: url("./images/bg-3.jpg");
+    --bg_result: url("./images/bg-4.jpg");
 }
 
 body,
@@ -261,6 +261,7 @@ button {
   padding: var(--button_padding);
   width: var(--button_width);
   font-size: var(--button_font-size);
+  background-color: var(--button_background-color);
   background-image: var(--button_background-image);
   border-radius: var(--button_border-radius);
   border: var(--button_border);
@@ -467,23 +468,23 @@ button:active {
 }
 
 .bg1 {
-  background-image: url("./images/bg-6.jpg");
+  background-image: var(--bg_home);
 }
 
 .bg2 {
-  background-image: url("./images/bg.jpg");
+  background-image: var(--bg_home);
 }
 
 .bg3 {
-  background-image: url("./images/bg-2.jpg");
+  background-image: var(--bg_category);
 }
 
 .bg4 {
-  background-image: url("./images/bg-3.jpg");
+  background-image: var(--bg_quiz);
 }
 
 .bg5 {
-  background-image: url("./images/bg-4.jpg");
+  background-image: var(--bg_result);
 }
 
 .home-content {
